@@ -51,17 +51,7 @@ const maskEmail = (email) => {
   return `${firstTwo}***${lastOne}@${domain.slice(0, 1)}***${domain.slice(-4)}`;
 };
 
-// types/postDetailsPage.d.ts
-declare module '@/pages/PostDetailsPage' {
-  interface PostDetailsPageProps {
-    cookiesAccepted?: boolean;
-    cookiesDecided?: boolean;
-    onLeadEvent?: (type: string, postId: string) => void;
-  }
-  
-  const PostDetailsPage: React.FC<PostDetailsPageProps>;
-  export default PostDetailsPage;
-}
+const PostDetailsPage = React.memo(({ cookiesAccepted, cookiesDecided, onLeadEvent }) => {
   const params = useParams();
   const searchParams = useSearchParams();
   const postId = params?.id;
