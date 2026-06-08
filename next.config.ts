@@ -1,4 +1,3 @@
-// next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
@@ -18,8 +17,14 @@ const nextConfig = {
   
   transpilePackages: ['leaflet', 'react-leaflet'],
   
-  // 🔴 ISR beállítások
-  staticPageGenerationTimeout: 120,
+  // 🔥 ISR és SSG beállítások
+  staticPageGenerationTimeout: 120, // 2 perc timeout nagyobb build-eknél
+  
+  // Opcionális: készíts statikus exportot (ha teljesen statikus akarsz)
+  // output: 'export', // Csak akkor, ha tényleg teljesen statikus kell
+  
+  // Traffic cop kikapcsolása (ha szükséges)
+  // trailingSlash: false,
 };
 
 module.exports = nextConfig;

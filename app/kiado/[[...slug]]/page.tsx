@@ -1,4 +1,3 @@
-// app/kiado/[[...slug]]/page.tsx
 import { getLocationContent } from '@/services/seoService';
 import HomePageContentWrapper from '@/components/HomePageContentWrapper';
 import { Metadata } from 'next';
@@ -7,14 +6,107 @@ interface PageProps {
   params: Promise<{ slug?: string[] }>;
 }
 
+// 🔥 ISR konfiguráció - 1 óránként újragenerálódik a háttérben
+export const revalidate = 3600;
+
+// 🔥 Prerenderelendő népszerű városok listája (ékezetes formában)
+const POPULAR_CITIES = [
+  'budapest', 'debrecen', 'szeged', 'miskolc', 'pécs', 'győr',
+  'nyíregyháza', 'kecskemét', 'székesfehérvár', 'szombathely', 'szolnok',
+  'tatabánya', 'kaposvár', 'békéscsaba', 'érd', 'veszprém', 'zalaegerszeg',
+  'sopron', 'eger', 'nagykanizsa', 'dunaújváros', 'hódmezővásárhely',
+  'dunakeszi', 'szentendre', 'gödöllő', 'vecsés', 'gyömrő', 'monor',
+  'cegléd', 'nagykáta'
+];
+
+// 🔥 Vármegyék listája
+const COUNTIES = [
+  'budapest', // Budapest főváros
+  'pest-varmegye',
+  'hajdu-bihar-varmegye',
+  'gyor-moson-sopron-varmegye',
+  'baranya-varmegye',
+  'borsod-abauj-zemplen-varmegye',
+  'szabolcs-szatmar-bereg-varmegye',
+  'bacs-kiskun-varmegye',
+  'bekes-varmegye',
+  'csongrad-csanad-varmegye',
+  'fejer-varmegye',
+  'heves-varmegye',
+  'komarom-esztergom-varmegye',
+  'nograd-varmegye',
+  'somogy-varmegye',
+  'tolna-varmegye',
+  'vas-varmegye',
+  'veszprem-varmegye',
+  'zala-varmegye',
+  'jasz-nagykun-szolnok-varmegye'
+];
+
+const PROPERTY_TYPES = ['lakas', 'haz'];
+
+// 🔥 generateStaticParams - Build-time prerenderelés KIADÓ oldalakra
+export async function generateStaticParams() {
+  const params = [];
+  
+  // 1. Alap route-ok (város nélkül)
+  for (const propertyType of PROPERTY_TYPES) {
+    // /kiado/lakas
+    params.push({ slug: [propertyType] });
+    // /kiado/lakas/lista
+    params.push({ slug: [propertyType, 'lista'] });
+  }
+  
+  // 2. Városos route-ok
+  for (const propertyType of PROPERTY_TYPES) {
+    for (const city of POPULAR_CITIES) {
+      // /kiado/lakas/budapest
+      params.push({ slug: [propertyType, city] });
+      // /kiado/lakas/budapest/lista
+      params.push({ slug: [propertyType, city, 'lista'] });
+    }
+  }
+  
+  // 3. Budapest kerületek (extra népszerű)
+  const budapestDistricts = [
+    'budapest-i-kerulet', 'budapest-ii-kerulet', 'budapest-iii-kerulet',
+    'budapest-iv-kerulet', 'budapest-v-kerulet', 'budapest-vi-kerulet',
+    'budapest-vii-kerulet', 'budapest-viii-kerulet', 'budapest-ix-kerulet',
+    'budapest-x-kerulet', 'budapest-xi-kerulet', 'budapest-xii-kerulet',
+    'budapest-xiii-kerulet', 'budapest-xiv-kerulet', 'budapest-xv-kerulet',
+    'budapest-xvi-kerulet', 'budapest-xvii-kerulet', 'budapest-xviii-kerulet',
+    'budapest-xix-kerulet', 'budapest-xx-kerulet', 'budapest-xxi-kerulet',
+    'budapest-xxii-kerulet', 'budapest-xxiii-kerulet'
+  ];
+  
+  for (const propertyType of PROPERTY_TYPES) {
+    for (const district of budapestDistricts) {
+      params.push({ slug: [propertyType, district] });
+      params.push({ slug: [propertyType, district, 'lista'] });
+    }
+  }
+  
+  // 4. Vármegye route-ok
+  for (const propertyType of PROPERTY_TYPES) {
+    for (const county of COUNTIES) {
+      params.push({ slug: [propertyType, county] });
+      params.push({ slug: [propertyType, county, 'lista'] });
+    }
+  }
+  
+  console.log(`[Kiadó generateStaticParams] ${params.length} oldal generálása build-kor`);
+  return params;
+}
+
+// METADATA generálása
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const listingType = 'elado';
+  const listingType = 'kiado';
   const type = slug?.[0] || 'lakas';
   const city = slug?.[1] || null;
   
-  let title = `${listingType === 'elado' ? 'Eladó' : 'Kiadó'} ${type === 'lakas' ? 'lakások' : 'házak'} - Ingatlan-Térkép`;
-  let description = `Keress ${listingType === 'elado' ? 'eladó' : 'kiadó'} ${type === 'lakas' ? 'lakásokat' : 'házakat'} Magyarország térképén.`;
+  let title = `Kiadó ${type === 'lakas' ? 'lakások' : 'házak'} - Ingatlan-Térkép`;
+  let description = `Keress kiadó ${type === 'lakas' ? 'lakásokat' : 'házakat'} Magyarország térképén.`;
   let canonicalUrl = `https://ingatlan-terkep.hu/${listingType}/${type}`;
   
   if (city) {
@@ -30,9 +122,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
   }
   
-  return { title, description, alternates: { canonical: canonicalUrl } };
+  return { 
+    title, 
+    description, 
+    alternates: { canonical: canonicalUrl },
+    openGraph: {
+      title,
+      description,
+      url: canonicalUrl,
+      siteName: 'Ingatlan-Térkép',
+      locale: 'hu_HU',
+      type: 'website',
+    },
+  };
 }
 
+// JSON-LD generáló függvény
 function generateJsonLd(listingType: string, type: string, city: string | null, locationContent: any, seoQuickPosts: any[]) {
   const baseUrl = 'https://ingatlan-terkep.hu';
   if (city && locationContent) {
@@ -42,12 +147,12 @@ function generateJsonLd(listingType: string, type: string, city: string | null, 
         {
           "@type": "WebPage",
           "@id": `${baseUrl}/${listingType}/${type}/${city}`,
-          "name": locationContent.seo?.title || `${listingType === 'elado' ? 'Eladó' : 'Kiadó'} ${type === 'lakas' ? 'lakások' : 'házak'} ${city}`,
+          "name": locationContent.seo?.title || `Kiadó ${type === 'lakas' ? 'lakások' : 'házak'} ${city}`,
           "url": `${baseUrl}/${listingType}/${type}/${city}`,
         },
         {
           "@type": "Product",
-          "name": `${listingType === 'elado' ? 'Eladó' : 'Kiadó'} ${type === 'lakas' ? 'lakások' : 'házak'} ${city}`,
+          "name": `Kiadó ${type === 'lakas' ? 'lakások' : 'házak'} ${city}`,
           "offers": {
             "@type": "AggregateOffer",
             "offerCount": locationContent.stats?.listingCount || 0,
@@ -65,6 +170,7 @@ function generateJsonLd(listingType: string, type: string, city: string | null, 
   };
 }
 
+// Fő komponens (Server Component)
 export default async function Page({ params }: PageProps) {
   const { slug } = await params;
   const listingType = 'kiado';
@@ -72,6 +178,7 @@ export default async function Page({ params }: PageProps) {
   const city = slug?.[1] || null;
   let viewMode: 'map' | 'list' = 'map';
   
+  // ViewMode felismerés
   if (slug && slug.length > 1) {
     if (slug[1] === 'lista') viewMode = 'list';
     else if (slug.length > 2 && slug[2] === 'lista') viewMode = 'list';
@@ -99,40 +206,12 @@ export default async function Page({ params }: PageProps) {
   
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       
-      <div className="seo-below-map-section" style={{ position: 'relative', zIndex: 10, background: 'white' }}>
-        <div className="container relative z-10 mx-auto px-4 py-12 max-w-7xl">
-          <div className="article-wrapper bg-white rounded-2xl shadow-lg border border-gray-200 p-6 md:p-10">
-            {city && locationContent ? (
-              <>
-                <h1 className="seo-h1">
-                  {locationContent.seo?.h1 || `Kiadó ${type === 'lakas' ? 'lakások' : 'házak'} ${city}`}
-                </h1>
-                {locationContent.stats && (
-                  <div className="stats-cards">
-                    {locationContent.stats.listingCount && (
-                      <div className="stat-card">
-                        <div className="stat-number">{locationContent.stats.listingCount}</div>
-                        <div className="stat-label">hirdetés</div>
-                      </div>
-                    )}
-                  </div>
-                )}
-                {locationContent.content?.mainContent && (
-                  <div className="seo-generated-content" dangerouslySetInnerHTML={{ __html: locationContent.content.mainContent }} />
-                )}
-              </>
-            ) : !city ? (
-              <>
-                <h1 className="seo-h1">Keress kiadó ingatlant valós idejű térképen</h1>
-                <p className="seo-intro">Több tízezer friss kiadó ingatlan Magyarországon – pontos szűrőkkel és interaktív térképpel.</p>
-              </>
-            ) : null}
-          </div>
-        </div>
-      </div>
-      
+      {/* Client wrapper komponens - a térkép és a SEO tartalom is itt jelenik meg lent */}
       <HomePageContentWrapper 
         listingType={listingType}
         type={type}

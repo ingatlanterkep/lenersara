@@ -1,4 +1,3 @@
-// app/elado/[[...slug]]/page.tsx
 import { getLocationContent } from '@/services/seoService';
 import HomePageContentWrapper from '@/components/HomePageContentWrapper';
 import { Metadata } from 'next';
@@ -7,7 +6,99 @@ interface PageProps {
   params: Promise<{ slug?: string[] }>;
 }
 
-// METADATA generálása (ez még SSR-ben marad)
+// 🔥 ISR konfiguráció - 1 óránként újragenerálódik a háttérben
+export const revalidate = 3600;
+
+// 🔥 Prerenderelendő népszerű városok listája (ékezetes formában)
+const POPULAR_CITIES = [
+  'budapest', 'debrecen', 'szeged', 'miskolc', 'pécs', 'győr',
+  'nyíregyháza', 'kecskemét', 'székesfehérvár', 'szombathely', 'szolnok',
+  'tatabánya', 'kaposvár', 'békéscsaba', 'érd', 'veszprém', 'zalaegerszeg',
+  'sopron', 'eger', 'nagykanizsa', 'dunaújváros', 'hódmezővásárhely',
+  'dunakeszi', 'szentendre', 'gödöllő', 'vecsés', 'gyömrő', 'monor',
+  'cegléd', 'nagykáta'
+];
+
+// 🔥 Vármegyék listája
+const COUNTIES = [
+  'budapest', // Budapest főváros
+  'pest-varmegye',
+  'hajdu-bihar-varmegye',
+  'gyor-moson-sopron-varmegye',
+  'baranya-varmegye',
+  'borsod-abauj-zemplen-varmegye',
+  'szabolcs-szatmar-bereg-varmegye',
+  'bacs-kiskun-varmegye',
+  'bekes-varmegye',
+  'csongrad-csanad-varmegye',
+  'fejer-varmegye',
+  'heves-varmegye',
+  'komarom-esztergom-varmegye',
+  'nograd-varmegye',
+  'somogy-varmegye',
+  'tolna-varmegye',
+  'vas-varmegye',
+  'veszprem-varmegye',
+  'zala-varmegye',
+  'jasz-nagykun-szolnok-varmegye'
+];
+
+const PROPERTY_TYPES = ['lakas', 'haz'];
+
+// 🔥 generateStaticParams - Build-time prerenderelés
+export async function generateStaticParams() {
+  const params = [];
+  
+  // 1. Alap route-ok (város nélkül)
+  for (const propertyType of PROPERTY_TYPES) {
+    // /elado/lakas
+    params.push({ slug: [propertyType] });
+    // /elado/lakas/lista
+    params.push({ slug: [propertyType, 'lista'] });
+  }
+  
+  // 2. Városos route-ok
+  for (const propertyType of PROPERTY_TYPES) {
+    for (const city of POPULAR_CITIES) {
+      // /elado/lakas/budapest
+      params.push({ slug: [propertyType, city] });
+      // /elado/lakas/budapest/lista
+      params.push({ slug: [propertyType, city, 'lista'] });
+    }
+  }
+  
+  // 3. Budapest kerületek (extra népszerű)
+  const budapestDistricts = [
+    'budapest-i-kerulet', 'budapest-ii-kerulet', 'budapest-iii-kerulet',
+    'budapest-iv-kerulet', 'budapest-v-kerulet', 'budapest-vi-kerulet',
+    'budapest-vii-kerulet', 'budapest-viii-kerulet', 'budapest-ix-kerulet',
+    'budapest-x-kerulet', 'budapest-xi-kerulet', 'budapest-xii-kerulet',
+    'budapest-xiii-kerulet', 'budapest-xiv-kerulet', 'budapest-xv-kerulet',
+    'budapest-xvi-kerulet', 'budapest-xvii-kerulet', 'budapest-xviii-kerulet',
+    'budapest-xix-kerulet', 'budapest-xx-kerulet', 'budapest-xxi-kerulet',
+    'budapest-xxii-kerulet', 'budapest-xxiii-kerulet'
+  ];
+  
+  for (const propertyType of PROPERTY_TYPES) {
+    for (const district of budapestDistricts) {
+      params.push({ slug: [propertyType, district] });
+      params.push({ slug: [propertyType, district, 'lista'] });
+    }
+  }
+  
+  // 4. Vármegye route-ok
+  for (const propertyType of PROPERTY_TYPES) {
+    for (const county of COUNTIES) {
+      params.push({ slug: [propertyType, county] });
+      params.push({ slug: [propertyType, county, 'lista'] });
+    }
+  }
+  
+  console.log(`[Eladó generateStaticParams] ${params.length} oldal generálása build-kor`);
+  return params;
+}
+
+// METADATA generálása
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const listingType = 'elado';
@@ -95,6 +186,7 @@ export default async function Page({ params }: PageProps) {
   const city = slug?.[1] || null;
   let viewMode: 'map' | 'list' = 'map';
   
+  // ViewMode felismerés
   if (slug && slug.length > 1) {
     if (slug[1] === 'lista') viewMode = 'list';
     else if (slug.length > 2 && slug[2] === 'lista') viewMode = 'list';
@@ -122,10 +214,12 @@ export default async function Page({ params }: PageProps) {
   
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       
-      
-      {/* Client wrapper komponens */}
+      {/* Client wrapper komponens - a térkép és a SEO tartalom is itt jelenik meg lent */}
       <HomePageContentWrapper 
         listingType={listingType}
         type={type}
