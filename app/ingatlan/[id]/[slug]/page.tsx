@@ -1,8 +1,22 @@
+// app/ingatlan/[id]/[slug]/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
-import PostDetailsPage from '@/pages/PostDetailsPage';
+import dynamic from 'next/dynamic';
 import { getPostDetails } from '@/services/apiService';
+
+// Dinamikus import a PostDetailsPage-hoz (SSR kikapcsolva)
+const PostDetailsPage = dynamic(
+  () => import('@/pages/PostDetailsPage'),
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="loading">Hirdetés betöltése...</div>
+      </div>
+    )
+  }
+);
 
 export default function PropertyDetails({ params }: { params: Promise<{ id: string; slug: string }> }) {
   const [cookiesAccepted, setCookiesAccepted] = useState(false);
@@ -18,8 +32,8 @@ export default function PropertyDetails({ params }: { params: Promise<{ id: stri
   }, [params]);
   
   const handleLeadEvent = (type: string, postId: string) => {
-    if (cookiesAccepted && window.gtag) {
-      window.gtag('event', 'generate_lead', {
+    if (cookiesAccepted && typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', 'generate_lead', {
         lead_type: type,
         post_id: postId,
         value: 100,

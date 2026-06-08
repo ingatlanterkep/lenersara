@@ -1,10 +1,9 @@
+// pages/PostDetailsPage.js - a fájl elején
 'use client';
 
 import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
-import { getPostDetails, getSimilarPosts } from '../services/apiService';
-import PostDetailsGallery from '../components/PostDetailsGallery';
-import L from 'leaflet';
+import dynamic from 'next/dynamic';
 import sanitizeHtml from 'sanitize-html';
 import '../styles/PostDetailsPage.css';
 import { analyzePropertyAI } from '../services/apiService';
@@ -17,7 +16,25 @@ import {
 } from '../utils/favoritePosts';
 import ReCAPTCHA from "react-google-recaptcha";
 
-const LazyMiniMapComponent = React.lazy(() => import('../components/MiniMapComponent'));
+// Dinamikus importok (SSR kikapcsolva)
+const PostDetailsGallery = dynamic(
+  () => import('../components/PostDetailsGallery'),
+  { ssr: false, loading: () => <div className="gallery-loading">Képek betöltése...</div> }
+);
+
+const LazyMiniMapComponent = dynamic(
+  () => import('../components/MiniMapComponent'),
+  { ssr: false, loading: () => <div className="map-loading">Térkép betöltése...</div> }
+);
+
+// Leaflet dinamikus import - csak client oldalon
+let L = null;
+if (typeof window !== 'undefined') {
+  import('leaflet').then(module => {
+    L = module.default;
+    import('leaflet/dist/leaflet.css');
+  });
+}
 
 const generateSlug = (title) => {
   if (!title) return 'unknown';
