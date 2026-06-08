@@ -2,7 +2,8 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { geocodeAddress } from '../utils/geocodeAddress';
+
+const geocodeAddress = (await import('../utils/geocodeAddress')).geocodeAddress;
 import '../styles/PostEditForm.css';
 import { debounce } from 'lodash';
 
