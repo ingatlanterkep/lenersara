@@ -168,8 +168,6 @@ export default function HomePageContent({
   const [isMobile, setIsMobile] = useState(false);
   const [hasFitted, setHasFitted] = useState(false);
   const [favoritePosts, setFavoritePosts] = useState(new Set());
-  const [listPosts, setListPosts] = useState([]);
-  const [listTotal, setListTotal] = useState(0);
   const [listPage, setListPage] = useState(1);
   const [listLoading, setListLoading] = useState(false);
   const [listHasMore, setListHasMore] = useState(true);
