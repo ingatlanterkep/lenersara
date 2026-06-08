@@ -1,3 +1,4 @@
+// components/Navbar.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -54,10 +55,13 @@ const Navbar = ({
     return () => window.removeEventListener('favoritesUpdated', updateCount);
   }, []);
 
+  // 🔴 JAVÍTÁS: Használj null-coalescing operátort, hogy mindig string legyen
+  const currentPath = pathname ?? '/';
+  
   const isHomePage = 
-    pathname === '/' || 
-    /^\/(elado|kiado)\/[^/]+(\/[^/]+)?(\/lista)?$/.test(pathname) ||
-    pathname === '/lista';
+    currentPath === '/' || 
+    /^\/(elado|kiado)\/[^/]+(\/[^/]+)?(\/lista)?$/.test(currentPath) ||
+    currentPath === '/lista';
 
   const toggleMenu = () => setNavbarMenuOpen(!isNavbarMenuOpen);
   const handleLinkClick = () => setNavbarMenuOpen(false);
@@ -76,8 +80,8 @@ const Navbar = ({
   };
 
   const handleViewModeToggle = () => {
-    const isCurrentlyList = pathname?.endsWith('/lista') || false;
-    let newPath = pathname || '/';
+    const isCurrentlyList = currentPath.endsWith('/lista');
+    let newPath = currentPath;
     
     if (isCurrentlyList) {
       newPath = newPath.replace(/\/lista$/, '') || '/';
@@ -108,7 +112,7 @@ const Navbar = ({
           <div className="navbar-controls">
             {isHomePage && (
               <button className="navbar-icon-button view-mode-toggle" onClick={handleViewModeToggle}>
-                {pathname?.endsWith('/lista') ? (
+                {currentPath.endsWith('/lista') ? (
                   <img src="/terkepnezet.png" alt="Térkép nézet" style={{ width: 24, height: 24 }} />
                 ) : (
                   <img src="/listanezet.png" alt="Lista nézet" style={{ width: 24, height: 24 }} />
