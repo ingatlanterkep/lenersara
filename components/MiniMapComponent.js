@@ -459,7 +459,7 @@ const MiniMapComponent = React.memo(({ post }) => {
 
         {zoom >= 14 && !layers.satellite && (
           <TileLayer
-            url={`https://api.maptiler.com/maps/basic-v2/{z}/{x}/{y}.png?key=${process.env.NEXT_PUBLIC_MAPTILER_API_KEY}`}
+            url={`https://api.maptiler.com/maps/basic-v2/{z}/{x}/{y}.png?key=pZsWTfQMsHMC3mv8EY7g`}
             attribution='© MapTiler'
             zIndex={2}
             className="fade-layer"
@@ -482,7 +482,7 @@ const MiniMapComponent = React.memo(({ post }) => {
         {layers.satellite && (
           <Suspense fallback={null}>
             <TileLayer
-              url={`https://api.maptiler.com/maps/satellite/{z}/{x}/{y}.jpg?key=${process.env.NEXT_PUBLIC_MAPTILER_API_KEY}`}
+              url={`https://api.maptiler.com/maps/satellite/{z}/{x}/{y}.jpg?key=pZsWTfQMsHMC3mv8EY7g`}
               attribution='© MapTiler'
               zIndex={10}
               className="fade-layer"

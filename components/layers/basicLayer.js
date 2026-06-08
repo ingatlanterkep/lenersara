@@ -12,7 +12,7 @@ export const renderBasicLayer = () => {
 //      url="https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
 
 
-     url={`https://api.maptiler.com/maps/basic/{z}/{x}/{y}.jpg?key=${apiKey}`}
+     url={`https://api.maptiler.com/maps/basic/{z}/{x}/{y}.jpg?key=pZsWTfQMsHMC3mv8EY7g`}
       attribution='© <a href="https://www.maptiler.com/">MapTiler</a>'
       zIndex={100} // Például magasabb zIndex érték
     />
