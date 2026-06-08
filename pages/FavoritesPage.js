@@ -1,15 +1,27 @@
+// pages/FavoritesPage.js
 'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { getPostDetails } from '../services/apiService';
 import { 
   getFavoritePosts, 
   removeFavoritePost
 } from '../utils/favoritePosts';
 import '../styles/FavoritesPage.css';
-import MiniMapComponent from '../components/MiniMapComponent';
-import PostDetailsGallery from '../components/PostDetailsGallery';
+
+// Dinamikus import a MiniMapComponent-hez (SSR kikapcsolva)
+const MiniMapComponent = dynamic(
+  () => import('../components/MiniMapComponent'),
+  { ssr: false, loading: () => <div className="map-loading">Térkép betöltése...</div> }
+);
+
+// Dinamikus import a PostDetailsGallery-hez (SSR kikapcsolva)
+const PostDetailsGallery = dynamic(
+  () => import('../components/PostDetailsGallery'),
+  { ssr: false, loading: () => <div className="gallery-loading">Képek betöltése...</div> }
+);
 
 const FAVORITE_POSTS_KEY = 'favorite_realestate_posts';
 
@@ -18,6 +30,11 @@ const FavoritesPage = ({ cookiesAccepted = false }) => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const getFullImageUrl = (imagePath) => {
     const baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASEURL || 'http://localhost:5000';
@@ -49,6 +66,7 @@ const FavoritesPage = ({ cookiesAccepted = false }) => {
   };
 
   useEffect(() => {
+    if (!isClient) return;
     if (cookiesAccepted && window.gtag && favorites.length > 0) {
       window.gtag('event', 'view_favorites_page', {
         favorite_count: favorites.length,
@@ -56,9 +74,11 @@ const FavoritesPage = ({ cookiesAccepted = false }) => {
         avg_price: favorites.reduce((sum, p) => sum + (p.price || p.rental_price || 0), 0) / favorites.length
       });
     }
-  }, [favorites, cookiesAccepted]);
+  }, [favorites, cookiesAccepted, isClient]);
 
   useEffect(() => {
+    if (!isClient) return;
+    
     const loadFavorites = async () => {
       try {
         setLoading(true);
@@ -105,9 +125,10 @@ const FavoritesPage = ({ cookiesAccepted = false }) => {
 
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
+  }, [isClient]);
 
   const handleRemoveFavorite = (postId) => {
+    if (!isClient) return;
     if (window.confirm("Biztosan eltávolítod a kedvencekből?")) {
       removeFavoritePost(postId);
       setFavorites(prev => prev.filter(p => p._id !== postId));
@@ -118,6 +139,7 @@ const FavoritesPage = ({ cookiesAccepted = false }) => {
   };
 
   const handleCardClick = (post) => {
+    if (!isClient) return;
     const isMobile = window.innerWidth <= 768;
     
     if (isMobile) {
@@ -130,6 +152,8 @@ const FavoritesPage = ({ cookiesAccepted = false }) => {
   };
 
   useEffect(() => {
+    if (!isClient) return;
+    
     const handleResize = () => {
       const isMobile = window.innerWidth <= 768;
       if (isMobile && selectedPost) {
@@ -139,9 +163,9 @@ const FavoritesPage = ({ cookiesAccepted = false }) => {
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [selectedPost]);
+  }, [selectedPost, isClient]);
 
-  if (loading) {
+  if (!isClient || loading) {
     return <div className="loading">Betöltés...</div>;
   }
 

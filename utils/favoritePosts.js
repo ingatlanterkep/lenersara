@@ -1,13 +1,17 @@
-// src/utils/favoritePosts.js
+// utils/favoritePosts.js
 const FAVORITE_POSTS_KEY = 'favorite_realestate_posts';
 const FAVORITE_EXPIRY_KEY = 'favorite_realestate_expiry';
 const EXPIRY_DAYS = 90;
 
+// Ellenőrizzük, hogy client oldalon vagyunk-e
+const isClient = typeof window !== 'undefined';
+
 export const getFavoritePosts = () => {
+  if (!isClient) return new Set();
+  
   try {
     const expiry = localStorage.getItem(FAVORITE_EXPIRY_KEY);
     if (expiry && new Date(expiry) < new Date()) {
-      // Lejárt → töröljük
       localStorage.removeItem(FAVORITE_POSTS_KEY);
       localStorage.removeItem(FAVORITE_EXPIRY_KEY);
       return new Set();
@@ -22,13 +26,14 @@ export const getFavoritePosts = () => {
 };
 
 export const addFavoritePost = (postId) => {
+  if (!isClient) return;
+  
   try {
     const favorites = getFavoritePosts();
     favorites.add(postId);
 
     localStorage.setItem(FAVORITE_POSTS_KEY, JSON.stringify(Array.from(favorites)));
 
-    // Ha még nincs expiry, állítsunk be egyet
     if (!localStorage.getItem(FAVORITE_EXPIRY_KEY)) {
       const expiryDate = new Date();
       expiryDate.setDate(expiryDate.getDate() + EXPIRY_DAYS);
@@ -40,12 +45,13 @@ export const addFavoritePost = (postId) => {
 };
 
 export const removeFavoritePost = (postId) => {
+  if (!isClient) return;
+  
   try {
     const favorites = getFavoritePosts();
     favorites.delete(postId);
     localStorage.setItem(FAVORITE_POSTS_KEY, JSON.stringify(Array.from(favorites)));
 
-    // Ha üres lett → expiry is törölhető (opcionális)
     if (favorites.size === 0) {
       localStorage.removeItem(FAVORITE_EXPIRY_KEY);
     }
@@ -55,10 +61,13 @@ export const removeFavoritePost = (postId) => {
 };
 
 export const isFavoritePost = (postId) => {
+  if (!isClient) return false;
   return getFavoritePosts().has(postId);
 };
 
 export const clearExpiredFavorites = () => {
+  if (!isClient) return;
+  
   const expiry = localStorage.getItem(FAVORITE_EXPIRY_KEY);
   if (expiry && new Date(expiry) < new Date()) {
     localStorage.removeItem(FAVORITE_POSTS_KEY);
