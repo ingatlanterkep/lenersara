@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ChangePasswordForm from '../forms/ChangePasswordForm';
-import '../styles/ChangePasswordPage.css';
+import '../styles/ChangePasswordForm.css';
 import '../styles/AuthForm.css';
 
 const ChangePasswordPage = () => {

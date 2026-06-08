@@ -1,6 +1,6 @@
-// components/forms/RegisterForm.jsx
+// forms/RegisterForm.jsx
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link'; // ← EZ A FONTOS VÁLTOZTATÁS!
 
 const EyeIcon = ({ isVisible }) => (
   isVisible ? (
@@ -95,16 +95,14 @@ const RegisterForm = ({ onRegister, setMessage }) => {
         <input type="text" value={referralCode} onChange={e => setReferralCode(e.target.value)} placeholder="ABC123" />
       </div>
 
-
-
-        <div style={{ textAlign: 'center', margin: '24px 0 16px 0', padding: '12px', background: '#f8f9fa', borderRadius: '8px' }}>
-          <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14.5px', cursor: 'pointer' }}>
+      <div style={{ textAlign: 'center', margin: '24px 0 16px 0', padding: '12px', background: '#f8f9fa', borderRadius: '8px' }}>
+        <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14.5px', cursor: 'pointer' }}>
           <input type="checkbox" checked={privacyAccepted} onChange={e => setPrivacyAccepted(e.target.checked)} />
-            <span>
-              Elfogadom az <a href="/aszf" target="_blank" rel="noopener">ÁSZF-et</a> és az{' '}
-              <a href="/privacy-policy" target="_blank" rel="noopener">Adatvédelmi tájékoztatót</a>{' '}
-              <span style={{ color: 'red' }}>*</span>
-            </span>
+          <span>
+            Elfogadom az <Link href="/aszf" target="_blank">ÁSZF-et</Link> és az{' '}
+            <Link href="/privacy-policy" target="_blank">Adatvédelmi tájékoztatót</Link>{' '}
+            <span style={{ color: 'red' }}>*</span>
+          </span>
         </label>
         {errors.privacy && <span className="error-message">{errors.privacy}</span>}
       </div>
