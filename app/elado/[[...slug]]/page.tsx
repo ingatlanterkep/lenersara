@@ -1,13 +1,26 @@
 // app/elado/[[...slug]]/page.tsx
 import { getLocationContent } from '@/services/seoService';
-import HomePageContent from '@/pages/HomePageContent';
+import dynamic from 'next/dynamic';
 import { Metadata } from 'next';
 
 interface PageProps {
   params: Promise<{ slug?: string[] }>;
 }
 
-// METADATA generálása
+// Dinamikus import a HomePageContent-hoz (SSR kikapcsolva)
+const HomePageContent = dynamic(
+  () => import('@/pages/HomePageContent'),
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="loading">Térkép betöltése...</div>
+      </div>
+    )
+  }
+);
+
+// METADATA generálása (ez még SSR-ben marad)
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const listingType = 'elado';
@@ -31,7 +44,60 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
   }
   
-  return { title, description, alternates: { canonical: canonicalUrl } };
+  return { 
+    title, 
+    description, 
+    alternates: { canonical: canonicalUrl },
+    openGraph: {
+      title,
+      description,
+      url: canonicalUrl,
+      siteName: 'Ingatlan-Térkép',
+      locale: 'hu_HU',
+      type: 'website',
+    },
+  };
+}
+
+// JSON-LD generáló függvény
+function generateJsonLd(listingType: string, type: string, city: string | null, locationContent: any, seoQuickPosts: any[]) {
+  const baseUrl = 'https://ingatlan-terkep.hu';
+  if (city && locationContent) {
+    return {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebPage",
+          "@id": `${baseUrl}/${listingType}/${type}/${city}`,
+          "name": locationContent.seo?.title || `${listingType === 'elado' ? 'Eladó' : 'Kiadó'} ${type === 'lakas' ? 'lakások' : 'házak'} ${city}`,
+          "url": `${baseUrl}/${listingType}/${type}/${city}`,
+        },
+        {
+          "@type": "Product",
+          "name": `${listingType === 'elado' ? 'Eladó' : 'Kiadó'} ${type === 'lakas' ? 'lakások' : 'házak'} ${city}`,
+          "offers": {
+            "@type": "AggregateOffer",
+            "offerCount": locationContent.stats?.listingCount || 0,
+            "priceCurrency": "HUF",
+          }
+        }
+      ]
+    };
+  }
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Ingatlan-Térkép",
+    "url": baseUrl,
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": `${baseUrl}/elado/lakas/{search_term}`
+      },
+      "query-input": "required name=search_term"
+    }
+  };
 }
 
 // Fő komponens
@@ -71,7 +137,57 @@ export default async function Page({ params }: PageProps) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       
-      {/* 🔴 A SEO tartalom legyen a homepage-container-en BELÜL, ne KÍVÜL */}
+      {/* SEO tartalom - server side rendered */}
+      <div className="seo-below-map-section" style={{ position: 'relative', zIndex: 10, background: 'white' }}>
+        <div className="container relative z-10 mx-auto px-4 py-12 max-w-7xl">
+          <div className="article-wrapper bg-white rounded-2xl shadow-lg border border-gray-200 p-6 md:p-10">
+            {city && locationContent ? (
+              <>
+                <h1 className="seo-h1">
+                  {locationContent.seo?.h1 || `Eladó ${type === 'lakas' ? 'lakások' : 'házak'} ${city}`}
+                </h1>
+                {locationContent.stats && (
+                  <div className="stats-cards">
+                    {locationContent.stats.listingCount && (
+                      <div className="stat-card">
+                        <div className="stat-number">{locationContent.stats.listingCount}</div>
+                        <div className="stat-label">hirdetés</div>
+                      </div>
+                    )}
+                    {locationContent.stats.medianPricePerSqm && (
+                      <div className="stat-card">
+                        <div className="stat-number">{Math.round(locationContent.stats.medianPricePerSqm).toLocaleString()} Ft</div>
+                        <div className="stat-label">medián nm ár</div>
+                      </div>
+                    )}
+                    {locationContent.stats.medianPrice && (
+                      <div className="stat-card">
+                        <div className="stat-number">{Math.round(locationContent.stats.medianPrice / 1000000)}M Ft</div>
+                        <div className="stat-label">medián ár</div>
+                      </div>
+                    )}
+                  </div>
+                )}
+                {locationContent.content?.mainContent && (
+                  <div className="seo-generated-content" dangerouslySetInnerHTML={{ __html: locationContent.content.mainContent }} />
+                )}
+              </>
+            ) : !city ? (
+              <>
+                <h1 className="seo-h1">Keress ingatlant valós idejű térképen</h1>
+                <p className="seo-intro">Több tízezer friss eladó és kiadó ingatlan Magyarországon – pontos szűrőkkel és interaktív térképpel.</p>
+                <div className="seo-cta-buttons">
+                  <a href="/elado/lakas" className="btn-primary">Eladó lakások →</a>
+                  <a href="/kiado/lakas" className="btn-secondary">Kiadó lakások →</a>
+                  <a href="/elado/haz" className="btn-tertiary">Eladó házak →</a>
+                </div>
+              </>
+            ) : null}
+          </div>
+        </div>
+      </div>
+      
+      {/* Client komponens (térkép, interaktív részek) */}
       <HomePageContent 
         listingType={listingType}
         type={type}
@@ -82,42 +198,4 @@ export default async function Page({ params }: PageProps) {
       />
     </>
   );
-}
-
-// JSON-LD generáló függvény
-function generateJsonLd(listingType: string, type: string, city: string | null, locationContent: any, seoQuickPosts: any[]) {
-  const baseUrl = 'https://ingatlan-terkep.hu';
-  if (city && locationContent) {
-    return {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "WebPage",
-          "@id": `${baseUrl}/${listingType}/${type}/${city}`,
-          "name": locationContent.seo?.title || `${listingType === 'elado' ? 'Eladó' : 'Kiadó'} ${type === 'lakas' ? 'lakások' : 'házak'} ${city}`,
-          "url": `${baseUrl}/${listingType}/${type}/${city}`,
-        },
-        {
-          "@type": "Product",
-          "name": `${listingType === 'elado' ? 'Eladó' : 'Kiadó'} ${type === 'lakas' ? 'lakások' : 'házak'} ${city}`,
-          "offers": {
-            "@type": "AggregateOffer",
-            "offerCount": locationContent.stats?.listingCount || 0,
-            "priceCurrency": "HUF",
-          }
-        }
-      ]
-    };
-  }
-  return {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "Ingatlan-Térkép",
-    "url": baseUrl,
-  };
-}
-
-function generateSlug(title: string): string {
-  if (!title) return 'unknown';
-  return title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 }
