@@ -6,7 +6,7 @@ export const fetchBasicData = async (bbox, signal) => {
 };
 
 export const renderBasicLayer = () => {
- const apiKey = process.env.REACT_APP_MAPTILER_API_KEY;
+ const apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
   return (
     <TileLayer
 //      url="https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"

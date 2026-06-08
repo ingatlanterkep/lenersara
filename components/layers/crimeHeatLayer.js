@@ -6,7 +6,7 @@ export const fetchCrimeData = async (bbox, signal) => {
 };
 
 export const renderCrimeHeatLayer = () => {
-  const apiKey = process.env.REACT_APP_MAPTILER_API_KEY;
+  const apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
   
   // Próbáld ki ezeket a formátumokat:
   
@@ -14,7 +14,7 @@ export const renderCrimeHeatLayer = () => {
   return (
     <TileLayer
       key="crime-heat-raster"
-      url={`https://api.maptiler.com/maps/019e556f-80e0-7e04-af78-466f7f79efd7/{z}/{x}/{y}.webp?key=pZsWTfQMsHMC3mv8EY7g`}
+      url={`https://api.maptiler.com/maps/019e556f-80e0-7e04-af78-466f7f79efd7/{z}/{x}/{y}.webp?key=${apiKey}`}
       attribution='© <a href="https://www.maptiler.com/">MapTiler</a> | Közbiztonság: terkep.police.hu'
       tileSize={512}
             zIndex={105} // Például magasabb zIndex érték

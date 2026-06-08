@@ -6,7 +6,7 @@ export const fetchSatelliteData = async (bbox, signal) => {
 };
 
 export const renderSatelliteLayer = () => {
-  const apiKey = process.env.REACT_APP_MAPTILER_API_KEY;
+  const apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
   return (
    <TileLayer
      url={`https://api.maptiler.com/maps/satellite/{z}/{x}/{y}.jpg?key=${apiKey}`}
