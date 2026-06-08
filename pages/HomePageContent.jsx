@@ -5,7 +5,6 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { useRouter, usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import FilterForm from '../components/FilterForm';
-import MapComponent from '../components/MapComponent';
 import useFilters from '@/hooks/useFilters';
 import { getPostDetails, updatePost, deletePost, getFilteredPostsList } from '@/services/apiService';
 import { getCurrentUser } from '@/services/usersService';
@@ -26,10 +25,12 @@ import {
 } from '@/utils/favoritePosts';
 import SmartToolsPanel from '../components/SmartToolsPanel';
 
-// Dinamikus import a Leaflet-hez (SSR kikapcsolva)
 const MapComponentDynamic = dynamic(
   () => import('../components/MapComponent'),
-  { ssr: false, loading: () => <div className="map-loading">Térkép betöltése...</div> }
+  { 
+    ssr: false,
+    loading: () => <div className="map-loading">Térkép betöltése...</div>
+  }
 );
 
 // Konstansok

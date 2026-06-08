@@ -7,11 +7,7 @@ const HomePageContentDynamic = dynamic(
   () => import('@/pages/HomePageContent'),
   { 
     ssr: false,
-    loading: () => (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="loading">Térkép betöltése...</div>
-      </div>
-    )
+    loading: () => <div className="flex justify-center items-center min-h-screen">Térkép betöltése...</div>
   }
 );
 
