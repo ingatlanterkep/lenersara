@@ -1,14 +1,12 @@
+// pages/ManualUploadPage.js
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import PostForm from '../forms/PostForm';
-import ImageUploader from '../forms/ImageUploader';
-import VerificationForm from '../forms/VerificationForm';
+import dynamic from 'next/dynamic';
 import { getCurrentUser } from '../services/usersService';
 import { createPost, uploadImages, updatePost, getUserPosts } from '../services/apiService';
 import { sendVerificationCode, verifyVerificationCode } from '../services/authService';
-import { geocodeAddress } from '../utils/geocodeAddress';
 import '../styles/UploadPage.css';
 import '../styles/layout/DashboardLayout.css';
 import '../styles/components/FieldsetCard.css';
@@ -16,6 +14,11 @@ import '../styles/components/Input.css';
 import '../styles/components/Button.css';
 import '../styles/components/Message.css';
 import '../styles/components/InfoGrid.css';
+
+// Dinamikus importok (SSR kikapcsolva)
+const PostForm = dynamic(() => import('../forms/PostForm'), { ssr: false });
+const ImageUploader = dynamic(() => import('../forms/ImageUploader'), { ssr: false });
+const VerificationForm = dynamic(() => import('../forms/VerificationForm'), { ssr: false });
 
 const ManualUploadPage = () => {
   const router = useRouter();
@@ -33,8 +36,13 @@ const ManualUploadPage = () => {
   const [subscriptionType, setSubscriptionType] = useState('free');
   const [postCount, setPostCount] = useState(0);
   const [loadingPosts, setLoadingPosts] = useState(true);
+  const [isClient, setIsClient] = useState(false);
 
   const postFormRef = useRef();
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const getMaxPosts = () => {
     switch (subscriptionType) {
@@ -50,6 +58,8 @@ const ManualUploadPage = () => {
   const canUploadImages = subscriptionType !== 'free';
 
   useEffect(() => {
+    if (!isClient) return;
+    
     const fetchUserData = async () => {
       try {
         const userData = await getCurrentUser();
@@ -75,7 +85,7 @@ const ManualUploadPage = () => {
       }
     };
     fetchUserData();
-  }, [router]);
+  }, [router, isClient]);
 
   const handleFilesSelected = (items) => {
     const files = items.filter(item => item instanceof File);
@@ -113,6 +123,8 @@ const ManualUploadPage = () => {
 
     if (!hasManualGeolocation) {
       try {
+        const { geocodeAddress } = await import('../utils/geocodeAddress');
+        
         const addressForGeocode = {
           house_number: formData.address?.house_number || '',
           street: formData.address?.street || '',
@@ -303,7 +315,7 @@ const ManualUploadPage = () => {
     }
   };
 
-  if (loadingPosts) return <div className="loading">Betöltés...</div>;
+  if (!isClient || loadingPosts) return <div className="loading">Betöltés...</div>;
 
   return (
     <div className="upload-card">
