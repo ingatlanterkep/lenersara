@@ -1,14 +1,15 @@
+// pages/RegistrationPage.js
 'use client';
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import RegisterForm from '../forms/RegisterForm';
 import VerificationForm from '../forms/VerificationForm';
-import { signup, sendVerificationCode, verifyVerificationCode } from '../services/authService';
+import { signup as defaultSignup, sendVerificationCode, verifyVerificationCode } from '../services/authService';
 import '../styles/AuthPage.css';
 import '../styles/AuthForm.css';
 
-const RegistrationPage = () => {
+const RegistrationPage = ({ onRegister }) => {  // ← Vedd át a prop-ot
   const [email, setEmail] = useState('');
   const [showVerification, setShowVerification] = useState(false);
   const [message, setMessage] = useState('');
@@ -26,7 +27,10 @@ const RegistrationPage = () => {
         referralCode: data.referralCode ? String(data.referralCode).trim() : ''
       };
 
-      const response = await signup(cleanData);
+      // Ha van onRegister prop, használd, különben az alapértelmezett signup-ot
+      const signupFn = onRegister || defaultSignup;
+      const response = await signupFn(cleanData);
+      
       setEmail(cleanData.email);
 
       if (response.success) {
