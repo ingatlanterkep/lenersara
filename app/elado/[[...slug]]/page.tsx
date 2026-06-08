@@ -1,24 +1,11 @@
 // app/elado/[[...slug]]/page.tsx
 import { getLocationContent } from '@/services/seoService';
-import dynamic from 'next/dynamic';
+import HomePageContentWrapper from '@/components/HomePageContentWrapper';
 import { Metadata } from 'next';
 
 interface PageProps {
   params: Promise<{ slug?: string[] }>;
 }
-
-// Dinamikus import a HomePageContent-hoz (SSR kikapcsolva)
-const HomePageContent = dynamic(
-  () => import('@/pages/HomePageContent'),
-  { 
-    ssr: false,
-    loading: () => (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="loading">Térkép betöltése...</div>
-      </div>
-    )
-  }
-);
 
 // METADATA generálása (ez még SSR-ben marad)
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -100,7 +87,7 @@ function generateJsonLd(listingType: string, type: string, city: string | null, 
   };
 }
 
-// Fő komponens
+// Fő komponens (Server Component)
 export default async function Page({ params }: PageProps) {
   const { slug } = await params;
   const listingType = 'elado';
@@ -187,8 +174,8 @@ export default async function Page({ params }: PageProps) {
         </div>
       </div>
       
-      {/* Client komponens (térkép, interaktív részek) */}
-      <HomePageContent 
+      {/* Client wrapper komponens */}
+      <HomePageContentWrapper 
         listingType={listingType}
         type={type}
         city={city}

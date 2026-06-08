@@ -106,13 +106,14 @@ const validCounties = [
   'jasz-nagykun-szolnok-varmegye'
 ];
 
+// pages/HomePageContent.tsx - a komponens paramétereinél
 export default function HomePageContent({ 
   listingType: urlListingType, 
   type: urlType, 
   city: urlLocation,
   viewModeDefault = 'map',
-  serverLocationContent,
-  serverSeoQuickPosts,
+  serverLocationContent = null,    // ← alapértelmezett null
+  serverSeoQuickPosts = [],        // ← alapértelmezett üres tömb
 }) {
   const router = useRouter();
   const pathname = usePathname();
