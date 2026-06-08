@@ -1,0 +1,271 @@
+/* styles/PostEditForm.css */
+
+/* Konténer az űrlap körül */
+#post-edit-form-container {
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+  background: #fff;
+  border: 2px solid #97d4ff;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 1;
+}
+
+/* Űrlap fő stílusa */
+#post-edit-form {
+  width: 100%;
+}
+
+/* Cím */
+#post-edit-title {
+  color: #5099ce;
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 1.8rem;
+}
+
+/* Ellenőrzött státusz */
+#post-edit-verified-status {
+  color: #8b4513;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+/* Form csoportok */
+#post-edit-form .form-group {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+/* Címkék */
+#post-edit-form .form-group label {
+  color: #8b4513;
+  font-weight: 500;
+}
+
+/* Bevitel mezők */
+#post-edit-title-input,
+#post-edit-description-input,
+#post-edit-price-input,
+#post-edit-rental-price-input,
+#post-edit-status-select,
+#post-edit-availability-select,
+#post-edit-original-listing-input,
+#post-edit-city-input,
+#post-edit-street-input,
+#post-edit-house-number-input,
+#post-edit-district-input,
+#post-edit-region-input,
+#post-edit-postal-code-input,
+#post-edit-county-input,
+#post-edit-display-option-select,
+#post-edit-offset-radius-input,
+#post-edit-lat-input,
+#post-edit-lon-input,
+#post-edit-radius-input,
+#post-edit-location-mode-select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #97d4ff;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-size: 1rem;
+  color: #8b4513;
+  background-color: #f9f9f9;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Szövegmező specifikus stílusa */
+#post-edit-description-input {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Fókusz állapot */
+#post-edit-title-input:focus,
+#post-edit-description-input:focus,
+#post-edit-price-input:focus,
+#post-edit-rental-price-input:focus,
+#post-edit-status-select:focus,
+#post-edit-availability-select:focus,
+#post-edit-original-listing-input:focus,
+#post-edit-city-input:focus,
+#post-edit-street-input:focus,
+#post-edit-house-number-input:focus,
+#post-edit-district-input:focus,
+#post-edit-region-input:focus,
+#post-edit-postal-code-input:focus,
+#post-edit-county-input:focus,
+#post-edit-display-option-select:focus,
+#post-edit-offset-radius-input:focus,
+#post-edit-lat-input:focus,
+#post-edit-lon-input:focus,
+#post-edit-radius-input:focus,
+#post-edit-location-mode-select:focus {
+  outline: none;
+  border-color: #5099ce;
+  box-shadow: 0 0 5px rgba(80, 153, 206, 0.5);
+}
+
+/* Cím szerkesztési mezőcsoport */
+#post-edit-address-fieldset,
+#post-edit-geolocation-fieldset {
+  background: #fff;
+  border: 2px solid #97d4ff;
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+/* Mezőcsoportok hover állapota */
+#post-edit-address-fieldset:hover,
+#post-edit-geolocation-fieldset:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Mezőcsoportok címei */
+#post-edit-address-fieldset legend,
+#post-edit-geolocation-fieldset legend {
+  color: #5099ce;
+  font-weight: 500;
+  padding: 0 10px;
+  font-size: 1.2rem;
+}
+
+/* Térkép konténer */
+#post-edit-map-container {
+  margin-top: 15px;
+  border: 2px solid #97d4ff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+/* Térkép maga */
+#post-edit-map {
+  height: 400px;
+  width: 100%;
+}
+
+/* Gombok konténere */
+#post-edit-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  margin-top: 20px;
+}
+
+/* Gombok stílusa */
+#post-edit-save-button,
+#post-edit-verify-button,
+#post-edit-cancel-button,
+#post-edit-geocode-button {
+  background: #5099ce;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  width: 100%;
+  max-width: 300px;
+  text-align: center;
+  font-size: 1rem;
+  transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Verifikálás gomb külön színe */
+#post-edit-verify-button {
+  background: #2ecc71;
+}
+
+/* Mégse gomb külön színe */
+#post-edit-cancel-button {
+  background: #e74c3c;
+}
+
+/* Gombok hover állapota */
+#post-edit-save-button:hover,
+#post-edit-verify-button:hover,
+#post-edit-cancel-button:hover,
+#post-edit-geocode-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Save gomb hover */
+#post-edit-save-button:hover {
+  background: #407ea8;
+}
+
+/* Verify gomb hover */
+#post-edit-verify-button:hover {
+  background: #27ae60;
+}
+
+/* Cancel gomb hover */
+#post-edit-cancel-button:hover {
+  background: #c0392b;
+}
+
+/* Geocode gomb hover */
+#post-edit-geocode-button:hover {
+  background: #407ea8;
+}
+
+/* JSON előnézet */
+#post-edit-geolocation-fieldset pre {
+  background: #f9f9f9;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #97d4ff;
+  color: #8b4513;
+  font-size: 0.9rem;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+/* Reszponzív */
+@media (max-width: 768px) {
+  #post-edit-form-container {
+    padding: 15px;
+  }
+
+  #post-edit-title {
+    font-size: 1.5rem;
+  }
+
+  #post-edit-form .form-group {
+    grid-template-columns: 1fr;
+  }
+
+  #post-edit-address-fieldset,
+  #post-edit-geolocation-fieldset {
+    padding: 15px;
+  }
+
+  #post-edit-address-fieldset legend,
+  #post-edit-geolocation-fieldset legend {
+    font-size: 1rem;
+  }
+
+  #post-edit-map {
+    height: 300px;
+  }
+
+  #post-edit-save-button,
+  #post-edit-verify-button,
+  #post-edit-cancel-button,
+  #post-edit-geocode-button {
+    max-width: 250px;
+    padding: 8px 15px;
+  }
+}

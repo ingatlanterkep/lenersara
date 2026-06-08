@@ -1,0 +1,173 @@
+.facebook-follow-label-wrapper {
+  position: absolute;
+  bottom: 36px;                    /* még kicsit feljebb → jobb sarok-érzet, nem ragad a szélhez */
+  right: 36px;
+  z-index: 850;
+  pointer-events: none;
+}
+
+.facebook-follow-label {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  border: 2px solid var(--primary-light, #97d4ff);
+  border-radius: 999px;
+  padding: 10px 20px 10px 12px;    /* extra padding jobbra az X miatt */
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18),
+              0 1px 4px rgba(0, 0, 0, 0.08);
+  text-decoration: none;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+  position: relative;
+  overflow: visible;               /* overflow visible → X ne legyen levágva */
+  transition: all 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: pulseFloat 4s ease-in-out infinite;
+}
+
+@keyframes pulseFloat {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  }
+  50% {
+    transform: translateY(-5px) scale(1.018);
+    box-shadow: 0 12px 28px rgba(80, 153, 206, 0.26);
+  }
+}
+
+.facebook-follow-label:hover {
+  transform: translateY(-6px) scale(1.04);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.24),
+              0 4px 12px rgba(80, 153, 206, 0.3);
+  border-color: var(--primary, #5099ce);
+}
+
+.label-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ... a fájl eleje változatlan marad ... */
+
+.fb-logo-wrapper {
+  width: 34px;                     /* kicsit nagyobb kör a jobb illeszkedésért */
+  height: 34px;
+  background: #1877f2;             /* hivatalos FB kék */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  overflow: hidden;                /* biztosítja, hogy ne lógjon ki semmi */
+}
+
+.fb-icon {
+  width: 20px;
+  height: 20px;
+  /* Filter ELTÁVOLÍTVA – a SVG natívan fehér f-et mutat kék háttéren */
+  transition: transform 0.3s ease;
+}
+
+.facebook-follow-label:hover .fb-icon {
+  transform: scale(1.12);
+}
+
+
+
+/* ... a fájl többi része változatlan (text-stack, close-btn, pulseFloat, stb.) ... */
+
+.facebook-follow-label:hover .fb-icon {
+  transform: scale(1.12);
+}
+
+.text-stack {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.main-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: #444;
+}
+
+.sub-text {
+  font-size: 13px;
+  opacity: 0.95;
+}
+
+.sub-text strong {
+  color: var(--primary, #5099ce);
+  font-weight: 600;
+}
+
+/* X gomb – nem takarja a labelt */
+.close-btn {
+  position: absolute;
+  top: -12px;                      /* még feljebb → teljesen látható */
+  right: -12px;
+  width: 28px;
+  height: 28px;
+  background-color: #f28c82;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+  transition: all 0.22s ease;
+  pointer-events: auto;
+  z-index: 12;                     /* még magasabb, hogy mindig felül legyen */
+}
+
+.close-btn:hover {
+  background-color: #c0392b;
+  transform: scale(1.15) rotate(90deg);
+}
+
+/* Mobil */
+@media (max-width: 768px) {
+  .facebook-follow-label-wrapper {
+    bottom: 24px;
+    right: 24px;
+  }
+
+  .facebook-follow-label {
+    padding: 8px 18px 8px 10px;
+    font-size: 13px;
+    gap: 10px;
+  }
+
+  .fb-logo-wrapper {
+    width: 30px;
+    height: 30px;
+  }
+
+  .fb-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .main-text { font-size: 13px; }
+  .sub-text { font-size: 12px; }
+
+  .close-btn {
+    width: 26px;
+    height: 26px;
+    font-size: 16px;
+    top: -10px;
+    right: -10px;
+  }
+}

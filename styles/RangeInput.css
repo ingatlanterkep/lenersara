@@ -1,0 +1,198 @@
+/* RangeInput konténer */
+.range-input-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%; /* Teljes szélesség desktopon */
+  font-size: 0.95rem;
+  color: #8b4513;
+  font-weight: 500;
+}
+
+/* RangeInput wrapper */
+.range-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1; /* Az input mező kitölti a rendelkezésre álló helyet */
+  height: 40px; /* Alapértelmezett magasság desktopon */
+  border: 1px solid #97d4ff;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+/* Fókusz és aktív állapot */
+.range-input-wrapper:focus-within,
+.range-input-wrapper.active {
+  outline: none;
+  border-color: #5099ce;
+  box-shadow: 0 0 5px rgba(80, 153, 206, 0.5);
+}
+
+/* Minimum és maximum input mezők */
+.range-min-input,
+.range-max-input {
+  flex: 1;
+  padding: 0 8px; /* Kisebbre csökkentett padding */
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  color: #8b4513;
+  text-align: center;
+  height: 100%;
+  z-index: 1;
+}
+
+/* Minimum input bal oldali igazítás */
+.range-min-input {
+  text-align: left;
+  padding-left: 12px;
+}
+
+/* Maximum input jobb oldali igazítás */
+.range-max-input {
+  text-align: right;
+  padding-right: 12px;
+}
+
+/* Placeholder stílus */
+.range-min-input::placeholder,
+.range-max-input::placeholder {
+  color: #8b4513;
+  opacity: 0.5;
+}
+
+/* Elválasztó vonal */
+.range-divider {
+  position: relative;
+  color: #8b4513;
+  opacity: 0.7;
+  font-size: 1rem;
+  pointer-events: none;
+  z-index: 2;
+  flex: 0 0 auto; /* Fix méret az elválasztónak */
+}
+
+/* Mértékegység */
+.range-unit {
+  margin-left: 10px; /* Térköz a wrapper és a mértékegység között */
+  color: #8b4513;
+  opacity: 0.7;
+  font-size: 0.9rem;
+  font-weight: bold;
+  white-space: nowrap;
+  flex: 0 0 auto; /* A mértékegység csak a szükséges helyet foglalja */
+}
+
+/* Alapértelmezett címke */
+.default-range-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #8b4513;
+  opacity: 0.5;
+  font-size: 1rem;
+  pointer-events: none;
+  z-index: 0;
+  white-space: nowrap;
+  transition: opacity 0.2s ease;
+}
+
+/* Aktív állapotban a címke eltűnik */
+.range-input-wrapper.active .default-range-label {
+  opacity: 0;
+}
+
+/* Number input nyilak eltüntetése */
+.range-min-input::-webkit-outer-spin-button,
+.range-min-input::-webkit-inner-spin-button,
+.range-max-input::-webkit-outer-spin-button,
+.range-max-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.range-min-input,
+.range-max-input {
+  -moz-appearance: textfield; /* Firefox nyilak eltüntetése */
+}
+
+/* Reszponzív dizájn: Tablet (768px és kisebb) */
+@media (max-width: 768px) {
+  .range-input-container {
+    font-size: 0.9rem;
+  }
+
+  .range-input-wrapper {
+    height: 36px; /* Magasság csökkentve tableten */
+  }
+
+  .range-min-input,
+  .range-max-input {
+    font-size: 0.9rem;
+    padding: 0 6px;
+  }
+
+  .range-min-input {
+    padding-left: 10px;
+  }
+
+  .range-max-input {
+    padding-right: 10px;
+  }
+
+  .range-divider {
+    font-size: 0.9rem;
+  }
+
+  .range-unit {
+    font-size: 0.85rem;
+    margin-left: 8px;
+  }
+
+  .default-range-label {
+    font-size: 0.9rem;
+  }
+}
+
+/* Reszponzív dizájn: Mobil (480px és kisebb) */
+@media (max-width: 480px) {
+  .range-input-container {
+    font-size: 0.85rem;
+    width: calc(50% - 3px); /* Fél sor szélesség mobilon, gap levonása */
+  }
+
+  .range-input-wrapper {
+    height: 32px; /* Magasság csökkentve mobilon */
+  }
+
+  .range-min-input,
+  .range-max-input {
+    font-size: 0.85rem;
+    padding: 0 4px;
+  }
+
+  .range-min-input {
+    padding-left: 8px;
+  }
+
+  .range-max-input {
+    padding-right: 8px;
+  }
+
+  .range-divider {
+    font-size: 0.8rem;
+  }
+
+  .range-unit {
+    font-size: 0.8rem;
+    margin-left: 6px;
+  }
+
+  .default-range-label {
+    font-size: 0.85rem;
+  }
+}

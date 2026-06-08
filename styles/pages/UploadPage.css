@@ -1,0 +1,475 @@
+/* styles/UploadPage.css */
+
+/* Alapbeállítások */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.upload-container {
+  display: flex;
+  min-height: 100vh;
+  background-image: url('./image.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding-top: 0px;
+  position: relative;
+}
+
+.upload-container::before {
+  content: '';
+  display: flex;
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(233, 210, 194, 0.7);
+  z-index: 0;
+}
+
+.upload-content {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0px;
+}
+
+.upload-card {
+  background: #fff;
+  border: 2px solid #97d4ff;
+  z-index: 1;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  width: 100%;
+  max-width: 800px;
+  text-align: center;
+}
+
+.upload-card h2 {
+  color: #5099ce;
+  margin-bottom: 20px;
+}
+
+.property-type-fieldset,
+.rent-details-fieldset,
+.image-preview-fieldset,
+.image-upload-fieldset {
+  background: #fff;
+  border: 2px solid #97d4ff;
+  border-radius: 15px;
+  padding: 20px; /* Nagyobb padding a szebb megjelenésért */
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.property-type-fieldset:hover,
+.rent-details-fieldset:hover,
+.image-preview-fieldset:hover,
+.image-upload-fieldset:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Finom árnyék hover állapotban */
+}
+
+.property-type-fieldset legend,
+.rent-details-fieldset legend,
+.image-preview-fieldset legend,
+.image-upload-fieldset legend {
+  color: #5099ce;
+  font-weight: 500;
+  padding: 0 10px;
+  font-size: 1.2rem; /* Kicsit nagyobb legend a hangsúly kedvéért */
+}
+
+/* Drag-and-Drop terület */
+.drop-zone {
+  border: 2px dashed #97d4ff; /* Szaggatott kék keret */
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.9); /* Halvány fehér háttér */
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.drop-zone.drag-over {
+  border-color: #5099ce; /* Sötétebb kék keret drag-over állapotban */
+  background-color: rgba(80, 153, 206, 0.1); /* Halvány kék háttér */
+}
+
+/* A "Húzd ide a képeket, vagy tallózz." szöveg */
+.drop-zone p {
+  color: #8b4513; /* Barna szín */
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500; /* Kicsit vastagabb betűtípus a hangsúly kedvéért */
+}
+
+/* A "tallózz" link */
+.file-label {
+  color: #5099ce; /* Barna szín, hogy egységes legyen */
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.file-label:hover {
+  color: #6b3e0d; /* Sötétebb barna hover állapotban */
+}
+
+.file-input {
+  display: none !important;
+}
+
+/* URL-beviteli rész */
+.link-input-group {
+  text-align: center; /* Középre igazítjuk a tartalmat */
+  margin-top: 20px;
+  margin-right: 20px;
+}
+
+.link-input-group label {
+  display: block;
+  color: #8b4513; /* Barna szín a címkének */
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.link-textarea {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #97d4ff;
+  border-radius: 8px;
+  margin-top: 5px;
+  resize: vertical;
+  font-size: 1rem;
+  color: #8b4513;
+  background-color: #ffffff;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.link-textarea:focus {
+  outline: none;
+  border-color: #5099ce;
+  box-shadow: 0 0 5px rgba(80, 153, 206, 0.5);
+}
+
+/* Gombok */
+.profile-button {
+  background: #5099ce;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  margin-top: 15px;
+  width: 100%;
+  max-width: 300px; /* Kisebb szélesség a gombnak */
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-button:hover {
+  background: #407ea8;
+  transform: translateY(-2px); /* Finom emelkedés hover állapotban */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Árnyék hover állapotban */
+}
+
+.profile-button.disabled {
+  background: #a3c8e0;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Üzenetek */
+.info-text {
+  color: #e74c3c;
+  font-style: italic;
+  font-size: 0.9rem;
+  margin: 10px 0;
+  text-align: center;
+}
+
+.success-text {
+  color: #2ecc71;
+  font-style: italic;
+  font-size: 0.9rem;
+  margin: 10px 0;
+  text-align: center;
+}
+
+.form-select,
+.form-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #97d4ff;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-size: 1rem;
+  color: #8b4513;
+  background-color: #f9f9f9;
+  transition: border-color 0.3s ease;
+}
+
+.form-select:focus,
+.form-input:focus {
+  outline: none;
+  border-color: #5099ce;
+  box-shadow: 0 0 5px rgba(80, 153, 206, 0.5);
+}
+
+.image-preview-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+}
+
+.image-preview-item {
+  text-align: center;
+}
+
+.image-preview {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #97d4ff;
+}
+
+.remove-button {
+  background: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 5px;
+  width: 80px;
+  transition: background-color 0.3s ease;
+}
+
+.remove-button:hover {
+  background: #c82333;
+}
+
+@media (max-width: 768px) {
+  .upload-card {
+    padding: 15px;
+    max-width: 600px;
+  }
+
+  .upload-card h2 {
+    font-size: 1.5rem;
+  }
+
+  .form-select,
+  .form-input,
+  .link-textarea {
+    font-size: 0.9rem;
+    padding: 6px;
+  }
+
+  .image-preview {
+    width: 80px;
+    height: 80px;
+  }
+
+  .remove-button {
+    padding: 4px 8px;
+    width: 70px;
+  }
+
+  .drop-zone {
+    padding: 15px;
+  }
+
+  .profile-button {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+  }
+
+  .drop-zone p {
+    font-size: 0.9rem;
+  }
+}
+
+/* A PostForm-hoz tartozó stílusok */
+.post-form {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.post-form h3 {
+  color: #5099ce;
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+}
+
+.post-form fieldset {
+  background: #fff;
+  border: 2px solid #97d4ff;
+  border-radius: 15px;
+  padding: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.post-form fieldset legend {
+  color: #5099ce;
+  font-weight: 500;
+  padding: 0 10px;
+}
+
+.post-form .form-group {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.post-form .form-group label {
+  color: #8b4513;
+  font-weight: 500;
+}
+
+.post-form .form-group input,
+.post-form .form-group select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #97d4ff;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-size: 1rem;
+  color: #8b4513;
+  background-color: #f9f9f9;
+  transition: border-color 0.3s ease;
+}
+
+.post-form .form-group textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #97d4ff;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-size: 1rem;
+  color: #8b4513;
+  background-color: #f9f9f9;
+  transition: border-color 0.3s ease;
+  resize: vertical;
+}
+
+.post-form .form-group input:focus,
+.post-form .form-group select:focus,
+.post-form .form-group textarea:focus {
+  outline: none;
+  border-color: #5099ce;
+  box-shadow: 0 0 5px rgba(80, 153, 206, 0.5);
+}
+
+.post-form .checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.post-form .checkbox-group h4 {
+  color: #5099ce;
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+}
+
+.post-form .checkbox-group label {
+  display: flex;
+  align-items: center;
+  color: #8b4513;
+}
+
+.post-form .checkbox-group input[type="checkbox"] {
+  margin-right: 5px;
+  accent-color: #5099ce;
+}
+
+@media (max-width: 768px) {
+  .post-form .form-group {
+    grid-template-columns: 1fr;
+  }
+
+  .post-form .form-group input,
+  .post-form .form-group select,
+  .post-form .form-group textarea {
+    font-size: 0.9rem;
+    padding: 6px;
+  }
+
+  .post-form .checkbox-group {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .post-form .checkbox-group h4 {
+    font-size: 1rem;
+  }
+}
+
+.input-with-unit {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.input-with-unit .form-input {
+  padding-right: 80px;
+}
+
+.input-with-unit .unit {
+  position: absolute;
+  right: 10px;
+  color: #666;
+  font-size: 14px;
+}
+
+.post-form .form-group {
+  position: relative;
+}
+
+.post-form .form-group.has-error input,
+.post-form .form-group.has-error select,
+.post-form .form-group.has-error textarea {
+  border: 1px solid red;
+  background-color: #fff5f5;
+}
+
+.post-form .error-message {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+  display: block;
+  position: absolute;
+  bottom: -20px;
+  left: 0;
+}
+
+.button-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.button-container .success-text,
+.button-container .info-text {
+  margin-top: 10px;
+}

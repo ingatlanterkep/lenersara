@@ -1,0 +1,21 @@
+/* styles/components/Message.css */
+.message {
+  padding: 10px;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.9rem;
+  text-align: center;
+  margin: 10px 0;
+  border: 1px solid;
+}
+
+.message.success {
+  color: var(--success);
+  background: var(--success-bg);
+  border-color: var(--success-border);
+}
+
+.message.error {
+  color: var(--danger);
+  background: #fdf2f2;
+  border-color: var(--danger);
+}

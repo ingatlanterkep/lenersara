@@ -1,0 +1,575 @@
+/* styles/ArticlePage.css */
+/* Pontosan a privacy-policy oldal betűméreteivel – kisebb, olvashatóbb szövegek */
+
+.article-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-image: url('./image.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding-top: 60px;
+  position: relative;
+}
+
+.article-container::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(233, 210, 194, 0.7);
+  z-index: 0;
+}
+
+.article-wrapper {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 40px; /* Ugyanaz, mint a privacy-policy-container */
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+}
+
+/* Fejléc – privacy mintára */
+.article-header {
+  background: #fff;
+  border: 2px solid #97d4ff;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 30px;
+  margin-bottom: 40px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;          /* ← EZT ADD HOZZÁ! */
+  overflow: visible;
+  padding: 20px 20px 40px;
+}
+
+.article-header:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.article-title {
+  font-size: 2.5rem; /* Ugyanaz, mint privacy-policy-title */
+  color: #5099ce;
+  margin: 0;
+  line-height: 1.2;
+  text-align: center;
+  font-weight: 700;
+}
+
+.article-subtitle {
+  font-size: 1.2rem; /* Ugyanaz, mint privacy-policy-subtitle */
+  color: #8b4513;
+  margin: 5px 0;
+  text-align: center;
+}
+
+/* Szekciók – privacy mintára */
+.article-section {
+  background: #fff;
+  border: 2px solid #97d4ff;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 30px;
+  margin-bottom: 40px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+}
+
+.article-section:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.article-section h2 {
+  font-size: 2rem; /* Ugyanaz, mint privacy-policy-section h2 */
+  color: #5099ce;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #97d4ff;
+  padding-bottom: 10px;
+}
+
+.article-section h3 {
+  font-size: 1.5rem; /* Ugyanaz, mint privacy-policy-section h3 */
+  color: #5099ce;
+  margin: 20px 0 10px;
+}
+
+.article-section p {
+  font-size: 1rem; /* Pontosan privacy szint */
+  color: #8b4513;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.article-section ul {
+  list-style-type: disc;
+  padding-left: 25px;
+  color: #8b4513;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.article-section li {
+  margin-bottom: 10px;
+}
+
+/* Kép + szöveg blokk – fele-fele gépen, mobilra stacked */
+.text-with-image {
+  display: flex;
+  align-items: flex-start;
+  gap: 40px;
+  margin: 40px 0;
+}
+
+.text-with-image.reverse {
+  flex-direction: row-reverse;
+}
+
+.text-block {
+  flex: 1;
+  min-width: 0;
+}
+
+.text-with-image .article-figure {
+  flex: 1;
+  max-width: 500px;
+  margin: 0;
+}
+
+.text-with-image .article-figure img {
+  width: 100%;
+  height: auto;
+  margin: auto;
+  border-radius: 15px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+
+/* Kép caption */
+.article-figure figcaption {
+  font-size: 0.95rem;
+  color: #8b4513;
+  margin-top: 12px;
+  font-style: italic;
+  text-align: center;
+}
+
+/* Táblázatok – privacy mintára */
+.article-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 30px 0;
+  background: #f9f9f9;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.article-table th,
+.article-table td {
+  border: 1px solid #97d4ff;
+  padding: 12px;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.article-table th {
+  background-color: #5099ce;
+  color: #fff;
+  font-weight: 600;
+}
+
+.article-table tr:nth-child(even) {
+  background-color: #f4fbff;
+}
+
+.article-table tr:hover {
+  background-color: #e6f4ff;
+}
+
+/* Clear float és mobil */
+.article-section::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+@media (max-width: 992px) {
+  .text-with-image,
+  .text-with-image.reverse {
+    flex-direction: column;
+  }
+
+  .text-with-image .article-figure {
+    max-width: 100%;
+    margin-top: 30px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .article-wrapper {
+    padding: 20px 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .article-wrapper {
+    padding: 20px 20px;
+  }
+
+  .article-header,
+  .article-section {
+    padding: 20px;
+  }
+
+  .article-title {
+    font-size: 2rem;
+  }
+
+  .article-section h2 {
+    font-size: 1.75rem;
+  }
+
+  .article-section h3 {
+    font-size: 1.3rem;
+  }
+
+  .article-table th,
+  .article-table td {
+    padding: 8px;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .article-wrapper {
+    padding: 20px 15px;
+  }
+
+  .article-header,
+  .article-section {
+    padding: 15px;
+  }
+
+  .article-title {
+    font-size: 1.8rem;
+  }
+
+  .article-section h2 {
+    font-size: 1.5rem;
+  }
+
+  .article-section h3 {
+    font-size: 1.2rem;
+  }
+
+  .article-section p,
+  .article-section li {
+    font-size: 0.9rem;
+  }
+
+  .article-table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+.disclaimer {
+  background: #f0f8ff;
+  border-color: #5099ce;
+  font-style: italic;
+}
+
+.disclaimer p {
+  margin-bottom: 0;
+  font-size: 0.95rem;
+}
+
+/* ArticlePage footer – szép, kiemelt copyright rész */
+.article-footer {
+  margin-top: 60px;
+  padding: 30px;
+  background: #fff;
+  border: 2px solid #97d4ff;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.article-footer:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.copyright-notice {
+  font-size: 0.95rem;
+  color: #8b4513;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.copyright-notice a {
+  color: #5099ce;
+  text-decoration: underline;
+}
+
+.copyright-notice a:hover {
+  color: #397ab3;
+}
+
+/* Mobilra */
+@media (max-width: 768px) {
+  .article-footer {
+    padding: 20px;
+    margin-top: 40px;
+  }
+
+  .copyright-notice {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .article-footer {
+    padding: 15px;
+  }
+}
+
+/* Két táblázat egymás mellé */
+.table-pair {
+  display: flex;
+  gap: 30px;
+  margin: 30px 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.table-pair .article-table.narrow {
+  flex: 1;
+  min-width: 300px;
+  max-width: 48%;
+}
+
+/* Képek két oszlopban */
+.image-grid {
+  display: flex;
+  gap: 30px;
+  margin: 40px 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.image-grid .article-figure {
+  flex: 1;
+  min-width: 300px;
+  max-width: 48%;
+  margin: 0;
+}
+
+.image-grid .article-figure img {
+  width: 100%;
+  height: auto;
+  border-radius: 15px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+
+/* Mobilra stacked */
+@media (max-width: 992px) {
+  .table-pair,
+  .image-grid {
+    flex-direction: column;
+  }
+
+  .table-pair .article-table.narrow,
+  .image-grid .article-figure {
+    max-width: 100%;
+  }
+}
+
+/* Három táblázat egymás mellett */
+.table-trio {
+  display: flex;
+  gap: 20px;
+  margin: 30px 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.table-trio .article-table.narrow {
+  flex: 1;
+  min-width: 250px;
+  max-width: 32%;
+}
+
+/* Táblázat fejlécek sortörése */
+.table-trio th {
+  white-space: normal;
+  height: 60px;
+  vertical-align: middle;
+}
+
+/* Mobilra stacked */
+@media (max-width: 992px) {
+  .table-trio {
+    flex-direction: column;
+  }
+
+  .table-trio .article-table.narrow {
+    max-width: 100%;
+  }
+}
+
+/* ... a meglévő CSS eleje marad ... */
+
+/* ÚJ/MÓDOSÍTOTT: Képkezelés javítása */
+.article-figure {
+  margin: 2em 0;
+  text-align: center;
+  max-width: 100%; /* Biztosítja, hogy ne lógjon ki */
+  overflow: hidden; /* Ha mégis nagy lenne */
+}
+
+.article-image {
+    max-height: 400px;
+
+  max-width: 100%;
+  width: auto; /* Teljes szélesség a konténerben */
+  height: auto;
+  border-radius: 15px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+  display: block;
+  margin: 0 auto; /* Középre igazítás */
+}
+
+.article-figcaption {
+  font-style: italic;
+  color: #8b4513;
+  margin-top: 12px;
+  font-size: 0.95rem;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Mobilra extra biztosítás */
+@media (max-width: 768px) {
+  .article-image {
+    border-radius: 10px; /* Kisebb sarkok mobilon */
+  }
+  
+  .article-figcaption {
+    font-size: 0.9rem;
+    padding: 0 10px;
+  }
+}
+
+/* ... a CSS többi része változatlan marad (table-pair, image-grid stb.) ... */
+
+/* AboutPage specifikus tab gombok – article designhoz igazítva */
+.target-switch-btn {
+  background: #5099ce;
+  color: #fff;
+  border: 2px solid #97d4ff;
+  padding: 14px 30px;
+  margin: 0 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  min-width: 200px;
+}
+
+.target-switch-btn:hover {
+  background: #407ea8;
+  border-color: #5099ce;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.target-switch-btn.active {
+  background: #407ea8;
+  border-color: #5099ce;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  transform: translateY(-3px);
+}
+
+@media (max-width: 768px) {
+  .target-switch-btn {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    padding: 16px;
+    font-size: 1.1rem;
+  }
+}
+/* src/components/FacebookBadge.css – egységes, konzisztens pozíció mindhárom oldalon */
+
+.fb-page-badge {
+  position: absolute;
+  bottom: 20px;               /* belül marad, nem negatív → nem lóg ki */
+  right: 25px;                /* kicsit beljebb, mint korábban */
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  border: 2px solid #c7e8ff;
+  border-radius: 12px;
+  padding: 10px 14px;
+  text-decoration: none;
+  box-shadow: 0 6px 16px rgba(80, 153, 206, 0.25);
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.fb-page-badge:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 24px rgba(80, 153, 206, 0.35);
+  border-color: #35a5dd;
+  background-color: #f8faff;
+}
+
+/* Szöveg és ikon stílusok – változatlan */
+.text-stack {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+
+.main-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #838d97;
+}
+
+.sub-text {
+  font-size: 13px;
+  color: #34495e;
+}
+
+.sub-text strong {
+  color: #5099ce;
+  font-weight: 700;
+}
+
+.fb-icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* Mobil fallback – flow-ba vissza */
+@media (max-width: 992px) {
+  .fb-page-badge {
+    position: static;
+    transform: none;
+    margin: 20px auto 0;
+    display: block;
+    text-align: center;
+    max-width: 320px;
+  }
+}

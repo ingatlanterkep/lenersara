@@ -1,0 +1,143 @@
+.contact-container {
+    display: flex;
+    min-height: 100vh;
+    background-image: url('./image.webp'); /* Cseréld ki a tényleges képre */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding-top: 60px; /* Hely a fejlécnek, ha van */
+    position: relative;
+  }
+  
+  /* Barna átlátszó réteg a háttér felett */
+  .contact-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(233, 210, 194, 0.7); /* Átlátszó barna réteg */
+    z-index: 0; /* A tartalom mögé kerül */
+  }
+  
+  .contact-page {
+    max-width: 1000px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 40px 20px;
+    position: relative;
+    z-index: 1; /* A barna réteg felett */
+  }
+  
+  .contact-page h1 {
+    color: #5099ce;
+    margin-bottom: 30px;
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 600;
+  }
+  
+  .contact-card {
+    background: #fff;
+    border: 2px solid #97d4ff;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 25px;
+    margin-bottom: 30px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    z-index: 1; /* Biztosítjuk, hogy a kártyák a réteg felett legyenek */
+  }
+  
+  .contact-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  }
+  
+  .contact-card h2,
+  .contact-card h3 {
+    color: #5099ce;
+    margin-bottom: 15px;
+    font-weight: 500;
+  }
+  
+  .contact-card h2 {
+    font-size: 2rem;
+  }
+  
+  .contact-card h3 {
+    font-size: 1.5rem;
+  }
+  
+  .contact-card p,
+  .contact-card ul {
+    margin: 10px 0;
+    color: #8b4513;
+    line-height: 1.6;
+  }
+  
+  .contact-card ul {
+    padding-left: 25px;
+    list-style-type: disc;
+  }
+  
+  .contact-card li {
+    margin-bottom: 12px;
+  }
+  
+  .contact-card a {
+    color: #5099ce;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  
+  .contact-card a:hover {
+    color: #407ea8;
+    text-decoration: underline;
+  }
+  
+  @media (max-width: 768px) {
+    .contact-page {
+      padding: 20px 15px;
+    }
+  
+    .contact-page h1 {
+      font-size: 2rem;
+    }
+  
+    .contact-card {
+      padding: 20px;
+    }
+  
+    .contact-card h2 {
+      font-size: 1.75rem;
+    }
+  
+    .contact-card h3 {
+      font-size: 1.25rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .contact-page h1 {
+      font-size: 1.8rem;
+    }
+  
+    .contact-card {
+      padding: 15px;
+    }
+  
+    .contact-card h2 {
+      font-size: 1.5rem;
+    }
+  
+    .contact-card h3 {
+      font-size: 1.2rem;
+    }
+  
+    .contact-card p,
+    .contact-card ul {
+      font-size: 0.95rem;
+    }
+  }

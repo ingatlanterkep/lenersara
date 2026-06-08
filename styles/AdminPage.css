@@ -1,0 +1,413 @@
+/* styles/AdminPage.css */
+.admin-container {
+  max-width: 1200px;
+  width: calc(100% - 150px); /* A padding (20px + 20px) levonása */
+  margin: 0 auto;
+  padding: 20px;
+  background: #fff; /* Fehér háttér, hogy elfedje a barna réteget */
+  border: 2px solid #97d4ff; /* Kék keret */
+  border-radius: 15px; /* Lekerekített sarkok */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Árnyék */
+  position:  relative; /* Biztosítjuk, hogy a z-index működjön */
+  z-index: 2; /* A barna réteg (z-index: 0) és a sidebar (z-index: 1) felett legyen */
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.admin-header h2 {
+  color: #5099ce; /* Egységes kék szín */
+  text-align: center;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.admin-card {
+  background: #fff;
+  border: 2px solid #97d4ff; /* Kék keret */
+  border-radius: 15px; /* Lekerekített sarkok */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Árnyék */
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.search-bar {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #97d4ff; /* Világoskék keret */
+  border-radius: 5px; /* Finomabb lekerekítés */
+  font-size: 1rem;
+  margin-bottom: 20px;
+  color: #8b4513; /* Barna szöveg */
+}
+
+.search-bar:focus {
+  outline: none;
+  border-color: #5099ce; /* Kék fókusz */
+  box-shadow: 0 0 5px rgba(80, 153, 206, 0.5); /* Fókusz árnyék */
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  color: #8b4513; /* Barna szöveg */
+}
+
+th {
+  background-color: #f9f9f9; /* Világos háttér */
+  color: #5099ce; /* Kék szöveg a fejléchez */
+}
+
+.office-details {
+  display: grid;
+  gap: 20px;
+}
+
+.office-info {
+  display: grid;
+  gap: 10px;
+}
+
+.xml-links,
+.ingatlanforras-id,
+.delete-images {
+  margin-top: 20px;
+}
+
+.xml-links h4,
+.ingatlanforras-id h4,
+.delete-images h4 {
+  color: #5099ce; /* Kék címek */
+  margin-bottom: 10px;
+}
+
+.xml-link-input,
+.ingatlanforras-id {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.xml-link-input input,
+.ingatlanforras-id input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #97d4ff; /* Világoskék keret */
+  border-radius: 5px;
+  font-size: 1rem;
+  color: #8b4513; /* Barna szöveg */
+}
+
+.xml-link-input input:focus,
+.ingatlanforras-id input:focus {
+  outline: none;
+  border-color: #5099ce; /* Kék fókusz */
+  box-shadow: 0 0 5px rgba(80, 153, 206, 0.5); /* Fókusz árnyék */
+}
+
+.xml-link-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  border: 1px solid #97d4ff; /* Világoskék keret */
+  border-radius: 5px;
+  margin-bottom: 8px;
+  background: #f9f9f9; /* Világos háttér */
+}
+
+.xml-link-item a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.xml-link-item a:hover {
+  text-decoration: underline;
+}
+
+.filter-section {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap; /* Reszponzív szűrők */
+}
+
+.filter-input,
+.filter-select {
+  padding: 10px;
+  width: 50%;
+  max-width: 400px;
+  border: 1px solid #97d4ff; /* Világoskék keret */
+  border-radius: 5px;
+  font-size: 1rem;
+  color: #8b4513; /* Barna szöveg */
+}
+
+.filter-input:focus,
+.filter-select:focus {
+  outline: none;
+  border-color: #5099ce; /* Kék fókusz */
+  box-shadow: 0 0 5px rgba(80, 153, 206, 0.5); /* Fókusz árnyék */
+}
+
+.posts-container {
+  max-height: 600px;
+  overflow-y: auto;
+  border: 2px solid #97d4ff; /* Kék keret */
+  border-radius: 15px;
+  padding: 15px;
+  background: #f9f9f9; /* Világos háttér */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Árnyék */
+}
+
+.posts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.post-card {
+  background: #fff;
+  border: 2px solid #97d4ff; /* Kék keret */
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Árnyék */
+  padding: 15px;
+}
+
+.post-card h3 {
+  color: #5099ce; /* Kék cím */
+  margin: 0 0 10px;
+}
+
+.post-card p {
+  color: #8b4513; /* Barna szöveg */
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+}
+
+.post-card p strong {
+  color: #5099ce; /* Kék kiemelés */
+}
+
+.post-card p a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.post-card p a:hover {
+  text-decoration: underline;
+}
+
+.description-box {
+  max-height: 100px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 5px;
+  background: #f9f9f9;
+  border-radius: 5px;
+  color: #8b4513; /* Barna szöveg */
+}
+
+.post-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.action-button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  color: #fff;
+  width: 100%;
+  transition: background 0.3s, transform 0.3s;
+}
+
+.action-button.delete {
+  background: #e74c3c;
+}
+
+.action-button.delete:hover {
+  background: #c0392b;
+  transform: translateY(-2px); /* Hover emelkedés */
+}
+
+.action-button.edit {
+  background: #5099ce;
+}
+
+.action-button.edit:hover {
+  background: #407ea8;
+  transform: translateY(-2px); /* Hover emelkedés */
+}
+
+.no-posts {
+  text-align: center;
+  color: #8b4513; /* Barna szöveg */
+  padding: 20px;
+}
+
+.admin-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 12px; /* Egységes lekerekítés */
+  cursor: pointer;
+  background-color: #5099ce;
+  color: white;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.admin-button:hover {
+  background-color: #407ea8;
+  transform: translateY(-2px); /* Hover emelkedés */
+}
+
+.admin-button.delete {
+  background-color: #e74c3c;
+}
+
+.admin-button.delete:hover {
+  background-color: #c0392b;
+  transform: translateY(-2px); /* Hover emelkedés */
+}
+
+.delete-images .admin-button.delete {
+  background-color: #ff4d4d; /* Élénkebb piros */
+}
+
+.delete-images .admin-button.delete:hover {
+  background-color: #cc0000;
+  transform: translateY(-2px); /* Hover emelkedés */
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+  gap: 10px;
+}
+
+.pagination-button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  color: #fff;
+  background: #5099ce;
+  transition: background 0.3s, transform 0.3s;
+}
+
+.pagination-button:hover {
+  background: #407ea8;
+  transform: translateY(-2px); /* Hover emelkedés */
+}
+
+.pagination-button:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  text-align: center;
+  margin: 10px 0;
+  font-size: 1rem;
+  color: #8b4513; /* Barna szöveg */
+}
+
+.loading {
+  text-align: center;
+  font-size: 1rem;
+  color: #5099ce; /* Kék szöveg */
+  margin: 20px 0;
+}
+
+.error {
+  text-align: center;
+  font-size: 1rem;
+  color: #e74c3c; /* Piros szöveg */
+  margin: 20px 0;
+}
+
+/* Reszponzív dizájn */
+@media (max-width: 768px) {
+  .admin-container {
+    width: calc(100% - 20px); /* Kisebb padding kisebb képernyőn */
+    padding: 10px;
+  }
+
+  .posts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-section {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .filter-input,
+  .filter-select {
+    width: 80%;
+  }
+
+  .xml-link-input,
+  .ingatlanforras-id {
+    flex-direction: column;
+  }
+
+  .post-actions {
+    flex-direction: column;
+  }
+
+  .pagination {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  table {
+    font-size: 0.9rem;
+  }
+
+  th,
+  td {
+    padding: 8px;
+  }
+}
+
+/* Hiányzó helyszínek szekció */
+.admin-card ul {
+  list-style: none;
+  padding: 0;
+}
+
+.admin-card li {
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+}
+
+.admin-card h4 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  color: #333;
+}

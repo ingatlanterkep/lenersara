@@ -1,0 +1,610 @@
+/* Alapértelmezett popup stílusa */
+.custom-popup {
+  background-color: #ffffff;
+  border: 2px solid #6baed6;
+  border-radius: 15px;
+  font-family: "Poppins", sans-serif;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 300px; /* Alapértelmezett maximális szélesség */
+  min-width: 200px;
+  padding: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+  display: block !important;
+  visibility: visible !important;
+}
+
+/* Leaflet popup alapértelmezett konténer */
+.leaflet-popup {
+  margin-bottom: 20px !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  width: auto !important; /* A szélességet a tartalom határozza meg */
+  max-width: 300px !important; /* Maximális szélesség korlátozása */
+}
+
+/* Leaflet popup tartalom wrapper */
+.leaflet-popup-content-wrapper {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  border-radius: 15px;
+  width: 100% !important;
+  max-width: 300px !important;
+  min-width: 200px !important;
+  overflow: hidden !important;
+  pointer-events: auto !important;
+  display: block !important;
+  visibility: visible !important;
+}
+
+/* A tartalom konténerének pontos méretezése */
+.leaflet-popup-content {
+  margin: 0 !important;
+  width: 100% !important;
+  max-width: 300px !important;
+  min-width: 200px !important;
+  overflow: hidden !important;
+}
+
+/* Leaflet popup tip konténer */
+.leaflet-popup-tip-container {
+  width: 20px;
+  height: 10px;
+  position: absolute;
+  bottom: -15px; /* Eredeti érték visszaállítva */
+  overflow: visible;
+}
+
+/* Leaflet popup tip (a kis nyíl) */
+.leaflet-popup-tip {
+  background: #6baed6;
+  border: 2px solid #6baed6;
+  width: 20px;
+  height: 10px;
+  margin: 0 auto;
+  position: absolute;
+  bottom: 0;
+  left: 100%; /* Eredeti érték visszaállítva */
+  transform: translateX(-50%);
+  clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+  -webkit-clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+}
+
+/* Popup bezáró gomb */
+.leaflet-container .leaflet-popup-close-button {
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  background-color: #f28c82 !important; /* Piros háttér */
+  border: none !important;
+  font-size: 14px !important;
+  color: #fff !important; /* Fehér X */
+  cursor: pointer !important;
+  width: 24px !important;
+  height: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important; /* Kör alak */
+  padding: 0 !important;
+  line-height: 1 !important;
+  transition: background-color 0.3s ease !important;
+  z-index: 1200 !important; /* Biztosítjuk, hogy a tartalom felett legyen */
+  pointer-events: auto !important;
+}
+
+.leaflet-container .leaflet-popup-close-button:hover {
+  background-color: #c0392b !important; /* Sötétebb piros hover esetén */
+}
+
+/* Reszponzív dizájn a bezáró gombhoz */
+@media (max-width: 768px) {
+  .leaflet-container .leaflet-popup-close-button {
+    font-size: 12px !important;
+    width: 20px !important;
+    height: 20px !important;
+    top: 6px !important;
+    right: 6px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .leaflet-container .leaflet-popup-close-button {
+    font-size: 10px !important;
+    width: 18px !important;
+    height: 18px !important;
+    top: 5px !important;
+    right: 5px !important;
+  }
+}
+
+/* Popup header és tartalom módosítása */
+.popup-header {
+  margin: 0;
+  padding: 0;
+}
+
+.title-bar {
+  background-color: #6baed6;
+  padding: 5px 10px;
+  border-radius: 12px 12px 0 0;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.popup-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.1;
+  margin-right: 32px; /* Eredeti érték a bezáró gombnak */
+}
+
+.popup-address {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+  display: block;
+}
+
+/* Ár és alapterület konténer */
+.price-area-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #e6f3ff;
+  padding: 0px 10px;
+  border-radius: 0px;
+  margin: 0px 0;
+}
+
+/* Ár stílusa */
+.popup-price {
+  font-size: 10px;
+  font-weight: bold;
+  color: #8b4513;
+  margin: 0;
+}
+
+/* Alapterület stílusa */
+.popup-area {
+  font-size: 10px;
+  font-weight: bold;
+  color: #8b4513;
+  margin: 0;
+}
+
+/* Description nagyobb hellyel és kerettel */
+.popup-description {
+  font-size: 12px;
+  color: #8b4513;
+  margin: 5px 10px;
+  line-height: 1.2;
+  max-height: 120px;
+  overflow-y: auto;
+  border: 1px solid #6baed6;
+  padding: 5px;
+  border-radius: 5px;
+  white-space: pre-line; /* Sortörések megjelenítése */
+}
+
+/* Popup tartalom */
+.popup-content {
+  padding: 0 10px 5px;
+}
+
+/* Gomb és galéria elválasztása */
+.popup-gallery {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.view-button {
+  background-color: #6baed6;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px 20px;
+  border-radius: 12px;
+  border: 2px solid #6baed6 !important;
+  cursor: pointer;
+  width: 85%;
+  max-width: 250px;
+  margin: 0 auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  text-decoration: none;
+  display: block;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.view-button:hover {
+  background-color: #5099ce;
+  border-color: #5099ce !important;
+}
+
+/* Galéria stílusok */
+.image-gallery {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
+  margin-top: 5px;
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.thumbnail-gallery {
+  display: flex;
+  gap: 3px;
+  justify-content: flex-start;
+  padding: 2px 0;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: auto;
+  overflow-y: hidden;
+  margin-top: 5px;
+  max-width: 100%;
+}
+
+.thumbnail-gallery img {
+  width: auto;
+  height: 40px;
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.thumbnail-gallery img:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.thumbnail-gallery img.active {
+  border: 2px solid #3498db;
+  opacity: 1;
+  transform: scale(1);
+}
+
+.main-image-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 100%;
+}
+
+.main-image {
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+  max-height: 220px;
+  object-fit: contain;
+  border-radius: 10px;
+  border: 2px solid #d3d3d3;
+  margin-bottom: 5px;
+  transition: transform 0.3s ease;
+  display: block;
+}
+
+.nav-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  z-index: 10;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.nav-arrow:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.nav-arrow.left {
+  left: 5px;
+}
+
+.nav-arrow.right {
+  right: 5px;
+}
+
+.thumbnail-gallery::-webkit-scrollbar {
+  height: 3px;
+}
+
+.thumbnail-gallery::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.thumbnail-gallery::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+
+.thumbnail-gallery::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.thumbnail-gallery {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1);
+}
+
+/* Nagy képernyős nézet (481px felett) */
+@media (min-width: 481px) {
+  .leaflet-popup,
+  .leaflet-popup-content-wrapper,
+  .custom-popup,
+  .leaflet-popup-content {
+    width: 300px !important; /* Fix 300px szélesség nagy képernyőn */
+    max-width: 300px !important;
+    min-width: 300px !important; /* Biztosítjuk, hogy ne legyen keskenyebb */
+    display: block !important;
+    visibility: visible !important;
+  }
+
+  .popup-title {
+    font-size: 18px;
+    margin-right: 26px; /* Eredeti érték a bezáró gombnak */
+  }
+
+  .popup-address {
+    font-size: 12px;
+  }
+
+  .popup-price,
+  .popup-area {
+    font-size: 10px;
+  }
+
+  .popup-description {
+    font-size: 12px;
+    max-height: 120px;
+  }
+
+  .main-image {
+    max-width: 220px; /* Eredeti méret */
+    max-height: 220px;
+  }
+
+  .thumbnail-gallery img {
+    height: 40px; /* Eredeti méret */
+  }
+
+  .view-button {
+    font-size: 16px;
+    padding: 10px 20px;
+    max-width: 250px; /* Eredeti méret */
+  }
+}
+
+/* Reszponzív: Mobilokon (≤480px) */
+/* Reszponzív: Mobilokon (≤480px) */
+@media (max-width: 480px) {
+  .leaflet-popup {
+    margin-left: 0px !important;
+    margin-right: 0px !important;
+    margin-bottom: 20px !important;
+    max-width: calc(100%) !important;
+    min-width: 200px !important;
+  }
+
+  .leaflet-popup-content-wrapper,
+  .custom-popup,
+  .leaflet-popup-content {
+    max-width: calc(100% - 40px) !important;
+    min-width: 200px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    display: block !important;
+    visibility: visible !important;
+  }
+
+  .leaflet-popup-tip-container {
+    bottom: -15px !important;
+  }
+
+  .leaflet-popup-tip {
+    left: 100% !important;
+    transform: translateX(-0%) !important;
+  }
+
+  .popup-header {
+    margin: 0;
+  }
+
+  .title-bar {
+    padding: 3px 6px;
+    max-height: 45px;
+  }
+
+  .popup-title {
+    font-size: 10px !important; /* Halved from 14px */
+    line-height: 1.1;
+    margin-right: 23px;
+  }
+
+  .popup-address {
+    font-size: 7px;
+    margin: 0;
+    max-height: 15px;
+  }
+
+  .price-area-container {
+    padding: 0 6px;
+    max-height: 16px;
+  }
+
+  .popup-price {
+    font-size: 7px;
+    margin: 0;
+  }
+
+  .popup-area {
+    font-size: 7px;
+    margin: 0;
+  }
+
+  .popup-description {
+    font-size: 9px;
+    max-height: 54px !important; /* Halved from 96px */
+    border: 1px solid #6baed6;
+    padding: 3px;
+    border-radius: 2px;
+    margin: 0px 0px;
+    overflow-y: auto;
+  }
+
+  .popup-content {
+    padding: 0 6px 4px;
+  }
+
+  .popup-gallery {
+    margin-top: 0px;
+    margin-bottom: 0 !important; /* Remove bottom margin to place button directly below */
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .main-image-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .main-image {
+    width: 100% !important;
+    max-width: 176px !important;
+    height: auto !important;
+    max-height: 120px !important;
+    object-fit: contain;
+    border-radius: 4px;
+    border: 2px solid #d3d3d3;
+    margin-bottom: 2px;
+  }
+
+  .thumbnail-gallery {
+    display: none !important; /* Hide thumbnail gallery on mobile */
+  }
+
+  .view-button {
+    font-size: 13px;
+    padding: 8px 16px;
+    border-radius: 10px;
+    width: 85%;
+    max-width: 200px;
+    margin: 4px auto 0 !important; /* Reduced margin to place button closer to main image */
+  }
+
+  .nav-arrow {
+    padding: 6px;
+    font-size: 12px;
+  }
+}
+
+/* Ikonoknál mindig pointer kurzor */
+.layer-marker-icon {
+  transition: filter 0.3s ease;
+  cursor: pointer !important;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Hover effekt */
+.layer-marker-icon:hover {
+  filter: brightness(1.5);
+}
+
+/* Custom marker ikon (a createCustomIcon-hoz igazítva) */
+.custom-marker-icon {
+  background: none !important;
+  border: none !important;
+}
+
+/* Geometria réteg */
+.geometry-layer {
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 500 !important;
+}
+
+/* Biztosítjuk, hogy a Polygon SVG elemei láthatóak legyenek */
+.leaflet-overlay-pane svg path {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.ad-container {
+  margin: 5px 0;
+  text-align: center;
+  width: 100%;
+  height: 90px; /* Fix magasság a hirdetésekhez */
+  overflow: hidden; /* Túlcsordulás elrejtése */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (max-width: 768px) {
+  .ad-container {
+    margin: 5px 0;
+  }
+}
+
+/* PRIORITY osztályok z-indexe – ez a kulcs! */
+/* A .leaflet-marker-pane alap z-indexe ~600, ezért ezek fölé kell menni */
+
+.custom-marker-icon.priority-3 {
+  z-index: 750 !important;   /* Legmagasabb – mindig felül */
+}
+
+.custom-marker-icon.priority-4 {
+  z-index: 700 !important;   /* Közepes */
+}
+
+.custom-marker-icon.priority-5,
+.custom-marker-icon:not(.priority-3):not(.priority-4) {
+  z-index: 650 !important;   /* Legalacsonyabb */
+}
+
+/* Extra: aktív marker még mindig mindent felülír (ha kell) */
+.custom-marker-icon.active-marker {
+  z-index: 1000 !important;
+}
+
+/* Biztosítás: a marker-price ne rontsa el a stacking-et */
+.custom-marker-icon .marker-price {
+  position: relative;
+  z-index: 1;   /* ne lógjon ki a stacking contextből */
+}
+
+.leaflet-marker-pane .custom-marker-icon.priority-3 {
+  z-index: 750 !important;
+}
+.leaflet-marker-pane .custom-marker-icon.priority-4 {
+  z-index: 700 !important;
+}
+.leaflet-marker-pane .custom-marker-icon {
+  z-index: 650 !important;   /* alap */
+}
+.leaflet-marker-pane .custom-marker-icon.active-marker {
+  z-index: 1000 !important;
+}

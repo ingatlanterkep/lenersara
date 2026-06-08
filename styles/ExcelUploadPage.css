@@ -1,0 +1,201 @@
+
+.excel-upload-container {
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 40px 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.excel-upload-header {
+  background: #fff;
+  border: 2px solid #97d4ff;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 30px;
+  margin-bottom: 40px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.excel-upload-header:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.excel-upload-title {
+  font-size: 2.5rem;
+  color: #5099ce;
+  margin: 0;
+  line-height: 1.2;
+  text-align: center;
+  font-weight: 700;
+}
+
+.excel-upload-subtitle {
+  font-size: 1.2rem;
+  color: #8b4513;
+  margin: 5px 0;
+  text-align: center;
+}
+
+.excel-upload-section {
+  background: #fff;
+  border: 2px solid #97d4ff;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 30px;
+  margin-bottom: 40px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.excel-upload-section:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.excel-upload-section h2 {
+  font-size: 2rem;
+  color: #5099ce;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #97d4ff;
+  padding-bottom: 10px;
+}
+
+.download-template-btn {
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto 20px;
+  padding: 15px;
+  background-color: #5099ce;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.download-template-btn:hover {
+  background-color: #407ea8;
+  transform: translateY(-2px);
+}
+
+/* Drag-and-Drop terület */
+.excel-drop-zone {
+  border: 2px dashed #97d4ff;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  margin: 20px auto;
+  max-width: 500px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.9);
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.excel-drop-zone.drag-over {
+  border-color: #5099ce;
+  background-color: rgba(80, 153, 206, 0.1);
+}
+
+.excel-drop-zone p {
+  color: #8b4513;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* A "tallózz" link stílusa */
+.file-label {
+  color: #5099ce; /* Kék szín */
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.file-label:hover {
+  color: #407ea8; /* Sötétebb kék hover állapotban */
+}
+
+.file-input {
+  display: none; /* Rejtett, mert drag-and-drop területet használunk */
+}
+
+.success-text {
+  color: #5099ce;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.error-text {
+  color: #ff6347;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.json-output {
+  background-color: #f0f8ff;
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #97d4ff;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  max-height: 400px;
+  overflow-y: auto;
+  font-size: 0.95rem;
+  color: #8b4513;
+}
+
+/* Reszponzív dizájn */
+@media (max-width: 768px) {
+  .excel-upload-container {
+    padding: 20px 15px;
+  }
+
+  .excel-upload-title {
+    font-size: 2rem;
+  }
+
+  .excel-upload-subtitle {
+    font-size: 1rem;
+  }
+
+  .excel-upload-section h2 {
+    font-size: 1.75rem;
+  }
+
+  .download-template-btn {
+    max-width: 100%;
+    font-size: 1rem;
+  }
+
+  .excel-drop-zone {
+    max-width: 100%;
+    padding: 15px;
+  }
+
+  .excel-drop-zone p {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .excel-upload-title {
+    font-size: 1.8rem;
+  }
+
+  .excel-upload-subtitle {
+    font-size: 0.95rem;
+  }
+
+  .excel-upload-section h2 {
+    font-size: 1.5rem;
+  }
+
+  .download-template-btn {
+    font-size: 1rem;
+  }
+}

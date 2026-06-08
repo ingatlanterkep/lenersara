@@ -1,0 +1,25 @@
+/* styles/components/FieldsetCard.css */
+.upload-fieldset {
+  background: #fff;
+  border: 2px solid #97d4ff;
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.upload-fieldset:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.upload-fieldset legend {
+  color: #5099ce;
+  font-weight: 500;
+  padding: 0 10px;
+  font-size: 1.2rem;
+}
+
+.upload-fieldset .fieldset-content {
+  padding-top: 10px;
+}

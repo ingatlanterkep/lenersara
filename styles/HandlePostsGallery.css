@@ -1,0 +1,38 @@
+.image-gallery {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+  
+  .image-gallery img {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 5px;
+  }
+  
+  .gallery-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 1.2rem;
+  }
+  
+  .gallery-button.prev {
+    left: 0;
+  }
+  
+  .gallery-button.next {
+    right: 0;
+  }
+  
+  .gallery-button:hover {
+    background: rgba(0, 0, 0, 0.8);
+  }

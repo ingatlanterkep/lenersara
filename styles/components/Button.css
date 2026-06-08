@@ -1,0 +1,91 @@
+/* styles/components/Button.css */
+.profile-button {
+  background: #5099ce;
+  color: #fff;
+  border: none;
+  padding: 8px 16px; /* KISEBB PADDING */
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  min-width: 140px; /* EGYSÉGES MIN. SZÉLESSÉG */
+  width: auto;
+  display: inline-block;
+  text-align: center;
+}
+
+.profile-button:hover:not(:disabled) {
+  background: #407ea8;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.profile-button:disabled {
+  background: #a3c8e0;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-secondary { background: #6c757d; }
+.btn-secondary:hover { background: #5a6268; }
+
+.btn-danger { background: #dc3545 !important; }
+.btn-danger:hover { background: #c82333 !important; }
+
+/* Gombok egymás mellett */
+.button-group {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.myposts-post-title {
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.myposts-image-container {
+  height: 160px;             /* asztali */
+}
+
+@media (max-width: 768px) {
+  .myposts-image-container {
+    height: 180px;           /* mobilon nagyobb kép */
+  }
+  
+  .myposts-post-title {
+    font-size: 0.95rem;
+  }
+  
+  .myposts-top-icons {
+    top: 8px;
+    right: 8px;
+    gap: 6px;
+  }
+  
+  .myposts-view-btn,
+  .myposts-settings-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+}
+
+.profile-button {
+  padding: 10px 18px;
+  font-size: 0.95rem;
+  min-width: 140px;          /* asztalin ne legyen túl kicsi */
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .profile-button {
+    min-width: unset;
+    width: 100%;
+    padding: 14px;
+  }
+}

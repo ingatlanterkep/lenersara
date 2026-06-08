@@ -1,0 +1,316 @@
+/* src/styles/BlogListPage.css – Javított, szebb és jobban kihasználó design */
+
+.blog-list-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-image: url('./image.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding-top: 60px;
+  position: relative;
+}
+
+.blog-list-container::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(233, 210, 194, 0.7);
+  z-index: 0;
+}
+
+.blog-list-wrapper {
+  width: 100%;
+  max-width: 1400px; /* Kissé növelve, hogy több kártya férjen el */
+  margin: 0 auto;
+  padding: 20px 40px;
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+}
+
+.blog-list-header {
+  background: #fff;
+  border: 2px solid #97d4ff;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 30px;
+  margin-bottom: 50px;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  position: relative;          /* ← EZT ADD HOZZÁ! */
+  overflow: visible;           /* opcionális, ha kilóg és vágódna */
+
+  padding: 20px 20px 40px;          /* ← ALUL TÖBB HELY a badge-nek (80px) */
+
+}
+
+.blog-list-header:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.blog-list-title {
+  font-size: 2.5rem;
+  color: #5099ce;
+  margin: 0 0 15px 0;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+
+.blog-list-subtitle {
+  font-size: 1.2rem;
+  color: #8b4513;
+  margin: 0 auto 20px;              /* ← margin-bottom a badge miatt */
+  max-width: 50%;                   /* ← nem megy széléig, marad hely jobbra */
+  line-height: 1.55;
+  white-space: normal;              /* ← ENGEDI a sortörést */
+  word-break: break-word;           /* ← hosszú szavaknál is tör */
+  hyphens: auto;                    /* ← magyarul szép elválasztás */
+  text-align: center;
+}
+
+
+/* === JAVÍTOTT KÁRTYA GRID === */
+.articles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); /* Kissé kisebb min-width, több oszlop */
+  gap: 32px; /* Kissé kisebb gap, sűrűbb elrendezés */
+  margin-bottom: 60px;
+}
+
+.article-card {
+  background: #fff;
+  border: 2px solid #97d4ff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  transition: all 0.4s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.article-card:hover {
+  transform: translateY(-12px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  border-color: #5099ce;
+}
+
+.article-link {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.article-card-image {
+  width: 90%;
+  max-height: 250px;
+  margin: 20px auto;
+  object-fit: contain;
+  transition: transform 0.4s ease;
+}
+
+.article-card:hover .article-card-image {
+  transform: scale(1.08);         /* Finom zoom hoverre */
+}
+
+.article-card-content {
+  padding: 28px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.article-card-title {
+  font-size: 1.65rem;
+  color: #5099ce;
+  margin: 0 0 12px 0;
+  line-height: 1.35;
+  font-weight: 600;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.article-card-meta {
+  font-size: 0.95rem;
+  color: #8b4513;
+  margin-bottom: 14px;
+  font-style: italic;
+}
+
+.article-card-excerpt {
+  font-size: 1rem;
+  color: #444;
+  line-height: 1.65;
+  margin-bottom: 20px;
+  flex-grow: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.read-more {
+  font-size: 1.1rem;
+  color: #5099ce;
+  font-weight: 600;
+  margin-top: auto;
+  transition: color 0.3s ease;
+}
+
+.read-more:hover {
+  color: #397ab3;
+}
+
+/* Coming soon kártya */
+.coming-soon {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #8b4513;
+  font-style: italic;
+  margin: 60px auto;
+  padding: 32px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid #97d4ff;
+  border-radius: 18px;
+  max-width: 800px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  transition: all 0.3s ease;
+}
+
+.coming-soon:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+}
+
+/* === RESZPONZIVITÁS === */
+@media (max-width: 1400px) {
+  .blog-list-wrapper {
+    padding: 20px 30px;
+  }
+}
+
+@media (max-width: 992px) {
+  .articles-grid {
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 28px;
+  }
+}
+
+@media (max-width: 768px) {
+  .blog-list-wrapper {
+    padding: 20px 20px;
+  }
+
+  .blog-list-header,
+  .article-card-content {
+    padding: 24px;
+  }
+
+  .blog-list-title {
+    font-size: 2.1rem;
+  }
+
+  .article-card-image {
+    height: 220px;
+  }
+
+  .article-card-title {
+    font-size: 1.55rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .articles-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .article-card-image {
+    height: 200px;
+  }
+
+  .article-card-content {
+    padding: 20px;
+  }
+
+  .blog-list-title {
+    font-size: 1.9rem;
+  }
+
+  .coming-soon {
+    padding: 24px;
+    font-size: 1.1rem;
+  }
+}
+
+/* Kapcsolódó cikkek szekció – ugyanolyan grid, mint a blog listán */
+.related-article-section {
+  margin: 80px auto 40px;
+  max-width: 1400px; /* Ugyanaz, mint a blog-list-wrapper */
+  padding: 0 40px;
+  box-sizing: border-box;
+}
+
+.related-article-title {
+  font-size: 2.2rem;
+  color: #5099ce;
+  text-align: center;
+  margin-bottom: 50px;
+  font-weight: 700;
+}
+
+.related-article-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 32px;
+  justify-items: center;
+}
+
+/* Mobilon egy oszlopba */
+@media (max-width: 992px) {
+  .related-article-grid {
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 28px;
+  }
+}
+
+@media (max-width: 768px) {
+  .related-article-section {
+    margin: 60px auto 20px;
+    padding: 0 20px;
+  }
+
+  .related-article-title {
+    font-size: 1.9rem;
+    margin-bottom: 40px;
+  }
+
+  .related-article-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .related-article-grid {
+    gap: 20px;
+  }
+}
+
+/* Facebook badge – konzisztens pozíció, nem kilóg durván */
+.fb-page-badge {
+  position: absolute;
+  bottom: 20px;                     /* belül marad */
+  right: 30px;                      /* kicsit beljebb */
+  z-index: 10;
+  /* ha mégis enyhe kilógást akarsz: bottom: -10px; right: 20px; */
+}
