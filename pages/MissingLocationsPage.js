@@ -1,7 +1,18 @@
+// pages/MissingLocationsPage.js
 'use client';
 
+import dynamic from 'next/dynamic';
+import { Suspense } from 'react';
 import { useRouter } from 'next/navigation';
-import MissingLocations from '@/components/MissingLocations';
+
+// Dinamikus import a MissingLocations komponenshez (SSR kikapcsolva)
+const MissingLocations = dynamic(
+  () => import('@/components/MissingLocations'),
+  { 
+    ssr: false,
+    loading: () => <div className="loading">Betöltés...</div>
+  }
+);
 
 export default function MissingLocationsPage() {
   const router = useRouter();
@@ -26,7 +37,9 @@ export default function MissingLocationsPage() {
         </button>
       </div>
 
-      <MissingLocations />
+      <Suspense fallback={<div>Betöltés...</div>}>
+        <MissingLocations />
+      </Suspense>
     </div>
   );
 }

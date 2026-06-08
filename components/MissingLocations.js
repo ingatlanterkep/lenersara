@@ -1,19 +1,14 @@
+// components/MissingLocations.js
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';  // ← React Router helyett
+import { useRouter } from 'next/navigation';
 import Modal from 'react-modal';
-import L from 'leaflet';
-import 'leaflet-draw';
-import { geocodeAddress } from '../utils/geocodeAddress';
-import { getMissingLocations, addCityRegion } from '../services/apiService';
-import 'leaflet/dist/leaflet.css';
-import 'leaflet-draw/dist/leaflet.draw.css';
 import '../styles/MissingLocations.css';
 
-// Next.js-ben nincs #root, használd a document.body-t vagy a modal-t közvetlenül
+// Modal beállítások - csak client oldalon
 if (typeof window !== 'undefined') {
-  Modal.setAppElement('body');  // ← Változtatás: #root helyett body
+  Modal.setAppElement('body');
 }
 
 const MissingLocations = () => {
@@ -25,15 +20,47 @@ const MissingLocations = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [mapInitialized, setMapInitialized] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+  const [L, setL] = useState(null);
+  const [geocodeAddress, setGeocodeAddress] = useState(null);
+  
   const mapRef = useRef(null);
   const drawnItemsRef = useRef(null);
+  const router = useRouter();
 
-  const router = useRouter();  // ← React Router helyett
+  // Client oldali ellenőrzés
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Dinamikus importok
+  useEffect(() => {
+    if (!isClient) return;
+
+    const loadDependencies = async () => {
+      try {
+        const leafletModule = await import('leaflet');
+        await import('leaflet-draw');
+        await import('leaflet/dist/leaflet.css');
+        await import('leaflet-draw/dist/leaflet.draw.css');
+        
+        const geocodeModule = await import('../utils/geocodeAddress');
+        
+        setL(leafletModule.default);
+        setGeocodeAddress(() => geocodeModule.geocodeAddress);
+      } catch (error) {
+        console.error('Failed to load Leaflet dependencies:', error);
+      }
+    };
+
+    loadDependencies();
+  }, [isClient]);
 
   useEffect(() => {
     const fetchMissingLocations = async () => {
       try {
         setLoading(true);
+        const { getMissingLocations } = await import('../services/apiService');
         const missingLocationsData = await getMissingLocations();
         setMissingLocations(missingLocationsData.data || { cities: [], regions: [] });
       } catch (err) {
@@ -43,13 +70,14 @@ const MissingLocations = () => {
       }
     };
 
-    fetchMissingLocations();
-  }, []);
+    if (isClient) {
+      fetchMissingLocations();
+    }
+  }, [isClient]);
 
   const handleAddPolygon = (location) => {
     let effectiveLocation = { ...location };
 
-    // Ha város
     if (location.city && !location.region) {
       effectiveLocation = {
         city: null,
@@ -57,9 +85,7 @@ const MissingLocations = () => {
         originalName: location.city,
         isDistrict: false,
       };
-    }
-    // Ha régió
-    else if (location.city && location.region) {
+    } else if (location.city && location.region) {
       effectiveLocation = {
         city: location.city,
         region: location.region,
@@ -68,7 +94,6 @@ const MissingLocations = () => {
       };
     }
 
-    console.log('[MissingLocations] Effective location:', effectiveLocation);
     setSelectedLocation(effectiveLocation);
     setIsPolygonModalOpen(true);
   };
@@ -92,6 +117,8 @@ const MissingLocations = () => {
     }
 
     try {
+      const { addCityRegion, getMissingLocations } = await import('../services/apiService');
+      
       let finalCity = selectedLocation.city || undefined;
 
       if (selectedLocation.city && selectedLocation.region) {
@@ -111,11 +138,7 @@ const MissingLocations = () => {
         },
       };
 
-      console.log('[MissingLocations] Saving polygon with final data:', data);
-
       const response = await addCityRegion(data);
-
-      // Frissítés
       const updatedMissingLocations = await getMissingLocations();
       setMissingLocations(updatedMissingLocations.data || { cities: [], regions: [] });
 
@@ -136,9 +159,8 @@ const MissingLocations = () => {
   };
 
   const initializeMapWithGeocodedLocation = async () => {
-    if (!selectedLocation || !isPolygonModalOpen || mapInitialized) return;
+    if (!isClient || !L || !geocodeAddress || !selectedLocation || !isPolygonModalOpen || mapInitialized) return;
 
-    // Ellenőrizd, hogy létezik-e a map container
     const mapContainer = document.getElementById('missing-locations-polygon-map');
     if (!mapContainer) {
       console.error('Map container not found');
@@ -155,7 +177,6 @@ const MissingLocations = () => {
       const { lat, lon, area_polygon } = geolocationData;
 
       if (area_polygon) {
-        console.log('[MissingLocations] Nominatim polygon received:', area_polygon);
         const polygonCoords = area_polygon.type === 'MultiPolygon' ? area_polygon[0][0] : Array.isArray(area_polygon[0][0]) ? area_polygon[0] : area_polygon;
         setNominatimPolygon(polygonCoords);
         setNewPolygon(polygonCoords);
@@ -165,7 +186,6 @@ const MissingLocations = () => {
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        subdomains: 'abc',
         maxZoom: 19,
       }).addTo(map);
 
@@ -195,14 +215,10 @@ const MissingLocations = () => {
             Number(latlng.lng.toFixed(6)),
             Number(latlng.lat.toFixed(6)),
           ]);
-          if (
-            coords[0][0] !== coords[coords.length - 1][0] ||
-            coords[0][1] !== coords[coords.length - 1][1]
-          ) {
+          if (coords[0][0] !== coords[coords.length - 1][0] || coords[0][1] !== coords[coords.length - 1][1]) {
             coords.push(coords[0]);
           }
           setNewPolygon(coords);
-          console.log('[MissingLocations] New polygon created:', coords);
         }
       });
 
@@ -213,21 +229,16 @@ const MissingLocations = () => {
               Number(latlng.lng.toFixed(6)),
               Number(latlng.lat.toFixed(6)),
             ]);
-            if (
-              coords[0][0] !== coords[coords.length - 1][0] ||
-              coords[0][1] !== coords[coords.length - 1][1]
-            ) {
+            if (coords[0][0] !== coords[coords.length - 1][0] || coords[0][1] !== coords[coords.length - 1][1]) {
               coords.push(coords[0]);
             }
             setNewPolygon(coords);
-            console.log('[MissingLocations] Polygon edited:', coords);
           }
         });
       });
 
       map.on('draw:deleted', () => {
         setNewPolygon(null);
-        console.log('[MissingLocations] Polygon deleted');
       });
 
       mapRef.current = map;
@@ -240,7 +251,6 @@ const MissingLocations = () => {
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        subdomains: 'abc',
         maxZoom: 19,
       }).addTo(map);
 
@@ -301,25 +311,28 @@ const MissingLocations = () => {
   };
 
   useEffect(() => {
-    if (mapInitialized && nominatimPolygon && mapRef.current && drawnItemsRef.current) {
+    if (isPolygonModalOpen && !mapInitialized && isClient && L && geocodeAddress) {
+      setTimeout(() => {
+        initializeMapWithGeocodedLocation();
+      }, 100);
+    }
+  }, [isPolygonModalOpen, selectedLocation, mapInitialized, isClient, L, geocodeAddress]);
+
+  useEffect(() => {
+    if (mapInitialized && nominatimPolygon && mapRef.current && drawnItemsRef.current && L) {
       drawnItemsRef.current.clearLayers();
       const leafletPolygon = L.polygon(
         nominatimPolygon.map(([lng, lat]) => [lat, lng]),
         { color: '#3388ff', weight: 3 }
       );
       drawnItemsRef.current.addLayer(leafletPolygon);
-      console.log('[MissingLocations] Nominatim polygon rendered on map:', nominatimPolygon);
       mapRef.current.fitBounds(leafletPolygon.getBounds());
     }
-  }, [nominatimPolygon, mapInitialized]);
+  }, [nominatimPolygon, mapInitialized, L]);
 
-  useEffect(() => {
-    if (isPolygonModalOpen && !mapInitialized) {
-      setTimeout(() => {
-        initializeMapWithGeocodedLocation();
-      }, 100);
-    }
-  }, [isPolygonModalOpen, selectedLocation, mapInitialized]);
+  if (!isClient) {
+    return <div className="missing-locations-loading">Betöltés...</div>;
+  }
 
   if (loading) {
     return <div className="missing-locations-loading">Betöltés...</div>;
@@ -336,7 +349,7 @@ const MissingLocations = () => {
         <div className="missing-locations-header-actions">
           <button
             className="missing-locations-button"
-            onClick={() => router.push('/profile/admin')}  // ← navigate helyett router.push
+            onClick={() => router.push('/profile/admin')}
           >
             Vissza az Admin Felületre
           </button>
