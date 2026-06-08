@@ -8,6 +8,8 @@ export default function HomePage() {
       type="lakas" 
       city={null} 
       viewModeDefault="map" 
+      serverLocationContent={null}      // ← EZT ADD HOZZÁ!
+      serverSeoQuickPosts={[]}          // ← EZT ADD HOZZÁ!
     />
   );
 }
