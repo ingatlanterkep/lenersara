@@ -81,7 +81,7 @@ const counties = [
   { name: 'Jász-Nagykun-Szolnok', value: 'jasz-nagykun-szolnok-varmegye', display: 'Jász-Nagykun-Szolnok vármegye' },
 ];
 
-const typeMap: Record<string, string> = {
+const typeMap = {
   lakas: 'Lakás',
   haz: 'Ház',
   iroda: 'Iroda',
@@ -106,33 +106,20 @@ const validCounties = [
   'jasz-nagykun-szolnok-varmegye'
 ];
 
-interface HomePageContentProps {
-  listingType: string;
-  type: string;
-  city: string | null;
-  viewModeDefault?: 'map' | 'list';
-  serverLocationContent?: any;
-  serverSeoQuickPosts?: any[];
-}
-
 export default function HomePageContent({ 
   listingType: urlListingType, 
   type: urlType, 
-  city: urlLocation,  // ← ezt használd city néven
+  city: urlLocation,
   viewModeDefault = 'map',
-  serverLocationContent,  // ← VEDD ÁT ezt a prop-ot!
-  serverSeoQuickPosts,    // ← VEDD ÁT ezt a prop-ot!
-}: HomePageContentProps) {
+  serverLocationContent,
+  serverSeoQuickPosts,
+}) {
   const router = useRouter();
   const pathname = usePathname();
-
-    const currentCity = urlLocation;  // vagy használd közvetlenül a urlLocation-t
   
-  // Flag-ek az URL frissítés vezérléséhez
   const isInitialized = useRef(false);
   
-  // Navigációs függvény
-  const navigate = useCallback((url: string, options?: { replace?: boolean }) => {
+  const navigate = useCallback((url, options) => {
     if (options?.replace) {
       router.replace(url);
     } else {
@@ -152,8 +139,7 @@ export default function HomePageContent({
   const [isLoading, setIsLoading] = useState(true);
   const [cookiesAccepted, setCookiesAccepted] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
-  const [selectedPost, setSelectedPost] = useState<any>(null);
-
+  const [selectedPost, setSelectedPost] = useState(null);
   const [locationSearchOpen, setLocationSearchOpen] = useState(false);
   const [selectedQuestionType, setSelectedQuestionType] = useState('');
   const [isQueuing, setIsQueuing] = useState(false);
@@ -168,6 +154,8 @@ export default function HomePageContent({
   const [isMobile, setIsMobile] = useState(false);
   const [hasFitted, setHasFitted] = useState(false);
   const [favoritePosts, setFavoritePosts] = useState(new Set());
+  const [listPosts, setListPosts] = useState([]);
+  const [listTotal, setListTotal] = useState(0);
   const [listPage, setListPage] = useState(1);
   const [listLoading, setListLoading] = useState(false);
   const [listHasMore, setListHasMore] = useState(true);
@@ -200,7 +188,6 @@ export default function HomePageContent({
     setShowMap(true);
   }, []);
   
-  // useFilters hook
   const {
     listingType, setListingType,
     selectedLocations, setSelectedLocations,
@@ -225,10 +212,9 @@ export default function HomePageContent({
     isFiltering, shouldLogMarkers, hasSpecificFilters, createFilters,
   } = useFilters(cookiesAccepted);
   
-  // Helper függvények
   const validDistricts = budapestDistricts.map(d => d.url);
   
-  const generateSlug = (title: string) => {
+  const generateSlug = (title) => {
     if (!title) return 'unknown';
     return title
       .toLowerCase()
@@ -238,7 +224,7 @@ export default function HomePageContent({
       .replace(/(^-|-$)/g, '');
   };
   
-  const convertLocationToFormat = (urlLocation: string) => {
+  const convertLocationToFormat = (urlLocation) => {
     const decodedLocation = decodeURIComponent(urlLocation);
     const normalized = decodedLocation.toLowerCase().replace(/_/g, '-');
     
@@ -259,29 +245,25 @@ export default function HomePageContent({
     return { scope: 'city', value: cityName, locationKey: `city:${cityName}` };
   };
 
-  const getFullImageUrl = (imagePath: string) => {
+  const getFullImageUrl = (imagePath) => {
     if (!imagePath || typeof imagePath !== 'string') return '/placeholder.jpg';
     if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) return imagePath;
     return `${process.env.NEXT_PUBLIC_BACKEND_BASEURL}${imagePath}`;
   };
 
-  // 🔴 HIÁNYZÓ FÜGGVÉNY - Add vissza!
-const createCustomIcon = (price: number) => {
-  // Ez a függvény a Leaflet térkép marker-ekhez kell
-  // Csak akkor fut, ha a Leaflet betöltött (client oldalon)
-  if (typeof window === 'undefined' || !(window as any).L) {
-    return null;
-  }
-  const L = (window as any).L;
-  return L.divIcon({
-    className: 'custom-marker-icon',
-    html: `<div style="background-color: white; border: 2px solid #0078A8; border-radius: 50%; padding: 5px; font-size: 12px; font-weight: bold; color: #0078A8;">${price}</div>`,
-    iconSize: [40, 40],
-    iconAnchor: [20, 40],
-  });
-};
+  const createCustomIcon = (price) => {
+    if (typeof window === 'undefined' || !window.L) {
+      return null;
+    }
+    return window.L.divIcon({
+      className: 'custom-marker-icon',
+      html: `<div style="background-color: white; border: 2px solid #0078A8; border-radius: 50%; padding: 5px; font-size: 12px; font-weight: bold; color: #0078A8;">${price}</div>`,
+      iconSize: [40, 40],
+      iconAnchor: [20, 40],
+    });
+  };
   
-  const fetchPostDetails = async (postId: string) => {
+  const fetchPostDetails = async (postId) => {
     try {
       const postDetails = await getPostDetails(postId);
       const newPost = postDetails.data;
@@ -302,7 +284,7 @@ const createCustomIcon = (price: number) => {
     }
   };
   
-  const loadListData = async (page: number = 1, append: boolean = false) => {
+  const loadListData = async (page = 1, append = false) => {
     if (listLoading) return;
     setListLoading(true);
     try {
@@ -336,7 +318,7 @@ const createCustomIcon = (price: number) => {
         setQueueSuccess(true);
         setQueueMessage(res.data.message || 'Sikeresen a queue-ba került!');
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('Queue hiba:', err);
       setQueueSuccess(false);
       setQueueMessage(err.response?.data?.message || 'Hiba történt a queue-ba helyezéskor');
@@ -350,7 +332,7 @@ const createCustomIcon = (price: number) => {
     if (isInitialized.current) return;
     
     if (urlListingType && urlType) {
-      const listingTypeMap: Record<string, string> = { elado: 'eladó', kiado: 'kiadó' };
+      const listingTypeMap = { elado: 'eladó', kiado: 'kiadó' };
       const validListingTypes = ['elado', 'kiado'];
       const validTypes = Object.keys(typeMap);
       
@@ -399,7 +381,7 @@ const createCustomIcon = (price: number) => {
     const checkAdminStatus = async () => {
       try {
         const currentUser = await getCurrentUser();
-        setIsAdmin((currentUser as any)?.isAdmin || false);
+        setIsAdmin(currentUser?.isAdmin || false);
       } catch (error) {
         setIsAdmin(false);
       }
@@ -422,7 +404,7 @@ const createCustomIcon = (price: number) => {
       try {
         const currentUser = await getCurrentUser();
         setIsLoggedIn(!!currentUser);
-      } catch (error: any) {
+      } catch (error) {
         if (error.response?.status === 403 || error.response?.status === 401) {
           localStorage.removeItem('token');
           setIsLoggedIn(false);
@@ -522,13 +504,13 @@ const createCustomIcon = (price: number) => {
     setTimeout(measureFilter, 100);
   }, [isMobile, selectedPost]);
   
-  const handleMobileResizeStart = (e: React.MouseEvent | React.TouchEvent) => {
+  const handleMobileResizeStart = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    const startY = (e as any).clientY || (e as any).touches?.[0]?.clientY;
+    const startY = e.clientY || e.touches?.[0]?.clientY;
     const startHeight = mobileBottomHeight;
     const windowHeight = window.innerHeight;
-    const onMove = (ev: any) => {
+    const onMove = (ev) => {
       const currentY = ev.clientY || ev.touches?.[0]?.clientY;
       const dy = startY - currentY;
       const deltaPercent = (dy / windowHeight) * 100;
@@ -536,7 +518,7 @@ const createCustomIcon = (price: number) => {
       newHeight = Math.min(60, Math.max(25, newHeight));
       setMobileBottomHeight(newHeight);
       const container = document.querySelector('.mobile-bottom-container');
-      if (container) (container as HTMLElement).style.height = `${newHeight}%`;
+      if (container) container.style.height = `${newHeight}%`;
     };
     const onUp = () => {
       document.removeEventListener('mousemove', onMove);
@@ -563,9 +545,8 @@ const createCustomIcon = (price: number) => {
     return () => document.body.classList.remove('has-selected-post');
   }, [isMobile, selectedPost]);
   
-  const memoizedPosts = useMemo(() => posts, [posts.map((p: any) => p._id).join(',')]);
+  const memoizedPosts = useMemo(() => posts, [posts.map(p => p._id).join(',')]);
   
-  // Vissza a térképre gomb kezelő
   const handleBackToMap = useCallback(() => {
     const basePath = pathname?.replace(/\/lista$/, '');
     if (basePath && basePath !== pathname) {
@@ -578,16 +559,12 @@ const createCustomIcon = (price: number) => {
     return <div className="loading">Betöltés...</div>;
   }
   
-// pages/HomePageContent.tsx - teljes return rész (SEO nélkül)
-
- return (
+  return (
     <div className="homepage-container">
-      {/* Háttér */}
       <div className="homepage-background">
         <div className="homepage-background-overlay"></div>
       </div>
-
-            
+      
       {(showFilterSidebar || showLayerSidebar) && (
         <>
           <div className="left-sidebar-container" ref={sidebarRef} style={{ width: `${sidebarWidth}px` }}>
@@ -665,7 +642,7 @@ const createCustomIcon = (price: number) => {
                 const startY = e.clientY;
                 const startHeight = filterHeight;
                 const sidebarHeight = rect?.height || 0;
-                const onMove = (ev: MouseEvent) => {
+                const onMove = (ev) => {
                   const dy = ev.clientY - startY;
                   const delta = (dy / sidebarHeight) * 100;
                   const newHeight = Math.max(20, Math.min(80, startHeight + delta));
@@ -703,7 +680,7 @@ const createCustomIcon = (price: number) => {
               e.stopPropagation();
               const startX = e.clientX;
               const startWidth = sidebarWidth;
-              const onMove = (ev: MouseEvent) => {
+              const onMove = (ev) => {
                 const dx = ev.clientX - startX;
                 const newWidth = Math.max(280, Math.min(window.innerWidth * 0.7, startWidth + dx));
                 setSidebarWidth(newWidth);
@@ -732,7 +709,7 @@ const createCustomIcon = (price: number) => {
             e.stopPropagation();
             const startX = e.clientX;
             const startWidth = rightSidebarWidth;
-            const onMove = (ev: MouseEvent) => {
+            const onMove = (ev) => {
               const dx = startX - ev.clientX;
               const newWidth = Math.max(300, Math.min(window.innerWidth * 0.7, startWidth + dx));
               setRightSidebarWidth(newWidth);
@@ -772,7 +749,7 @@ const createCustomIcon = (price: number) => {
               </div>
               <div className="detail-card-main-content">
                 {Array.isArray(selectedPost.images) && selectedPost.images.length > 0 && (
-                  <ImageGallery images={selectedPost.images.filter((img: any) => img?.url).map((img: any) => getFullImageUrl(img.url))} />
+                  <ImageGallery images={selectedPost.images.filter(img => img?.url).map(img => getFullImageUrl(img.url))} />
                 )}
                 <div className="description-column">
                   <p className="popup-description">{selectedPost.description || 'Nincs leírás.'}</p>
@@ -816,8 +793,6 @@ const createCustomIcon = (price: number) => {
                   </div>
                 </div>
               </div>
-
-              
               {isAdmin && selectedPost && (
                 <div className="admin-fb-queue-section">
                   <div>
@@ -861,9 +836,6 @@ const createCustomIcon = (price: number) => {
           <div className={`map-wrapper ${selectedPost ? 'has-active-marker' : ''}`}>
             <MapComponentDynamic
               key="map-component-static-key"
-              urlListingType={urlListingType}
-              urlType={urlType}
-              urlLocation={urlLocation}
               isStreetViewMode={isStreetViewMode}
               setIsStreetViewMode={setIsStreetViewMode}
               ref={mapRef}
@@ -924,7 +896,7 @@ const createCustomIcon = (price: number) => {
                 ) : (
                   <>
                     <div className="similar-posts-grid">
-                      {listPosts.map((post: any) => (
+                      {listPosts.map((post) => (
                         <PropertyCard
                           key={post._id}
                           post={post}
@@ -934,7 +906,7 @@ const createCustomIcon = (price: number) => {
                             const slug = generateSlug(post.title);
                             window.open(`/ingatlan/${post._id}/${slug}`, '_blank');
                           }}
-                          onFavoriteToggle={(postId: string) => {
+                          onFavoriteToggle={(postId) => {
                             const wasFavorite = isFavoritePost(postId);
                             if (wasFavorite) {
                               removeFavoritePost(postId);
@@ -987,61 +959,60 @@ const createCustomIcon = (price: number) => {
                 viewMode={viewMode}
                 setViewMode={setViewMode}
                 isMobile={isMobile}
+                cookiesAccepted={cookiesAccepted}
               />
             </div>
           </div>
         )}
 
-              <div className="seo-below-map-section">
+        <div className="seo-below-map-section">
           <div className="container relative z-10 mx-auto px-4 py-12 max-w-7xl">
             <div className="article-wrapper bg-white rounded-2xl shadow-lg border border-gray-200 p-6 md:p-10">
-        {urlLocation && serverLocationContent ? (
-          <>
-            <h1 className="seo-h1">
-              {serverLocationContent.seo?.h1 || `Eladó ${urlType === 'lakas' ? 'lakások' : 'házak'} ${urlLocation}`}
-            </h1>
-            {serverLocationContent.stats && (
-              <div className="stats-cards">
-                {serverLocationContent.stats.listingCount && (
-                  <div className="stat-card">
-                    <div className="stat-number">{serverLocationContent.stats.listingCount}</div>
-                    <div className="stat-label">hirdetés</div>
+              {urlLocation && serverLocationContent ? (
+                <>
+                  <h1 className="seo-h1">
+                    {serverLocationContent.seo?.h1 || `Eladó ${urlType === 'lakas' ? 'lakások' : 'házak'} ${urlLocation}`}
+                  </h1>
+                  {serverLocationContent.stats && (
+                    <div className="stats-cards">
+                      {serverLocationContent.stats.listingCount && (
+                        <div className="stat-card">
+                          <div className="stat-number">{serverLocationContent.stats.listingCount}</div>
+                          <div className="stat-label">hirdetés</div>
+                        </div>
+                      )}
+                      {serverLocationContent.stats.medianPricePerSqm && (
+                        <div className="stat-card">
+                          <div className="stat-number">{Math.round(serverLocationContent.stats.medianPricePerSqm).toLocaleString()} Ft</div>
+                          <div className="stat-label">medián nm ár</div>
+                        </div>
+                      )}
+                      {serverLocationContent.stats.medianPrice && (
+                        <div className="stat-card">
+                          <div className="stat-number">{Math.round(serverLocationContent.stats.medianPrice / 1000000)}M Ft</div>
+                          <div className="stat-label">medián ár</div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {serverLocationContent.content?.mainContent && (
+                    <div className="seo-generated-content" dangerouslySetInnerHTML={{ __html: serverLocationContent.content.mainContent }} />
+                  )}
+                </>
+              ) : !urlLocation ? (
+                <>
+                  <h1 className="seo-h1">Keress ingatlant valós idejű térképen</h1>
+                  <p className="seo-intro">Több tízezer friss eladó és kiadó ingatlan Magyarországon – pontos szűrőkkel és interaktív térképpel.</p>
+                  <div className="seo-cta-buttons">
+                    <a href="/elado/lakas" className="btn-primary">Eladó lakások →</a>
+                    <a href="/kiado/lakas" className="btn-secondary">Kiadó lakások →</a>
+                    <a href="/elado/haz" className="btn-tertiary">Eladó házak →</a>
                   </div>
-                )}
-                {serverLocationContent.stats.medianPricePerSqm && (
-                  <div className="stat-card">
-                    <div className="stat-number">{Math.round(serverLocationContent.stats.medianPricePerSqm).toLocaleString()} Ft</div>
-                    <div className="stat-label">medián nm ár</div>
-                  </div>
-                )}
-                {serverLocationContent.stats.medianPrice && (
-                  <div className="stat-card">
-                    <div className="stat-number">{Math.round(serverLocationContent.stats.medianPrice / 1000000)}M Ft</div>
-                    <div className="stat-label">medián ár</div>
-                  </div>
-                )}
-              </div>
-            )}
-            {serverLocationContent.content?.mainContent && (
-              <div className="seo-generated-content" dangerouslySetInnerHTML={{ __html: serverLocationContent.content.mainContent }} />
-            )}
-          </>
-        ) : !urlLocation ? (
-          <>
-            <h1 className="seo-h1">Keress ingatlant valós idejű térképen</h1>
-            <p className="seo-intro">Több tízezer friss eladó és kiadó ingatlan Magyarországon – pontos szűrőkkel és interaktív térképpel.</p>
-            <div className="seo-cta-buttons">
-              <a href="/elado/lakas" className="btn-primary">Eladó lakások →</a>
-              <a href="/kiado/lakas" className="btn-secondary">Kiadó lakások →</a>
-              <a href="/elado/haz" className="btn-tertiary">Eladó házak →</a>
+                </>
+              ) : null}
             </div>
-          </>
-        ) : null}
-      </div>
-      </div>
-      </div>
-        
-        {/* 🔴🔴🔴 A SEO szekciót TELJESEN KIVETTÜK 🔴🔴🔴 */}
+          </div>
+        </div>
         
         <footer className="app-footer">
           <div className="footer-main">
@@ -1068,8 +1039,6 @@ const createCustomIcon = (price: number) => {
           </div>
         </footer>
       </div>
-
-      
     </div>
   );
 }
