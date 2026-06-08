@@ -124,55 +124,6 @@ export default async function Page({ params }: PageProps) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       
-      {/* SEO tartalom - server side rendered */}
-      <div className="seo-below-map-section" style={{ position: 'relative', zIndex: 10, background: 'white' }}>
-        <div className="container relative z-10 mx-auto px-4 py-12 max-w-7xl">
-          <div className="article-wrapper bg-white rounded-2xl shadow-lg border border-gray-200 p-6 md:p-10">
-            {city && locationContent ? (
-              <>
-                <h1 className="seo-h1">
-                  {locationContent.seo?.h1 || `Eladó ${type === 'lakas' ? 'lakások' : 'házak'} ${city}`}
-                </h1>
-                {locationContent.stats && (
-                  <div className="stats-cards">
-                    {locationContent.stats.listingCount && (
-                      <div className="stat-card">
-                        <div className="stat-number">{locationContent.stats.listingCount}</div>
-                        <div className="stat-label">hirdetés</div>
-                      </div>
-                    )}
-                    {locationContent.stats.medianPricePerSqm && (
-                      <div className="stat-card">
-                        <div className="stat-number">{Math.round(locationContent.stats.medianPricePerSqm).toLocaleString()} Ft</div>
-                        <div className="stat-label">medián nm ár</div>
-                      </div>
-                    )}
-                    {locationContent.stats.medianPrice && (
-                      <div className="stat-card">
-                        <div className="stat-number">{Math.round(locationContent.stats.medianPrice / 1000000)}M Ft</div>
-                        <div className="stat-label">medián ár</div>
-                      </div>
-                    )}
-                  </div>
-                )}
-                {locationContent.content?.mainContent && (
-                  <div className="seo-generated-content" dangerouslySetInnerHTML={{ __html: locationContent.content.mainContent }} />
-                )}
-              </>
-            ) : !city ? (
-              <>
-                <h1 className="seo-h1">Keress ingatlant valós idejű térképen</h1>
-                <p className="seo-intro">Több tízezer friss eladó és kiadó ingatlan Magyarországon – pontos szűrőkkel és interaktív térképpel.</p>
-                <div className="seo-cta-buttons">
-                  <a href="/elado/lakas" className="btn-primary">Eladó lakások →</a>
-                  <a href="/kiado/lakas" className="btn-secondary">Kiadó lakások →</a>
-                  <a href="/elado/haz" className="btn-tertiary">Eladó házak →</a>
-                </div>
-              </>
-            ) : null}
-          </div>
-        </div>
-      </div>
       
       {/* Client wrapper komponens */}
       <HomePageContentWrapper 
