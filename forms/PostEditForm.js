@@ -1,23 +1,10 @@
+// forms/PostEditForm.js
+'use client';
+
 import React, { useState, useEffect, useRef } from 'react';
-import L from 'leaflet';
-import 'leaflet-draw';
 import { geocodeAddress } from '../utils/geocodeAddress';
 import '../styles/PostEditForm.css';
-import 'leaflet/dist/leaflet.css';
-import 'leaflet-draw/dist/leaflet.draw.css';
 import { debounce } from 'lodash';
-
-// Leaflet alapértelmezett ikonok konfigurálása
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconUrl: '/images/marker-icon.png',
-  iconRetinaUrl: '/images/marker-icon-2x.png',
-  shadowUrl: '/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
 
 const PostEditForm = ({ postId, postData, onSave, onCancel }) => {
   const [title, setTitle] = useState(postData.title || '');
@@ -46,6 +33,7 @@ const PostEditForm = ({ postId, postData, onSave, onCancel }) => {
   const [areaPolygon, setAreaPolygon] = useState(postData.geolocation?.area_polygon || []);
   const [locationMode, setLocationMode] = useState('radius');
   const [errorMessage, setErrorMessage] = useState('');
+  const [isMapReady, setIsMapReady] = useState(false);
 
   const mapRef = useRef(null);
   const drawnItemsRef = useRef(null);
@@ -63,37 +51,164 @@ const PostEditForm = ({ postId, postData, onSave, onCancel }) => {
     }, 100)
   ).current;
 
-  // Térkép inicializálása egyszer
+  // Csak client oldalon inicializáljuk a Leaflet-et
   useEffect(() => {
-    const mapContainer = document.getElementById('post-edit-map-container');
-    if (!mapContainer) {
-      console.error('Map container not found');
-      return;
-    }
+    // Ellenőrizzük, hogy client oldalon vagyunk-e
+    if (typeof window === 'undefined') return;
 
-    if (!mapRef.current) {
-      mapRef.current = L.map('post-edit-map-container').setView([lat, lon], 13);
+    const initLeaflet = async () => {
+      // Dinamikusan importáljuk a Leaflet-et
+      const L = (await import('leaflet')).default;
+      await import('leaflet-draw');
+      
+      // CSS-ek dinamikus importálása (ha szükséges)
+      await import('leaflet/dist/leaflet.css');
+      await import('leaflet-draw/dist/leaflet.draw.css');
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        subdomains: 'abc',
-        maxZoom: 19,
-      }).addTo(mapRef.current);
-
-      // L.FeatureGroup használata L.LayerGroup helyett
-      drawnItemsRef.current = new L.FeatureGroup();
-      mapRef.current.addLayer(drawnItemsRef.current);
-
-      // Marker inicializálása
-      markerRef.current = L.marker([lat, lon], {
-        draggable: true,
-        icon: new L.Icon.Default(), // Explicit módon használjuk az alapértelmezett ikont
-      }).addTo(drawnItemsRef.current);
-
-      markerRef.current.on('dragend', (e) => {
-        const { lat: newLat, lng: newLng } = e.target.getLatLng();
-        debouncedSetLatLon(newLat, newLng);
+      // Leaflet alapértelmezett ikonok konfigurálása
+      delete L.Icon.Default.prototype._getIconUrl;
+      L.Icon.Default.mergeOptions({
+        iconUrl: '/images/marker-icon.png',
+        iconRetinaUrl: '/images/marker-icon-2x.png',
+        shadowUrl: '/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41],
       });
+
+      const mapContainer = document.getElementById('post-edit-map-container');
+      if (!mapContainer) {
+        console.error('Map container not found');
+        return;
+      }
+
+      if (!mapRef.current) {
+        mapRef.current = L.map('post-edit-map-container').setView([lat, lon], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          subdomains: 'abc',
+          maxZoom: 19,
+        }).addTo(mapRef.current);
+
+        drawnItemsRef.current = new L.FeatureGroup();
+        mapRef.current.addLayer(drawnItemsRef.current);
+
+        markerRef.current = L.marker([lat, lon], {
+          draggable: true,
+          icon: new L.Icon.Default(),
+        }).addTo(drawnItemsRef.current);
+
+        markerRef.current.on('dragend', (e) => {
+          const { lat: newLat, lng: newLng } = e.target.getLatLng();
+          debouncedSetLatLon(newLat, newLng);
+        });
+
+        drawControlRef.current = new L.Control.Draw({
+          edit: { featureGroup: drawnItemsRef.current },
+          draw: {
+            polygon: locationMode === 'polygon',
+            polyline: locationMode === 'street_line',
+            rectangle: false,
+            circle: false,
+            marker: false,
+          },
+        });
+        mapRef.current.addControl(drawControlRef.current);
+
+        mapRef.current.on('draw:created', (e) => {
+          const layer = e.layer;
+          drawnItemsRef.current.clearLayers();
+          drawnItemsRef.current.addLayer(markerRef.current);
+          drawnItemsRef.current.addLayer(layer);
+
+          if (e.layerType === 'polyline') {
+            const coords = layer.getLatLngs().map((latlng) => [
+              roundCoordinate(latlng.lng),
+              roundCoordinate(latlng.lat),
+            ]);
+            setStreetLine([coords]);
+            setAreaPolygon([]);
+            setRadius(0);
+          } else if (e.layerType === 'polygon') {
+            const coords = layer.getLatLngs()[0].map((latlng) => [
+              roundCoordinate(latlng.lng),
+              roundCoordinate(latlng.lat),
+            ]);
+            setAreaPolygon([coords]);
+            setStreetLine([]);
+            setRadius(0);
+          }
+        });
+
+        mapRef.current.on('draw:edited', (e) => {
+          e.layers.eachLayer((layer) => {
+            if (layer instanceof L.Marker) {
+              const { lat: newLat, lng: newLng } = layer.getLatLng();
+              debouncedSetLatLon(newLat, newLng);
+            } else if (layer instanceof L.Polyline && !(layer instanceof L.Polygon)) {
+              const coords = layer.getLatLngs().map((latlng) => [
+                roundCoordinate(latlng.lng),
+                roundCoordinate(latlng.lat),
+              ]);
+              setStreetLine([coords]);
+              setAreaPolygon([]);
+              setRadius(0);
+            } else if (layer instanceof L.Polygon) {
+              const coords = layer.getLatLngs()[0].map((latlng) => [
+                roundCoordinate(latlng.lng),
+                roundCoordinate(latlng.lat),
+              ]);
+              setAreaPolygon([coords]);
+              setStreetLine([]);
+              setRadius(0);
+            }
+          });
+        });
+
+        mapRef.current.on('draw:deleted', (e) => {
+          e.layers.eachLayer((layer) => {
+            if (layer instanceof L.Polyline && !(layer instanceof L.Polygon)) {
+              setStreetLine([]);
+              setRadius(100);
+            } else if (layer instanceof L.Polygon) {
+              setAreaPolygon([]);
+              setRadius(100);
+            }
+          });
+        });
+      }
+
+      setIsMapReady(true);
+    };
+
+    initLeaflet();
+
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+    };
+  }, []); // Csak egyszer fut le
+
+  // Rétegek frissítése
+  useEffect(() => {
+    if (!isMapReady || !mapRef.current || !drawnItemsRef.current || !markerRef.current) return;
+
+    const updateLayers = async () => {
+      const L = await import('leaflet').then(m => m.default);
+      
+      mapRef.current.setView([lat, lon], 13);
+
+      drawnItemsRef.current.clearLayers();
+      markerRef.current.setLatLng([lat, lon]);
+      drawnItemsRef.current.addLayer(markerRef.current);
+
+      if (drawControlRef.current) {
+        mapRef.current.removeControl(drawControlRef.current);
+      }
 
       drawControlRef.current = new L.Control.Draw({
         edit: { featureGroup: drawnItemsRef.current },
@@ -107,142 +222,43 @@ const PostEditForm = ({ postId, postData, onSave, onCancel }) => {
       });
       mapRef.current.addControl(drawControlRef.current);
 
-      mapRef.current.on('draw:created', (e) => {
-        const layer = e.layer;
-        drawnItemsRef.current.clearLayers();
-        drawnItemsRef.current.addLayer(markerRef.current);
-        drawnItemsRef.current.addLayer(layer);
+      if (locationMode === 'radius' && radius > 0) {
+        L.circle([lat, lon], {
+          radius,
+          color: '#5099ce',
+          fillColor: '#5099ce',
+          fillOpacity: 0.2,
+        }).addTo(drawnItemsRef.current);
+      }
 
-        if (e.layerType === 'polyline') {
-          const coords = layer.getLatLngs().map((latlng) => [
-            roundCoordinate(latlng.lng),
-            roundCoordinate(latlng.lat),
-          ]);
-          setStreetLine([coords]);
-          setAreaPolygon([]);
-          setRadius(0);
-        } else if (e.layerType === 'polygon') {
-          const coords = layer.getLatLngs()[0].map((latlng) => [
-            roundCoordinate(latlng.lng),
-            roundCoordinate(latlng.lat),
-          ]);
-          setAreaPolygon([coords]);
-          setStreetLine([]);
-          setRadius(0);
+      if (locationMode === 'street_line' && streetLine?.length > 0) {
+        streetLine.forEach((segment) => {
+          if (segment?.length > 0) {
+            const coordsForLeaflet = segment.map(([lon, lat]) => [lat, lon]);
+            L.polyline(coordsForLeaflet, { color: '#e74c3c', weight: 4 }).addTo(drawnItemsRef.current);
+          }
+        });
+      }
+
+      if (locationMode === 'polygon' && areaPolygon?.length > 0) {
+        let polygonCoords = Array.isArray(areaPolygon[0][0]) ? areaPolygon[0] : areaPolygon;
+        if (polygonCoords?.length > 0) {
+          try {
+            const coordsForLeaflet = polygonCoords.map(([lon, lat]) => [lat, lon]);
+            L.polygon(coordsForLeaflet, {
+              color: '#2ecc71',
+              fillColor: '#2ecc71',
+              fillOpacity: 0.3,
+            }).addTo(drawnItemsRef.current);
+          } catch (error) {
+            console.error('Hiba a poligon kirajzolásakor:', error);
+          }
         }
-      });
-
-      mapRef.current.on('draw:edited', (e) => {
-        e.layers.eachLayer((layer) => {
-          if (layer instanceof L.Marker) {
-            const { lat: newLat, lng: newLng } = layer.getLatLng();
-            debouncedSetLatLon(newLat, newLng);
-          } else if (layer instanceof L.Polyline && !(layer instanceof L.Polygon)) {
-            const coords = layer.getLatLngs().map((latlng) => [
-              roundCoordinate(latlng.lng),
-              roundCoordinate(latlng.lat),
-            ]);
-            setStreetLine([coords]);
-            setAreaPolygon([]);
-            setRadius(0);
-          } else if (layer instanceof L.Polygon) {
-            const coords = layer.getLatLngs()[0].map((latlng) => [
-              roundCoordinate(latlng.lng),
-              roundCoordinate(latlng.lat),
-            ]);
-            setAreaPolygon([coords]);
-            setStreetLine([]);
-            setRadius(0);
-          }
-        });
-      });
-
-      mapRef.current.on('draw:deleted', (e) => {
-        e.layers.eachLayer((layer) => {
-          if (layer instanceof L.Polyline && !(layer instanceof L.Polygon)) {
-            setStreetLine([]);
-            setRadius(100);
-          } else if (layer instanceof L.Polygon) {
-            setAreaPolygon([]);
-            setRadius(100);
-          }
-        });
-      });
-    }
-
-    return () => {
-      if (mapRef.current) {
-        mapRef.current.remove();
-        mapRef.current = null;
       }
     };
-  }, []); // Üres függőségi tömb: csak egyszer fut le
 
-  // Rétegek frissítése
-useEffect(() => {
-  if (!mapRef.current || !drawnItemsRef.current || !markerRef.current) return;
-
-  // Térkép nézet frissítése
-  mapRef.current.setView([lat, lon], 13);
-
-  // Rétegek törlése, de a marker megtartása
-  drawnItemsRef.current.clearLayers();
-  markerRef.current.setLatLng([lat, lon]);
-  drawnItemsRef.current.addLayer(markerRef.current);
-
-  // Draw control frissítése
-  if (drawControlRef.current) {
-    mapRef.current.removeControl(drawControlRef.current);
-  }
-
-  drawControlRef.current = new L.Control.Draw({
-    edit: { featureGroup: drawnItemsRef.current },
-    draw: {
-      polygon: locationMode === 'polygon',
-      polyline: locationMode === 'street_line',
-      rectangle: false,
-      circle: false,
-      marker: false,
-    },
-  });
-  mapRef.current.addControl(drawControlRef.current);
-
-  // Rétegek hozzáadása az aktuális mód alapján
-  if (locationMode === 'radius' && radius > 0) {
-    L.circle([lat, lon], {
-      radius,
-      color: '#5099ce',
-      fillColor: '#5099ce',
-      fillOpacity: 0.2,
-    }).addTo(drawnItemsRef.current);
-  }
-
-  if (locationMode === 'street_line' && streetLine?.length > 0) {
-    // Iterálj végig az összes vonalszakaszon
-    streetLine.forEach((segment) => {
-      if (segment?.length > 0) {
-        const coordsForLeaflet = segment.map(([lon, lat]) => [lat, lon]);
-        L.polyline(coordsForLeaflet, { color: '#e74c3c', weight: 4 }).addTo(drawnItemsRef.current);
-      }
-    });
-  }
-
-  if (locationMode === 'polygon' && areaPolygon?.length > 0) {
-    let polygonCoords = Array.isArray(areaPolygon[0][0]) ? areaPolygon[0] : areaPolygon;
-    if (polygonCoords?.length > 0) {
-      try {
-        const coordsForLeaflet = polygonCoords.map(([lon, lat]) => [lat, lon]);
-        L.polygon(coordsForLeaflet, {
-          color: '#2ecc71',
-          fillColor: '#2ecc71',
-          fillOpacity: 0.3,
-        }).addTo(drawnItemsRef.current);
-      } catch (error) {
-        console.error('Hiba a poligon kirajzolásakor:', error);
-      }
-    }
-  }
-}, [lat, lon, radius, streetLine, areaPolygon, locationMode]);
+    updateLayers();
+  }, [isMapReady, lat, lon, radius, streetLine, areaPolygon, locationMode]);
 
   const handleGeocode = async () => {
     try {
@@ -280,50 +296,50 @@ useEffect(() => {
     setAddress((prev) => ({ ...prev, [field]: value }));
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  if (!lat || !lon || isNaN(lat) || isNaN(lon)) {
-    setErrorMessage('Kérlek, válassz egy érvényes helyet a térképen (szélesség és hosszúság szükséges).');
-    return;
-  }
+    if (!lat || !lon || isNaN(lat) || isNaN(lon)) {
+      setErrorMessage('Kérlek, válassz egy érvényes helyet a térképen (szélesség és hosszúság szükséges).');
+      return;
+    }
 
-  if (lat < -90 || lat > 90) {
-    setErrorMessage('A szélesség (lat) értéke -90 és 90 között kell legyen.');
-    return;
-  }
-  if (lon < -180 || lon > 180) {
-    setErrorMessage('A hosszúság (lon) értéke -180 és 180 között kell legyen.');
-    return;
-  }
+    if (lat < -90 || lat > 90) {
+      setErrorMessage('A szélesség (lat) értéke -90 és 90 között kell legyen.');
+      return;
+    }
+    if (lon < -180 || lon > 180) {
+      setErrorMessage('A hosszúság (lon) értéke -180 és 180 között kell legyen.');
+      return;
+    }
 
-  try {
-    setErrorMessage('');
-    await onSave({
-      title,
-      description,
-      price: postData.listing_type === 'eladó' ? parseFloat(price) || 0 : undefined,
-      rental_price: postData.listing_type === 'kiadó' ? parseFloat(rentalPrice) || 0 : undefined,
-      status,
-      availability,
-      address,
-      geolocation: {
-        lat: roundCoordinate(lat),
-        lon: roundCoordinate(lon),
-        radius: locationMode === 'radius' ? radius : 0,
-        street_line: locationMode === 'street_line' ? streetLine : [], // Az összes vonalszakasz küldése
-        area_polygon: locationMode === 'polygon' ? areaPolygon : [],
-      },
-      links: {
-        ...postData.links,
-        original_listing: originalListing,
-      },
-    });
-  } catch (error) {
-    console.error('Mentési hiba:', error);
-    setErrorMessage(error.message || 'Hiba történt a mentés során. Kérlek, ellenőrizd a koordinátákat.');
-  }
-};
+    try {
+      setErrorMessage('');
+      await onSave({
+        title,
+        description,
+        price: postData.listing_type === 'eladó' ? parseFloat(price) || 0 : undefined,
+        rental_price: postData.listing_type === 'kiadó' ? parseFloat(rentalPrice) || 0 : undefined,
+        status,
+        availability,
+        address,
+        geolocation: {
+          lat: roundCoordinate(lat),
+          lon: roundCoordinate(lon),
+          radius: locationMode === 'radius' ? radius : 0,
+          street_line: locationMode === 'street_line' ? streetLine : [],
+          area_polygon: locationMode === 'polygon' ? areaPolygon : [],
+        },
+        links: {
+          ...postData.links,
+          original_listing: originalListing,
+        },
+      });
+    } catch (error) {
+      console.error('Mentési hiba:', error);
+      setErrorMessage(error.message || 'Hiba történt a mentés során. Kérlek, ellenőrizd a koordinátákat.');
+    }
+  };
 
   return (
     <div id="post-edit-form-container">

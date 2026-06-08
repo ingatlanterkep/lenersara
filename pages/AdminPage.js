@@ -1,7 +1,9 @@
+// pages/AdminPage.js - a fájl tetején
 'use client';
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import Modal from 'react-modal';
 import {
   getUsers,
@@ -14,12 +16,18 @@ import {
   updatePost,
   deleteAllUserPosts,
 } from '../services/apiService';
-import PostEditForm from '../forms/PostEditForm';
+// import PostEditForm from '../forms/PostEditForm'; // ← EZT TÖRÖLD
 import ImageGallery from '../components/ImageGallery';
 import MissingLocations from '../components/MissingLocations';
 import '../styles/AdminLayout.css';
 import '../styles/AdminPage.css';
 import '../styles/layout/DashboardLayout.css';
+
+// Dinamikus import a PostEditForm-hoz (SSR kikapcsolva)
+const PostEditForm = dynamic(
+  () => import('../forms/PostEditForm'),
+  { ssr: false, loading: () => <div className="loading">Betöltés...</div> }
+);
 
 // Next.js-ben nincs #root, használjuk a body-t
 if (typeof window !== 'undefined') {
