@@ -9,16 +9,24 @@ interface PageProps {
 export const revalidate = 3600;
 
 const POPULAR_CITIES = [
-  'budapest', 'debrecen', 'szeged', 'miskolc', 'pécs', 'győr',
-  'nyíregyháza', 'kecskemét', 'székesfehérvár', 'szombathely', 'szolnok',
-  'tatabánya', 'kaposvár', 'békéscsaba', 'érd', 'veszprém', 'zalaegerszeg',
-  'sopron', 'eger', 'nagykanizsa', 'dunaújváros', 'hódmezővásárhely',
-  'dunakeszi', 'szentendre', 'gödöllő', 'vecsés', 'gyömrő', 'monor',
-  'cegléd', 'nagykáta'
+  'budapest', 'debrecen', 'szeged', 'miskolc', 'pécs', 'győr', 'nyíregyháza', 'kecskemét', 'székesfehérvár',
+  'szombathely', 'veszprém', 'zalaegerszeg', 'kaposvár', 'tatabánya', 'sopron', 'békéscsaba',
+  'eger', 'szolnok', 'dunaújváros', 'hódmezővásárhely', 'gyula', 'salgótarján', 'szekszárd',
+  'siófok', 'keszthely', 'nagykanizsa', 'hajdúböszörmény', 'szentes', 'oroszlány', 'gyöngyös',
+  'komló', 'mosonmagyaróvár', 'pápa', 'ajka', 'balatonfüred', 'baja', 'kiskunfélegyháza',
+  'szigetszentmiklós', 'érd', 'vecsés', 'gödöllő', 'szentendre', 'vác', 'dunakeszi', 'budaörs',
+  'gyál', 'monor', 'nagykőrös', 'cegléd', 'szarvas', 'makó', 'csongrád', 'orosháza', 'mezőtúr',
+  'törökszentmiklós', 'karcag', 'tapolca', 'hévíz', 'balassagyarmat', 'esztergom', 'komárom',
+  'dorog', 'ócsa', 'piliscsaba', 'pilisvörösvár', 'pomáz', 'biatorbágy', 'nagykovácsi', 'maglód', 'ózd',
+  'kazincbarcika', 'szerencs', 'sátoraljaújhely', 'tiszaújváros', 'berettyóújfalu',
+  'püspökladány', 'marcali', 'nagyatád', 'barcs', 'sarkad', 'gyomaendrőd', 'kondoros',
+  'csorna', 'gönyű', 'letenye', 'kisvárda', 'mándok', 'vásárosnamény',
+  // Balaton környéki bővítések
+  'balatonalmádi', 'fonyód', 'balatonlelle', 'balatonboglár', 'zamárdi', 'tihany', 'badacsonytomaj',
+  'balatonföldvár', 'balatonkenese', 'balatonfűzfő', 'alsóörs', 'csopak'
 ];
 
 const COUNTIES = [
-  'budapest',
   'pest-varmegye',
   'hajdu-bihar-varmegye',
   'gyor-moson-sopron-varmegye',
