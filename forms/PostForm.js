@@ -2,8 +2,9 @@ import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'rea
 import '../styles/UploadPage.css';
 
 import LocationPicker from './LocationPicker';
-import { geocodeAddress } from '../utils/geocodeAddress';
 
+// Ahol használod, ott dinamikusan importáld:
+const geocodeAddress = (await import('../utils/geocodeAddress')).geocodeAddress;
 
 const PostForm = forwardRef(({ rentData, setRentData, propertyType, setPropertyType }, ref) => {
   const initialState = {

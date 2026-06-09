@@ -19,6 +19,58 @@ export interface LocationContent {
   propertyType?: string;
 }
 
+// services/seoService.ts - add hozzá ezt a függvényt
+
+export interface SeoQuickPost {
+  _id: string;
+  title: string;
+  price?: number;
+  rental_price?: number;
+  area?: number;
+  rooms?: number;
+  images?: Array<{ url: string }>;
+  description?: string;
+  address?: {
+    street?: string;
+    city?: string;
+    region?: string;
+    zip?: string;
+  };
+  geolocation?: {
+    lat: number;
+    lon: number;
+  };
+  created_at?: string;
+}
+
+export async function getSeoQuickList(
+  listingType: string,
+  propertyType: string,
+  locationSlug: string
+): Promise<SeoQuickPost[]> {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASEURL || 'http://localhost:5000';
+    const response = await fetch(
+      `${baseUrl}/api/posts/seo-quick-list/${listingType}/${propertyType}/${locationSlug}`,
+      { 
+        next: { revalidate: 3600 },
+        headers: { 'Cache-Control': 'no-cache' }
+      }
+    );
+    
+    if (!response.ok) {
+      if (response.status === 404) return [];
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const json = await response.json();
+    return json.success ? (json.data || []) : [];
+  } catch (error) {
+    console.error('[getSeoQuickList] Hiba:', error);
+    return [];
+  }
+}
+
 export async function getLocationContent(
   listingType: string, 
   propertyType: string, 
