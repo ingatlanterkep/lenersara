@@ -94,7 +94,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   
   let title = `${listingType === 'elado' ? 'Eladó' : 'Kiadó'} ${type === 'lakas' ? 'lakások' : 'házak'} - Ingatlan-Térkép`;
   let description = `Keress ${listingType === 'elado' ? 'eladó' : 'kiadó'} ${type === 'lakas' ? 'lakásokat' : 'házakat'} Magyarország térképén.`;
-  let canonicalUrl = `https://ingatlan-terkep.hu/${listingType}/${type}`;
+// Javasolt:
+let canonicalUrl = `https://ingatlan-terkep.hu/${listingType}/${type}`;
+if (city) {
+  canonicalUrl = `https://ingatlan-terkep.hu/${listingType}/${type}/${city}`;
+}
   
   if (city) {
     try {
