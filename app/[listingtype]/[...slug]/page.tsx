@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation';
 
 interface PageProps {
   params: Promise<{ 
-    listingType: string;
+    listingtype: string;  // ← listingtype (kisbetű)
     slug: string[];
   }>;
 }
@@ -16,7 +16,7 @@ export const revalidate = 3600;
 const VALID_LISTING_TYPES = ['elado', 'kiado'];
 const VALID_PROPERTY_TYPES = ['lakas', 'haz', 'iroda', 'telek'];
 
-// Konstansok (egy helyen)
+// Konstansok (ugyanazok, mint előtte)
 const POPULAR_CITIES = [
   'budapest', 'debrecen', 'szeged', 'miskolc', 'pécs', 'győr', 'nyíregyháza', 'kecskemét', 'székesfehérvár',
   'szombathely', 'veszprém', 'zalaegerszeg', 'kaposvár', 'tatabánya', 'sopron', 'békéscsaba',
@@ -68,7 +68,6 @@ const budapestDistricts = [
   'budapest-xxii-kerulet', 'budapest-xxiii-kerulet'
 ];
 
-// Helper: location-ök generálása (városok + kerületek + megyék)
 function getAllLocations() {
   return [...POPULAR_CITIES, ...budapestDistricts, ...COUNTIES];
 }
@@ -79,16 +78,15 @@ export async function generateStaticParams() {
   for (const listingType of VALID_LISTING_TYPES) {
     for (const propertyType of VALID_PROPERTY_TYPES) {
       // /elado/lakas
-      params.push({ listingType, slug: [propertyType] });
+      params.push({ listingtype: listingType, slug: [propertyType] });
       // /elado/lakas/lista
-      params.push({ listingType, slug: [propertyType, 'lista'] });
+      params.push({ listingtype: listingType, slug: [propertyType, 'lista'] });
       
-      // Városok, kerületek, megyék
       for (const location of getAllLocations()) {
         // /elado/lakas/budapest
-        params.push({ listingType, slug: [propertyType, location] });
+        params.push({ listingtype: listingType, slug: [propertyType, location] });
         // /elado/lakas/budapest/lista
-        params.push({ listingType, slug: [propertyType, location, 'lista'] });
+        params.push({ listingtype: listingType, slug: [propertyType, location, 'lista'] });
       }
     }
   }
@@ -97,7 +95,6 @@ export async function generateStaticParams() {
   return params;
 }
 
-// Helper a szöveges tartalmakhoz
 function getTypeDisplayName(type: string): string {
   const names: Record<string, string> = {
     lakas: 'lakások',
@@ -112,7 +109,6 @@ function getListingTypeText(listingType: string): string {
   return listingType === 'elado' ? 'eladó' : 'kiadó';
 }
 
-// Helper: kinyeri a type-ot a slug-ból
 function extractTypeAndLocation(slug: string[]): { type: string | null; city: string | null; viewMode: 'map' | 'list' } {
   if (!slug || slug.length === 0) {
     return { type: null, city: null, viewMode: 'map' };
@@ -132,7 +128,6 @@ function extractTypeAndLocation(slug: string[]): { type: string | null; city: st
       }
     }
   } else if (slug.length === 1 && slug[0] === 'lista') {
-    // Ez a /elado/lista eset (ha van ilyen)
     viewMode = 'list';
   }
   
@@ -140,32 +135,30 @@ function extractTypeAndLocation(slug: string[]): { type: string | null; city: st
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { listingType, slug } = await params;
+  const { listingtype, slug } = await params;
   
-  // Validáció: listingType ellenőrzése
-  if (!VALID_LISTING_TYPES.includes(listingType)) {
+  if (!VALID_LISTING_TYPES.includes(listingtype)) {
     return { title: 'Oldal nem található' };
   }
   
   const { type, city } = extractTypeAndLocation(slug);
   
-  // Validáció: type ellenőrzése
   if (!type || !VALID_PROPERTY_TYPES.includes(type)) {
     return { title: 'Oldal nem található' };
   }
   
   const typeDisplayName = getTypeDisplayName(type);
-  const listingText = getListingTypeText(listingType);
+  const listingText = getListingTypeText(listingtype);
   
   let title = `${listingText} ${typeDisplayName} - Ingatlan-Térkép`;
   let description = `Keress ${listingText} ${typeDisplayName} Magyarország térképén.`;
-  let canonicalUrl = `https://ingatlan-terkep.hu/${listingType}/${type}`;
+  let canonicalUrl = `https://ingatlan-terkep.hu/${listingtype}/${type}`;
   
   if (city) {
-    canonicalUrl = `https://ingatlan-terkep.hu/${listingType}/${type}/${city}`;
+    canonicalUrl = `https://ingatlan-terkep.hu/${listingtype}/${type}/${city}`;
     
     try {
-      const locationContent = await getLocationContent(listingType, type, city);
+      const locationContent = await getLocationContent(listingtype, type, city);
       if (locationContent?.seo) {
         if (locationContent.seo.title) title = locationContent.seo.title;
         if (locationContent.seo.metaDescription) description = locationContent.seo.metaDescription;
@@ -191,7 +184,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-// JSON-LD generátorok
 function generateOrganizationJsonLd() {
   return {
     "@context": "https://schema.org",
@@ -316,10 +308,10 @@ function generateItemListJsonLd(seoQuickPosts: any[], listingType: string, type:
 
 // Fő komponens
 export default async function Page({ params }: PageProps) {
-  const { listingType, slug } = await params;
+  const { listingtype, slug } = await params;
   
-  // Validáció: listingType
-  if (!VALID_LISTING_TYPES.includes(listingType)) {
+  // Validáció: listingtype
+  if (!VALID_LISTING_TYPES.includes(listingtype)) {
     notFound();
   }
   
@@ -335,10 +327,10 @@ export default async function Page({ params }: PageProps) {
   
   if (city) {
     try {
-      locationContent = await getLocationContent(listingType, type, city);
+      locationContent = await getLocationContent(listingtype, type, city);
       const baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASEURL || 'http://localhost:5000';
       const seoResponse = await fetch(
-        `${baseUrl}/api/posts/seo-quick-list/${listingType}/${type}/${city}`,
+        `${baseUrl}/api/posts/seo-quick-list/${listingtype}/${type}/${city}`,
         { next: { revalidate: 3600 } }
       );
       const seoJson = await seoResponse.json();
@@ -349,7 +341,7 @@ export default async function Page({ params }: PageProps) {
   }
   
   const organizationJsonLd = generateOrganizationJsonLd();
-  const itemListJsonLd = generateItemListJsonLd(seoQuickPosts, listingType, type, city);
+  const itemListJsonLd = generateItemListJsonLd(seoQuickPosts, listingtype, type, city);
   
   return (
     <>
@@ -366,7 +358,7 @@ export default async function Page({ params }: PageProps) {
       )}
       
       <HomePageContentWrapper 
-        listingType={listingType}
+        listingType={listingtype}
         type={type}
         city={city}
         viewModeDefault={viewMode}
