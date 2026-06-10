@@ -1,5 +1,7 @@
 import { getLocationContent } from '@/services/seoService';
 import HomePageContentWrapper from '@/components/HomePageContentWrapper';
+import RelatedLinks from '@/components/HomePageRelatedLinks';
+
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
@@ -343,28 +345,38 @@ export default async function Page({ params }: PageProps) {
   const organizationJsonLd = generateOrganizationJsonLd();
   const itemListJsonLd = generateItemListJsonLd(seoQuickPosts, listingtype, type, city);
   
-  return (
-    <>
+ // Fő komponens return része
+return (
+  <>
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+    />
+    
+    {itemListJsonLd && (
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
       />
-      
-      {itemListJsonLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
-        />
-      )}
-      
-      <HomePageContentWrapper 
+    )}
+    
+    <HomePageContentWrapper 
+      listingType={listingtype}
+      type={type}
+      city={city}
+      viewModeDefault={viewMode}
+      serverLocationContent={locationContent}
+      serverSeoQuickPosts={seoQuickPosts}
+    />
+    
+    {/* 🔥 Belső linkek komponens */}
+    <div className="container mx-auto px-4 max-w-7xl mt-8">
+      <RelatedLinks 
         listingType={listingtype}
         type={type}
         city={city}
-        viewModeDefault={viewMode}
-        serverLocationContent={locationContent}
-        serverSeoQuickPosts={seoQuickPosts}
       />
-    </>
-  );
+    </div>
+  </>
+);
 }
