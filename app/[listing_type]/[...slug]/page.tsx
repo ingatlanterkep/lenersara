@@ -1,5 +1,3 @@
-// app/[listingType]/[type]/[[...slug]]/page.tsx
-
 import { getLocationContent } from '@/services/seoService';
 import HomePageContentWrapper from '@/components/HomePageContentWrapper';
 import { Metadata } from 'next';
@@ -7,9 +5,8 @@ import { notFound } from 'next/navigation';
 
 interface PageProps {
   params: Promise<{ 
-    listingType: string; 
-    type: string; 
-    slug?: string[] 
+    listingType: string;
+    slug: string[];
   }>;
 }
 
@@ -30,7 +27,7 @@ const POPULAR_CITIES = [
   'gyál', 'monor', 'nagykőrös', 'cegléd', 'szarvas', 'makó', 'csongrád', 'orosháza', 'mezőtúr',
   'törökszentmiklós', 'karcag', 'tapolca', 'hévíz', 'balassagyarmat', 'esztergom', 'komárom',
   'dorog', 'ócsa', 'piliscsaba', 'pilisvörösvár', 'pomáz', 'biatorbágy', 'nagykovácsi', 'maglód', 'ózd',
-  'kazincbarcika', 'szerencs', 'sátoraljaújhely', 'tiszaújváros', 'berettyóújfalu',
+  'kazincbarcika', 'szerencs', 'sátoraljaújhely', 'tiszaújváros', 'berettyújfalu',
   'püspökladány', 'marcali', 'nagyatád', 'barcs', 'sarkad', 'gyomaendrőd', 'kondoros',
   'csorna', 'gönyű', 'letenye', 'kisvárda', 'mándok', 'vásárosnamény',
   'balatonalmádi', 'fonyód', 'balatonlelle', 'balatonboglár', 'zamárdi', 'tihany', 'badacsonytomaj',
@@ -81,14 +78,17 @@ export async function generateStaticParams() {
   
   for (const listingType of VALID_LISTING_TYPES) {
     for (const propertyType of VALID_PROPERTY_TYPES) {
-      // Alap URL-ek: /elado/lakas, /elado/lakas/lista
-      params.push({ listingType, type: propertyType, slug: [] });
-      params.push({ listingType, type: propertyType, slug: ['lista'] });
+      // /elado/lakas
+      params.push({ listingType, slug: [propertyType] });
+      // /elado/lakas/lista
+      params.push({ listingType, slug: [propertyType, 'lista'] });
       
       // Városok, kerületek, megyék
       for (const location of getAllLocations()) {
-        params.push({ listingType, type: propertyType, slug: [location] });
-        params.push({ listingType, type: propertyType, slug: [location, 'lista'] });
+        // /elado/lakas/budapest
+        params.push({ listingType, slug: [propertyType, location] });
+        // /elado/lakas/budapest/lista
+        params.push({ listingType, slug: [propertyType, location, 'lista'] });
       }
     }
   }
@@ -108,22 +108,52 @@ function getTypeDisplayName(type: string): string {
   return names[type] || 'ingatlanok';
 }
 
-function getListingTypeText(listingType: string, isPlural: boolean = true): string {
-  if (listingType === 'elado') {
-    return isPlural ? 'eladó' : 'eladó';
+function getListingTypeText(listingType: string): string {
+  return listingType === 'elado' ? 'eladó' : 'kiadó';
+}
+
+// Helper: kinyeri a type-ot a slug-ból
+function extractTypeAndLocation(slug: string[]): { type: string | null; city: string | null; viewMode: 'map' | 'list' } {
+  if (!slug || slug.length === 0) {
+    return { type: null, city: null, viewMode: 'map' };
   }
-  return isPlural ? 'kiadó' : 'kiadó';
+  
+  const type = slug[0];
+  let city: string | null = null;
+  let viewMode: 'map' | 'list' = 'map';
+  
+  if (slug.length > 1) {
+    if (slug[1] === 'lista') {
+      viewMode = 'list';
+    } else {
+      city = slug[1];
+      if (slug.length > 2 && slug[2] === 'lista') {
+        viewMode = 'list';
+      }
+    }
+  } else if (slug.length === 1 && slug[0] === 'lista') {
+    // Ez a /elado/lista eset (ha van ilyen)
+    viewMode = 'list';
+  }
+  
+  return { type, city, viewMode };
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { listingType, type, slug } = await params;
+  const { listingType, slug } = await params;
   
-  // Validáció
-  if (!VALID_LISTING_TYPES.includes(listingType) || !VALID_PROPERTY_TYPES.includes(type)) {
+  // Validáció: listingType ellenőrzése
+  if (!VALID_LISTING_TYPES.includes(listingType)) {
     return { title: 'Oldal nem található' };
   }
   
-  const city = slug?.[0] || null;
+  const { type, city } = extractTypeAndLocation(slug);
+  
+  // Validáció: type ellenőrzése
+  if (!type || !VALID_PROPERTY_TYPES.includes(type)) {
+    return { title: 'Oldal nem található' };
+  }
+  
   const typeDisplayName = getTypeDisplayName(type);
   const listingText = getListingTypeText(listingType);
   
@@ -161,7 +191,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-// JSON-LD generátorok (egy példányban)
+// JSON-LD generátorok
 function generateOrganizationJsonLd() {
   return {
     "@context": "https://schema.org",
@@ -286,19 +316,18 @@ function generateItemListJsonLd(seoQuickPosts: any[], listingType: string, type:
 
 // Fő komponens
 export default async function Page({ params }: PageProps) {
-  const { listingType, type, slug } = await params;
+  const { listingType, slug } = await params;
   
-  // 🔥 Validáció: ha érvénytelen a listingType vagy type, 404
-  if (!VALID_LISTING_TYPES.includes(listingType) || !VALID_PROPERTY_TYPES.includes(type)) {
+  // Validáció: listingType
+  if (!VALID_LISTING_TYPES.includes(listingType)) {
     notFound();
   }
   
-  const city = slug?.[0] || null;
-  let viewMode: 'map' | 'list' = 'map';
+  const { type, city, viewMode } = extractTypeAndLocation(slug || []);
   
-  if (slug && slug.length > 0) {
-    if (slug[0] === 'lista') viewMode = 'list';
-    else if (slug.length > 1 && slug[1] === 'lista') viewMode = 'list';
+  // Validáció: type
+  if (!type || !VALID_PROPERTY_TYPES.includes(type)) {
+    notFound();
   }
   
   let locationContent = null;
