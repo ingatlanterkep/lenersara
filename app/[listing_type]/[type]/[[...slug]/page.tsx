@@ -1,13 +1,25 @@
+// app/[listingType]/[type]/[[...slug]]/page.tsx
+
 import { getLocationContent } from '@/services/seoService';
 import HomePageContentWrapper from '@/components/HomePageContentWrapper';
 import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
 interface PageProps {
-  params: Promise<{ slug?: string[] }>;
+  params: Promise<{ 
+    listingType: string; 
+    type: string; 
+    slug?: string[] 
+  }>;
 }
 
 export const revalidate = 3600;
 
+// Valid listing type-ok
+const VALID_LISTING_TYPES = ['elado', 'kiado'];
+const VALID_PROPERTY_TYPES = ['lakas', 'haz', 'iroda', 'telek'];
+
+// Konstansok (egy helyen)
 const POPULAR_CITIES = [
   'budapest', 'debrecen', 'szeged', 'miskolc', 'pécs', 'győr', 'nyíregyháza', 'kecskemét', 'székesfehérvár',
   'szombathely', 'veszprém', 'zalaegerszeg', 'kaposvár', 'tatabánya', 'sopron', 'békéscsaba',
@@ -21,12 +33,12 @@ const POPULAR_CITIES = [
   'kazincbarcika', 'szerencs', 'sátoraljaújhely', 'tiszaújváros', 'berettyóújfalu',
   'püspökladány', 'marcali', 'nagyatád', 'barcs', 'sarkad', 'gyomaendrőd', 'kondoros',
   'csorna', 'gönyű', 'letenye', 'kisvárda', 'mándok', 'vásárosnamény',
-  // Balaton környéki bővítések
   'balatonalmádi', 'fonyód', 'balatonlelle', 'balatonboglár', 'zamárdi', 'tihany', 'badacsonytomaj',
   'balatonföldvár', 'balatonkenese', 'balatonfűzfő', 'alsóörs', 'csopak'
 ];
 
 const COUNTIES = [
+  'budapest',
   'pest-varmegye',
   'hajdu-bihar-varmegye',
   'gyor-moson-sopron-varmegye',
@@ -48,8 +60,6 @@ const COUNTIES = [
   'jasz-nagykun-szolnok-varmegye'
 ];
 
-const PROPERTY_TYPES = ['lakas', 'haz'];
-
 const budapestDistricts = [
   'budapest-i-kerulet', 'budapest-ii-kerulet', 'budapest-iii-kerulet',
   'budapest-iv-kerulet', 'budapest-v-kerulet', 'budapest-vi-kerulet',
@@ -61,54 +71,69 @@ const budapestDistricts = [
   'budapest-xxii-kerulet', 'budapest-xxiii-kerulet'
 ];
 
+// Helper: location-ök generálása (városok + kerületek + megyék)
+function getAllLocations() {
+  return [...POPULAR_CITIES, ...budapestDistricts, ...COUNTIES];
+}
+
 export async function generateStaticParams() {
   const params = [];
   
-  for (const propertyType of PROPERTY_TYPES) {
-    params.push({ slug: [propertyType] });
-    params.push({ slug: [propertyType, 'lista'] });
-  }
-  
-  for (const propertyType of PROPERTY_TYPES) {
-    for (const city of POPULAR_CITIES) {
-      params.push({ slug: [propertyType, city] });
-      params.push({ slug: [propertyType, city, 'lista'] });
+  for (const listingType of VALID_LISTING_TYPES) {
+    for (const propertyType of VALID_PROPERTY_TYPES) {
+      // Alap URL-ek: /elado/lakas, /elado/lakas/lista
+      params.push({ listingType, type: propertyType, slug: [] });
+      params.push({ listingType, type: propertyType, slug: ['lista'] });
+      
+      // Városok, kerületek, megyék
+      for (const location of getAllLocations()) {
+        params.push({ listingType, type: propertyType, slug: [location] });
+        params.push({ listingType, type: propertyType, slug: [location, 'lista'] });
+      }
     }
   }
   
-  for (const propertyType of PROPERTY_TYPES) {
-    for (const district of budapestDistricts) {
-      params.push({ slug: [propertyType, district] });
-      params.push({ slug: [propertyType, district, 'lista'] });
-    }
-  }
-  
-  for (const propertyType of PROPERTY_TYPES) {
-    for (const county of COUNTIES) {
-      params.push({ slug: [propertyType, county] });
-      params.push({ slug: [propertyType, county, 'lista'] });
-    }
-  }
-  
-  console.log(`[Eladó generateStaticParams] ${params.length} oldal generálása build-kor`);
+  console.log(`[generateStaticParams] ${params.length} oldal generálása build-kor`);
   return params;
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params;
-  const listingType = 'elado';
-  const type = slug?.[0] || 'lakas';
-  const city = slug?.[1] || null;
-  
-  let title = `${listingType === 'elado' ? 'Eladó' : 'Kiadó'} ${type === 'lakas' ? 'lakások' : 'házak'} - Ingatlan-Térkép`;
-  let description = `Keress ${listingType === 'elado' ? 'eladó' : 'kiadó'} ${type === 'lakas' ? 'lakásokat' : 'házakat'} Magyarország térképén.`;
-// Javasolt:
-let canonicalUrl = `https://ingatlan-terkep.hu/${listingType}/${type}`;
-if (city) {
-  canonicalUrl = `https://ingatlan-terkep.hu/${listingType}/${type}/${city}`;
+// Helper a szöveges tartalmakhoz
+function getTypeDisplayName(type: string): string {
+  const names: Record<string, string> = {
+    lakas: 'lakások',
+    haz: 'házak',
+    iroda: 'irodák',
+    telek: 'telkek'
+  };
+  return names[type] || 'ingatlanok';
 }
+
+function getListingTypeText(listingType: string, isPlural: boolean = true): string {
+  if (listingType === 'elado') {
+    return isPlural ? 'eladó' : 'eladó';
+  }
+  return isPlural ? 'kiadó' : 'kiadó';
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { listingType, type, slug } = await params;
+  
+  // Validáció
+  if (!VALID_LISTING_TYPES.includes(listingType) || !VALID_PROPERTY_TYPES.includes(type)) {
+    return { title: 'Oldal nem található' };
+  }
+  
+  const city = slug?.[0] || null;
+  const typeDisplayName = getTypeDisplayName(type);
+  const listingText = getListingTypeText(listingType);
+  
+  let title = `${listingText} ${typeDisplayName} - Ingatlan-Térkép`;
+  let description = `Keress ${listingText} ${typeDisplayName} Magyarország térképén.`;
+  let canonicalUrl = `https://ingatlan-terkep.hu/${listingType}/${type}`;
   
   if (city) {
+    canonicalUrl = `https://ingatlan-terkep.hu/${listingType}/${type}/${city}`;
+    
     try {
       const locationContent = await getLocationContent(listingType, type, city);
       if (locationContent?.seo) {
@@ -136,7 +161,7 @@ if (city) {
   };
 }
 
-// 🔥 ÚJ: JSON-LD generáló függvény - pontosan úgy, mint a régi kódban
+// JSON-LD generátorok (egy példányban)
 function generateOrganizationJsonLd() {
   return {
     "@context": "https://schema.org",
@@ -144,9 +169,7 @@ function generateOrganizationJsonLd() {
     "name": "Ingatlan-Térkép",
     "url": "https://ingatlan-terkep.hu",
     "logo": "https://ingatlan-terkep.hu/logo.png",
-    "sameAs": [
-      "https://www.facebook.com/people/Ingatlan-T%C3%A9rk%C3%A9p/61574143888873/"
-    ]
+    "sameAs": ["https://www.facebook.com/people/Ingatlan-T%C3%A9rk%C3%A9p/61574143888873/"]
   };
 }
 
@@ -174,8 +197,11 @@ function generateItemListJsonLd(seoQuickPosts: any[], listingType: string, type:
     return loc.charAt(0).toUpperCase() + loc.slice(1).replace(/-/g, ' ');
   };
 
+  const listingText = getListingTypeText(listingType);
+  const typeDisplayName = getTypeDisplayName(type);
+  
   const listName = city
-    ? `Friss ${listingType === 'elado' ? 'eladó' : 'kiadó'} ${type === 'lakas' ? 'lakások' : 'házak'} ${formatLocationName(city)}`
+    ? `Friss ${listingText} ${typeDisplayName} ${formatLocationName(city)}`
     : "Friss ingatlanhirdetések – Ingatlan-Térkép";
 
   const items = seoQuickPosts.filter(post => {
@@ -185,7 +211,7 @@ function generateItemListJsonLd(seoQuickPosts: any[], listingType: string, type:
     return rawPrice > 0 && area >= 15 && rooms >= 1;
   });
 
-  const jsonLd = {
+  return {
     "@context": "https://schema.org",
     "@type": "ItemList",
     "@id": "https://ingatlan-terkep.hu/#property-list",
@@ -256,21 +282,23 @@ function generateItemListJsonLd(seoQuickPosts: any[], listingType: string, type:
       return item;
     })
   };
-
-  return jsonLd;
 }
 
-// Fő komponens (Server Component)
+// Fő komponens
 export default async function Page({ params }: PageProps) {
-  const { slug } = await params;
-  const listingType = 'elado';
-  const type = slug?.[0] || 'lakas';
-  const city = slug?.[1] || null;
+  const { listingType, type, slug } = await params;
+  
+  // 🔥 Validáció: ha érvénytelen a listingType vagy type, 404
+  if (!VALID_LISTING_TYPES.includes(listingType) || !VALID_PROPERTY_TYPES.includes(type)) {
+    notFound();
+  }
+  
+  const city = slug?.[0] || null;
   let viewMode: 'map' | 'list' = 'map';
   
-  if (slug && slug.length > 1) {
-    if (slug[1] === 'lista') viewMode = 'list';
-    else if (slug.length > 2 && slug[2] === 'lista') viewMode = 'list';
+  if (slug && slug.length > 0) {
+    if (slug[0] === 'lista') viewMode = 'list';
+    else if (slug.length > 1 && slug[1] === 'lista') viewMode = 'list';
   }
   
   let locationContent = null;
@@ -291,19 +319,16 @@ export default async function Page({ params }: PageProps) {
     }
   }
   
-  // JSON-LD-k generálása (pont úgy, mint a régi kódban)
   const organizationJsonLd = generateOrganizationJsonLd();
   const itemListJsonLd = generateItemListJsonLd(seoQuickPosts, listingType, type, city);
   
   return (
     <>
-      {/* Organization JSON-LD */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
       />
       
-      {/* ItemList JSON-LD (friss hirdetések) - CSAK AKKOR, ha van elég hirdetés */}
       {itemListJsonLd && (
         <script
           type="application/ld+json"
@@ -311,7 +336,6 @@ export default async function Page({ params }: PageProps) {
         />
       )}
       
-      {/* Client wrapper komponens */}
       <HomePageContentWrapper 
         listingType={listingType}
         type={type}
