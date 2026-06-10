@@ -369,13 +369,16 @@ return (
       serverSeoQuickPosts={seoQuickPosts}
     />
     
-    {/* 🔥 Belső linkek komponens */}
-    <div className="container mx-auto px-4 max-w-7xl mt-8">
-      <RelatedLinks 
-        listingType={listingtype}
-        type={type}
-        city={city}
-      />
+   <div className="seo-below-map-section">
+      <div className="container relative z-10 mx-auto px-4 py-12 max-w-7xl">
+        <div className="article-wrapper bg-white rounded-2xl shadow-lg border border-gray-200 p-6 md:p-10">
+          <RelatedLinks 
+            listingType={listingtype}
+            type={type}
+            city={city}
+          />
+        </div>
+      </div>
     </div>
   </>
 );

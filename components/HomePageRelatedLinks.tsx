@@ -8,7 +8,7 @@ interface RelatedLinksProps {
   city: string | null;  // város neve vagy null
 }
 
-// Segédfüggvények - a komponens ELŐTT kell definiálni
+// Segédfüggvények
 const VALID_PROPERTY_TYPES = ['lakas', 'haz', 'iroda', 'telek'];
 
 function getTypeDisplayName(type: string): string {
@@ -44,7 +44,7 @@ const countyCities: Record<string, string[]> = {
   'Jász-Nagykun-Szolnok vármegye': ['Szolnok', 'Jászberény', 'Törökszentmiklós', 'Karcag', 'Mezőtúr', 'Kunhegyes', 'Kunszentmárton', 'Tiszafüred', 'Jászapáti', 'Újszász']
 };
 
-// Vármegye -> URL mapping (a slug formátumhoz)
+// Vármegye -> URL mapping
 const countyToSlug: Record<string, string> = {
   'Pest vármegye': 'pest-varmegye',
   'Hajdú-Bihar vármegye': 'hajdu-bihar-varmegye',
@@ -67,14 +67,13 @@ const countyToSlug: Record<string, string> = {
   'Jász-Nagykun-Szolnok vármegye': 'jasz-nagykun-szolnok-varmegye'
 };
 
-// Város -> vármegye mapping (automatikus felismeréshez)
+// Város -> vármegye mapping
 const cityToCounty: Record<string, string> = {};
 for (const [county, cities] of Object.entries(countyCities)) {
   for (const city of cities) {
     cityToCounty[city.toLowerCase()] = county;
   }
 }
-// Kézzel hozzáadott nagyvárosok
 const majorCities = ['budapest', 'debrecen', 'szeged', 'miskolc', 'pécs', 'győr', 'nyíregyháza', 'kecskemét', 'székesfehérvár'];
 for (const city of majorCities) {
   if (!cityToCounty[city]) {
@@ -111,44 +110,46 @@ export default function RelatedLinks({ listingType, type, city }: RelatedLinksPr
   const isCounty = Object.values(countyToSlug).includes(city);
   const normalizedCity = city.toLowerCase();
   
-  // 1. Ha Budapest kerület: mutassuk a többi kerületet
+  // 1. Ha Budapest kerület
   if (isDistrict) {
     const otherDistricts = budapestDistricts.filter(d => d !== city);
     
     return (
-      <div className="related-links-section">
-        <h3>Budapest kerületei</h3>
-        <div className="related-links-grid">
+      <div className="seo-main-content">
+        <h2>Budapest kerületei</h2>
+        <div className="quick-search-grid">
           {otherDistricts.map(district => (
             <Link
               key={district}
               href={`/${listingType}/${type}/${district}`}
-              className="related-link"
+              className="quick-search-btn"
             >
-              {formatLocationName(district)}
+              <span className="btn-text">{formatLocationName(district)}</span>
             </Link>
           ))}
         </div>
         
-        <h3 className="mt-4">Eladó/kiadó ingatlanok Budapesten</h3>
-        <div className="related-links-grid">
+        <h2 className="mt-4">Eladó/kiadó ingatlanok Budapesten</h2>
+        <div className="quick-search-grid">
           {VALID_PROPERTY_TYPES.filter(t => t !== type).map(otherType => (
             <Link
               key={otherType}
               href={`/${listingType}/${otherType}/budapest`}
-              className="related-link"
+              className="quick-search-btn"
             >
-              {listingType === 'elado' ? 'Eladó' : 'Kiadó'} {getTypeDisplayName(otherType)}
+              <span className="btn-text">
+                {listingType === 'elado' ? 'Eladó' : 'Kiadó'} {getTypeDisplayName(otherType)}
+              </span>
             </Link>
           ))}
           {listingType === 'elado' && (
-            <Link href={`/kiado/${type}/budapest`} className="related-link">
-              Kiadó {getTypeDisplayName(type)}
+            <Link href={`/kiado/${type}/budapest`} className="quick-search-btn">
+              <span className="btn-text">Kiadó {getTypeDisplayName(type)}</span>
             </Link>
           )}
           {listingType === 'kiado' && (
-            <Link href={`/elado/${type}/budapest`} className="related-link">
-              Eladó {getTypeDisplayName(type)}
+            <Link href={`/elado/${type}/budapest`} className="quick-search-btn">
+              <span className="btn-text">Eladó {getTypeDisplayName(type)}</span>
             </Link>
           )}
         </div>
@@ -156,47 +157,51 @@ export default function RelatedLinks({ listingType, type, city }: RelatedLinksPr
     );
   }
   
-  // 2. Ha Budapest (város)
+  // 2. Ha Budapest város
   if (city === 'budapest') {
     return (
-      <div className="related-links-section">
-        <h3>Budapest kerületei</h3>
-        <div className="related-links-grid">
+      <div className="seo-main-content">
+        <h2>Budapest kerületei</h2>
+        <div className="quick-search-grid">
           {budapestDistricts.slice(0, 12).map(district => (
             <Link
               key={district}
               href={`/${listingType}/${type}/${district}`}
-              className="related-link"
+              className="quick-search-btn"
             >
-              {formatLocationName(district)}
+              <span className="btn-text">{formatLocationName(district)}</span>
             </Link>
           ))}
         </div>
-        <div className="related-links-grid mt-2">
+        <div className="quick-search-grid mt-2">
           {budapestDistricts.slice(12).map(district => (
             <Link
               key={district}
               href={`/${listingType}/${type}/${district}`}
-              className="related-link"
+              className="quick-search-btn"
             >
-              {formatLocationName(district)}
+              <span className="btn-text">{formatLocationName(district)}</span>
             </Link>
           ))}
         </div>
         
-        <h3 className="mt-4">Eladó/kiadó ingatlanok Budapesten</h3>
-        <div className="related-links-grid">
+        <h2 className="mt-4">Eladó/kiadó ingatlanok Budapesten</h2>
+        <div className="quick-search-grid">
           {VALID_PROPERTY_TYPES.filter(t => t !== type).map(otherType => (
             <Link
               key={otherType}
               href={`/${listingType}/${otherType}/budapest`}
-              className="related-link"
+              className="quick-search-btn"
             >
-              {listingType === 'elado' ? 'Eladó' : 'Kiadó'} {getTypeDisplayName(otherType)}
+              <span className="btn-text">
+                {listingType === 'elado' ? 'Eladó' : 'Kiadó'} {getTypeDisplayName(otherType)}
+              </span>
             </Link>
           ))}
-          <Link href={`/${listingType === 'elado' ? 'kiado' : 'elado'}/${type}/budapest`} className="related-link">
-            {listingType === 'elado' ? 'Kiadó' : 'Eladó'} {getTypeDisplayName(type)}
+          <Link href={`/${listingType === 'elado' ? 'kiado' : 'elado'}/${type}/budapest`} className="quick-search-btn">
+            <span className="btn-text">
+              {listingType === 'elado' ? 'Kiadó' : 'Eladó'} {getTypeDisplayName(type)}
+            </span>
           </Link>
         </div>
       </div>
@@ -209,33 +214,37 @@ export default function RelatedLinks({ listingType, type, city }: RelatedLinksPr
     const citiesInCounty = countyCities[countyName] || [];
     
     return (
-      <div className="related-links-section">
-        <h3>{countyName} városai</h3>
-        <div className="related-links-grid">
+      <div className="seo-main-content">
+        <h2>{countyName} városai</h2>
+        <div className="quick-search-grid">
           {citiesInCounty.slice(0, 10).map(cityName => (
             <Link
               key={cityName}
               href={`/${listingType}/${type}/${cityName.toLowerCase()}`}
-              className="related-link"
+              className="quick-search-btn"
             >
-              {cityName}
+              <span className="btn-text">{cityName}</span>
             </Link>
           ))}
         </div>
         
-        <h3 className="mt-4">Ingatlantípusok {countyName}-ben</h3>
-        <div className="related-links-grid">
+        <h2 className="mt-4">Ingatlantípusok {countyName}-ben</h2>
+        <div className="quick-search-grid">
           {VALID_PROPERTY_TYPES.filter(t => t !== type).map(otherType => (
             <Link
               key={otherType}
               href={`/${listingType}/${otherType}/${city}`}
-              className="related-link"
+              className="quick-search-btn"
             >
-              {listingType === 'elado' ? 'Eladó' : 'Kiadó'} {getTypeDisplayName(otherType)}
+              <span className="btn-text">
+                {listingType === 'elado' ? 'Eladó' : 'Kiadó'} {getTypeDisplayName(otherType)}
+              </span>
             </Link>
           ))}
-          <Link href={`/${listingType === 'elado' ? 'kiado' : 'elado'}/${type}/${city}`} className="related-link">
-            {listingType === 'elado' ? 'Kiadó' : 'Eladó'} {getTypeDisplayName(type)}
+          <Link href={`/${listingType === 'elado' ? 'kiado' : 'elado'}/${type}/${city}`} className="quick-search-btn">
+            <span className="btn-text">
+              {listingType === 'elado' ? 'Kiadó' : 'Eladó'} {getTypeDisplayName(type)}
+            </span>
           </Link>
         </div>
       </div>
@@ -249,54 +258,61 @@ export default function RelatedLinks({ listingType, type, city }: RelatedLinksPr
   const countySlug = county && countyToSlug[county] ? countyToSlug[county] : null;
   
   return (
-    <div className="related-links-section">
+    <div className="seo-main-content">
       {/* Kapcsolódó városok ugyanabban a vármegyében */}
       {otherCities.length > 0 && county && county !== 'Ismeretlen' && (
         <>
-          <h3>Kapcsolódó városok {county}-ben</h3>
-          <div className="related-links-grid">
+          <h2>Kapcsolódó városok {county}-ben</h2>
+          <div className="quick-search-grid">
             {otherCities.slice(0, 8).map(cityName => (
               <Link
                 key={cityName}
                 href={`/${listingType}/${type}/${cityName.toLowerCase()}`}
-                className="related-link"
+                className="quick-search-btn"
               >
-                {cityName}
+                <span className="btn-text">{cityName}</span>
               </Link>
             ))}
           </div>
         </>
       )}
       
-      {/* Vármegye szintű link - csak akkor jelenik meg, ha van érvényes countySlug */}
+      {/* Vármegye szintű link */}
       {countySlug && (
         <>
-          <h3 className="mt-4">Tovább a vármegyei szintre</h3>
-          <div className="related-links-grid">
+          <h2 className="mt-4">Tovább a vármegyei szintre</h2>
+          <div className="quick-search-grid">
             <Link
               href={`/${listingType}/${type}/${countySlug}`}
-              className="related-link font-semibold"
+              className="quick-search-btn"
+              style={{ background: 'linear-gradient(135deg, #5099ce 0%, #3a7bb8 100%)', borderColor: 'transparent' }}
             >
-              {county} összes {listingType === 'elado' ? 'eladó' : 'kiadó'} {getTypeDisplayName(type)}
+              <span className="btn-text" style={{ color: 'white' }}>
+                {county} összes {listingType === 'elado' ? 'eladó' : 'kiadó'} {getTypeDisplayName(type)} →
+              </span>
             </Link>
           </div>
         </>
       )}
       
       {/* Eladó/Kiadó típusok ugyanitt */}
-      <h3 className="mt-4">Ingatlantípusok {formatLocationName(normalizedCity)}-ban/-en</h3>
-      <div className="related-links-grid">
+      <h2 className="mt-4">Ingatlantípusok {formatLocationName(normalizedCity)}-ban/-en</h2>
+      <div className="quick-search-grid">
         {VALID_PROPERTY_TYPES.filter(t => t !== type).map(otherType => (
           <Link
             key={otherType}
             href={`/${listingType}/${otherType}/${city}`}
-            className="related-link"
+            className="quick-search-btn"
           >
-            {listingType === 'elado' ? 'Eladó' : 'Kiadó'} {getTypeDisplayName(otherType)}
+            <span className="btn-text">
+              {listingType === 'elado' ? 'Eladó' : 'Kiadó'} {getTypeDisplayName(otherType)}
+            </span>
           </Link>
         ))}
-        <Link href={`/${listingType === 'elado' ? 'kiado' : 'elado'}/${type}/${city}`} className="related-link">
-          {listingType === 'elado' ? 'Kiadó' : 'Eladó'} {getTypeDisplayName(type)}
+        <Link href={`/${listingType === 'elado' ? 'kiado' : 'elado'}/${type}/${city}`} className="quick-search-btn">
+          <span className="btn-text">
+            {listingType === 'elado' ? 'Kiadó' : 'Eladó'} {getTypeDisplayName(type)}
+          </span>
         </Link>
       </div>
     </div>
