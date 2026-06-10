@@ -1,24 +1,21 @@
 import { getLocationContent } from '@/services/seoService';
 import HomePageContentWrapper from '@/components/HomePageContentWrapper';
 import RelatedLinks from '@/components/HomePageRelatedLinks';
-
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 interface PageProps {
   params: Promise<{ 
-    listingtype: string;  // ← listingtype (kisbetű)
+    listingtype: string;
     slug: string[];
   }>;
 }
 
 export const revalidate = 3600;
 
-// Valid listing type-ok
 const VALID_LISTING_TYPES = ['elado', 'kiado'];
 const VALID_PROPERTY_TYPES = ['lakas', 'haz', 'iroda', 'telek'];
 
-// Konstansok (ugyanazok, mint előtte)
 const POPULAR_CITIES = [
   'budapest', 'debrecen', 'szeged', 'miskolc', 'pécs', 'győr', 'nyíregyháza', 'kecskemét', 'székesfehérvár',
   'szombathely', 'veszprém', 'zalaegerszeg', 'kaposvár', 'tatabánya', 'sopron', 'békéscsaba',
@@ -79,15 +76,11 @@ export async function generateStaticParams() {
   
   for (const listingType of VALID_LISTING_TYPES) {
     for (const propertyType of VALID_PROPERTY_TYPES) {
-      // /elado/lakas
       params.push({ listingtype: listingType, slug: [propertyType] });
-      // /elado/lakas/lista
       params.push({ listingtype: listingType, slug: [propertyType, 'lista'] });
       
       for (const location of getAllLocations()) {
-        // /elado/lakas/budapest
         params.push({ listingtype: listingType, slug: [propertyType, location] });
-        // /elado/lakas/budapest/lista
         params.push({ listingtype: listingType, slug: [propertyType, location, 'lista'] });
       }
     }
@@ -134,6 +127,16 @@ function extractTypeAndLocation(slug: string[]): { type: string | null; city: st
   }
   
   return { type, city, viewMode };
+}
+
+function formatCityName(city: string): string {
+  return city
+    .replace(/^budapest-/i, '')
+    .replace(/-kerulet$/, '')
+    .replace(/-/g, ' ')
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -197,35 +200,31 @@ function generateOrganizationJsonLd() {
   };
 }
 
+function getFullImageUrl(imagePath: string): string {
+  if (!imagePath || typeof imagePath !== 'string') return '/placeholder.jpg';
+  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) return imagePath;
+  const baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASEURL || 'http://localhost:5000';
+  return `${baseUrl}${imagePath}`;
+}
+
+function generateSlug(title: string): string {
+  if (!title) return 'unknown';
+  return title
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+}
+
 function generateItemListJsonLd(seoQuickPosts: any[], listingType: string, type: string, city: string | null) {
   if (!seoQuickPosts || seoQuickPosts.length < 3) return null;
-
-  const getFullImageUrl = (imagePath: string) => {
-    if (!imagePath || typeof imagePath !== 'string') return '/placeholder.jpg';
-    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) return imagePath;
-    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASEURL || 'http://localhost:5000';
-    return `${baseUrl}${imagePath}`;
-  };
-
-  const generateSlug = (title: string) => {
-    if (!title) return 'unknown';
-    return title
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
-  };
-
-  const formatLocationName = (loc: string) => {
-    return loc.charAt(0).toUpperCase() + loc.slice(1).replace(/-/g, ' ');
-  };
 
   const listingText = getListingTypeText(listingType);
   const typeDisplayName = getTypeDisplayName(type);
   
   const listName = city
-    ? `Friss ${listingText} ${typeDisplayName} ${formatLocationName(city)}`
+    ? `Friss ${listingText} ${typeDisplayName} ${formatCityName(city)}`
     : "Friss ingatlanhirdetések – Ingatlan-Térkép";
 
   const items = seoQuickPosts.filter(post => {
@@ -312,14 +311,12 @@ function generateItemListJsonLd(seoQuickPosts: any[], listingType: string, type:
 export default async function Page({ params }: PageProps) {
   const { listingtype, slug } = await params;
   
-  // Validáció: listingtype
   if (!VALID_LISTING_TYPES.includes(listingtype)) {
     notFound();
   }
   
   const { type, city, viewMode } = extractTypeAndLocation(slug || []);
   
-  // Validáció: type
   if (!type || !VALID_PROPERTY_TYPES.includes(type)) {
     notFound();
   }
@@ -345,41 +342,162 @@ export default async function Page({ params }: PageProps) {
   const organizationJsonLd = generateOrganizationJsonLd();
   const itemListJsonLd = generateItemListJsonLd(seoQuickPosts, listingtype, type, city);
   
- // Fő komponens return része
-return (
-  <>
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
-    />
-    
-    {itemListJsonLd && (
+  return (
+    <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
       />
-    )}
-    
-    <HomePageContentWrapper 
-      listingType={listingtype}
-      type={type}
-      city={city}
-      viewModeDefault={viewMode}
-      serverLocationContent={locationContent}
-      serverSeoQuickPosts={seoQuickPosts}
-    />
-    
-   <div className="seo-below-map-section">
-      <div className="container relative z-10 mx-auto px-4 py-12 max-w-7xl">
-        <div className="article-wrapper bg-white rounded-2xl shadow-lg border border-gray-200 p-6 md:p-10">
-          <RelatedLinks 
-            listingType={listingtype}
-            type={type}
-            city={city}
-          />
+      
+      {itemListJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+        />
+      )}
+      
+      <HomePageContentWrapper 
+        listingType={listingtype}
+        type={type}
+        city={city}
+        viewModeDefault={viewMode}
+        serverLocationContent={locationContent}
+        serverSeoQuickPosts={seoQuickPosts}
+        hideFooter={true}
+      />
+      
+      {/* SEO szekció a belső linkekkel - a térkép UTÁN, a footer ELŐTT */}
+      <div className="seo-below-map-section">
+        <div className="container relative z-10 mx-auto px-4 py-12 max-w-7xl">
+          <div className="article-wrapper bg-white rounded-2xl shadow-lg border border-gray-200 p-6 md:p-10">
+            
+            {/* Meglévő SEO tartalom */}
+            {city && locationContent ? (
+              <>
+                <h1 className="seo-h1">
+                  {locationContent.seo?.h1 || `${getListingTypeText(listingtype)} ${getTypeDisplayName(type)} ${formatCityName(city)}`}
+                </h1>
+                {locationContent.stats && (
+                  <div className="stats-cards">
+                    {locationContent.stats.listingCount && (
+                      <div className="stat-card">
+                        <div className="stat-number">{locationContent.stats.listingCount}</div>
+                        <div className="stat-label">hirdetés</div>
+                      </div>
+                    )}
+                    {locationContent.stats.medianPricePerSqm && (
+                      <div className="stat-card">
+                        <div className="stat-number">{Math.round(locationContent.stats.medianPricePerSqm).toLocaleString()} Ft</div>
+                        <div className="stat-label">medián nm ár</div>
+                      </div>
+                    )}
+                    {locationContent.stats.medianPrice && (
+                      <div className="stat-card">
+                        <div className="stat-number">{Math.round(locationContent.stats.medianPrice / 1000000)}M Ft</div>
+                        <div className="stat-label">medián ár</div>
+                      </div>
+                    )}
+                  </div>
+                )}
+                {locationContent.content?.mainContent && (
+                  <div className="seo-generated-content" dangerouslySetInnerHTML={{ __html: locationContent.content.mainContent }} />
+                )}
+              </>
+            ) : !city ? (
+              <>
+                <h1 className="seo-h1">Keress ingatlant valós idejű térképen</h1>
+                <p className="seo-intro">Több tízezer friss eladó és kiadó ingatlan Magyarországon – pontos szűrőkkel és interaktív térképpel.</p>
+                <div className="seo-cta-buttons">
+                  <a href="/elado/lakas" className="btn-primary">Eladó lakások →</a>
+                  <a href="/kiado/lakas" className="btn-secondary">Kiadó lakások →</a>
+                  <a href="/elado/haz" className="btn-tertiary">Eladó házak →</a>
+                </div>
+              </>
+            ) : null}
+            
+            {/* === FRISS HIRDETÉSEK KÁRTYÁK - PRERENDERELVE === */}
+            {seoQuickPosts && seoQuickPosts.length > 0 && (
+              <div className="mb-12">
+                <h2 className="text-2xl font-bold text-[#0078A8] mb-6 text-center">
+                  Friss hirdetések
+                </h2>
+                <div className="similar-posts-grid">
+                  {seoQuickPosts.slice(0, 10).map((post) => (
+                    <a
+                      key={post._id}
+                      href={`/ingatlan/${post._id}/${generateSlug(post.title || '')}`}
+                      className="similar-post-card"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <div className="similar-post-image">
+                        {post.images?.length > 0 ? (
+                          <img
+                            src={getFullImageUrl(post.images[0].url)}
+                            alt=""
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="no-image">Nincs kép</div>
+                        )}
+                      </div>
+                      <div className="similar-post-content">
+                        <h3>{post.title || 'Nincs cím'}</h3>
+                        <p className="similar-post-price">
+                          {listingtype === 'elado'
+                            ? `${Math.round((post.price || 0))} M Ft`
+                            : `${Math.round((post.rental_price || 0))} E Ft/hó`}
+                        </p>
+                        {post.area > 0 && (
+                          <p className="similar-post-area">Alapterület: {post.area} m²</p>
+                        )}
+                        <p className="similar-post-address">
+                          {post.address?.city || ''}{post.address?.region ? `, ${post.address.region}` : ''}
+                        </p>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Belső linkek - a SEO tartalom és a hirdetések után */}
+            <RelatedLinks 
+              listingType={listingtype}
+              type={type}
+              city={city}
+            />
+            
+          </div>
         </div>
       </div>
-    </div>
-  </>
-);
+      
+      {/* Footer - külön a SEO szekció UTÁN */}
+      <footer className="app-footer">
+        <div className="footer-main">
+          <div className="footer-column logo-column">
+            <img src="/barion-logo.png" alt="Barion biztonságos online fizetési logó" className="barion-logo" />
+            <img src="/Large-nobg-light.png" alt="Barion elfogadott fizetési kártyák és módszerek logója" className="barion-logo" />
+            <p className="footer-tagline">Biztonságos fizetés a Barionnal<br />A bankkártya adatok hozzánk nem jutnak el.</p>
+          </div>
+          <div className="footer-column">
+            <h4>Oldalak</h4>
+            <ul><li><a href="/">Kezdőlap</a></li><li><a href="/about">Rólunk</a></li><li><a href="/blog">Blog</a></li><li><a href="/contact">Kapcsolat</a></li></ul>
+          </div>
+          <div className="footer-column">
+            <h4>Jogi információk</h4>
+            <ul><li><a href="/privacy-policy">Adatvédelmi nyilatkozat</a></li><li><a href="/aszf">Általános Szerződési Feltételek</a></li></ul>
+          </div>
+          <div className="footer-column">
+            <h4>Közösség</h4>
+            <ul><li><a href="https://www.facebook.com/people/Ingatlan-T%C3%A9rk%C3%A9p/61574143888873/" target="_blank" rel="noopener">Facebook</a></li></ul>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          <p className="copyright">© 2026 Ingatlan-Térkép.hu – Minden jog fenntartva</p>
+        </div>
+      </footer>
+    </>
+  );
 }

@@ -1,4 +1,3 @@
-// components/HomePageContentWrapper.tsx
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -18,9 +17,10 @@ interface HomePageContentWrapperProps {
   viewModeDefault?: 'map' | 'list';
   serverLocationContent?: any;
   serverSeoQuickPosts?: any[];
+  hideFooter?: boolean;
 }
 
 export default function HomePageContentWrapper(props: HomePageContentWrapperProps) {
-  // @ts-ignore - A HomePageContent JS komponens, nem kell típusellenőrzés
+  // @ts-ignore
   return <HomePageContentDynamic {...props} />;
 }

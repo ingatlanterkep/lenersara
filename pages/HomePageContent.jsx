@@ -1,4 +1,3 @@
-// pages/HomePageContent.tsx
 'use client';
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
@@ -107,14 +106,14 @@ const validCounties = [
   'jasz-nagykun-szolnok-varmegye'
 ];
 
-// pages/HomePageContent.tsx - a komponens paramétereinél
 export default function HomePageContent({ 
   listingType: urlListingType, 
   type: urlType, 
   city: urlLocation,
   viewModeDefault = 'map',
-  serverLocationContent = null,    // ← alapértelmezett null
-  serverSeoQuickPosts = [],        // ← alapértelmezett üres tömb
+  serverLocationContent = null,
+  serverSeoQuickPosts = [],
+  hideFooter = false,
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -967,79 +966,32 @@ export default function HomePageContent({
           </div>
         )}
 
-        <div className="seo-below-map-section">
-          <div className="container relative z-10 mx-auto px-4 py-12 max-w-7xl">
-            <div className="article-wrapper bg-white rounded-2xl shadow-lg border border-gray-200 p-6 md:p-10">
-              {urlLocation && serverLocationContent ? (
-                <>
-                  <h1 className="seo-h1">
-                    {serverLocationContent.seo?.h1 || `Eladó ${urlType === 'lakas' ? 'lakások' : 'házak'} ${urlLocation}`}
-                  </h1>
-                  {serverLocationContent.stats && (
-                    <div className="stats-cards">
-                      {serverLocationContent.stats.listingCount && (
-                        <div className="stat-card">
-                          <div className="stat-number">{serverLocationContent.stats.listingCount}</div>
-                          <div className="stat-label">hirdetés</div>
-                        </div>
-                      )}
-                      {serverLocationContent.stats.medianPricePerSqm && (
-                        <div className="stat-card">
-                          <div className="stat-number">{Math.round(serverLocationContent.stats.medianPricePerSqm).toLocaleString()} Ft</div>
-                          <div className="stat-label">medián nm ár</div>
-                        </div>
-                      )}
-                      {serverLocationContent.stats.medianPrice && (
-                        <div className="stat-card">
-                          <div className="stat-number">{Math.round(serverLocationContent.stats.medianPrice / 1000000)}M Ft</div>
-                          <div className="stat-label">medián ár</div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  {serverLocationContent.content?.mainContent && (
-                    <div className="seo-generated-content" dangerouslySetInnerHTML={{ __html: serverLocationContent.content.mainContent }} />
-                  )}
-                </>
-              ) : !urlLocation ? (
-                <>
-                  <h1 className="seo-h1">Keress ingatlant valós idejű térképen</h1>
-                  <p className="seo-intro">Több tízezer friss eladó és kiadó ingatlan Magyarországon – pontos szűrőkkel és interaktív térképpel.</p>
-                  <div className="seo-cta-buttons">
-                    <a href="/elado/lakas" className="btn-primary">Eladó lakások →</a>
-                    <a href="/kiado/lakas" className="btn-secondary">Kiadó lakások →</a>
-                    <a href="/elado/haz" className="btn-tertiary">Eladó házak →</a>
-                  </div>
-                </>
-              ) : null}
+        {!hideFooter && (
+          <footer className="app-footer">
+            <div className="footer-main">
+              <div className="footer-column logo-column">
+                <img src="/barion-logo.png" alt="Barion biztonságos online fizetési logó" className="barion-logo" />
+                <img src="/Large-nobg-light.png" alt="Barion elfogadott fizetési kártyák és módszerek logója" className="barion-logo" />
+                <p className="footer-tagline">Biztonságos fizetés a Barionnal<br />A bankkártya adatok hozzánk nem jutnak el.</p>
+              </div>
+              <div className="footer-column">
+                <h4>Oldalak</h4>
+                <ul><li><a href="/">Kezdőlap</a></li><li><a href="/about">Rólunk</a></li><li><a href="/blog">Blog</a></li><li><a href="/contact">Kapcsolat</a></li></ul>
+              </div>
+              <div className="footer-column">
+                <h4>Jogi információk</h4>
+                <ul><li><a href="/privacy-policy">Adatvédelmi nyilatkozat</a></li><li><a href="/aszf">Általános Szerződési Feltételek</a></li></ul>
+              </div>
+              <div className="footer-column">
+                <h4>Közösség</h4>
+                <ul><li><a href="https://www.facebook.com/people/Ingatlan-T%C3%A9rk%C3%A9p/61574143888873/" target="_blank" rel="noopener">Facebook</a></li></ul>
+              </div>
             </div>
-          </div>
-        </div>
-        
-        <footer className="app-footer">
-          <div className="footer-main">
-            <div className="footer-column logo-column">
-              <img src="/barion-logo.png" alt="Barion biztonságos online fizetési logó" className="barion-logo" />
-              <img src="Large-nobg-light.png" alt="Barion elfogadott fizetési kártyák és módszerek logója" className="barion-logo" />
-              <p className="footer-tagline">Biztonságos fizetés a Barionnal<br />A bankkártya adatok hozzánk nem jutnak el.</p>
+            <div className="footer-bottom">
+              <p className="copyright">© 2026 Ingatlan-Térkép.hu – Minden jog fenntartva</p>
             </div>
-            <div className="footer-column">
-              <h4>Oldalak</h4>
-              <ul><li><a href="/">Kezdőlap</a></li><li><a href="/about">Rólunk</a></li><li><a href="/blog">Blog</a></li><li><a href="/contact">Kapcsolat</a></li></ul>
-            </div>
-            <div className="footer-column">
-              <h4>Jogi információk</h4>
-              <ul><li><a href="/privacy-policy">Adatvédelmi nyilatkozat</a></li><li><a href="/aszf">Általános Szerződési Feltételek</a></li></ul>
-            </div>
-            <div className="footer-column">
-              <h4>Közösség</h4>
-              <ul><li><a href="https://www.facebook.com/people/Ingatlan-T%C3%A9rk%C3%A9p/61574143888873/" target="_blank" rel="noopener">Facebook</a></li></ul>
-            </div>
-          </div>
-          <div className="footer-bottom">
-            <p className="copyright">© 2026 Ingatlan-Térkép.hu – Minden jog fenntartva</p>
-          </div>
-        </footer>
+          </footer>
+        )}
       </div>
     </div>
   );
