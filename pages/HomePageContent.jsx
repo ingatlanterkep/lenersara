@@ -15,6 +15,7 @@ import ImageGallery from '../components/ImageGallery';
 import { getViewedPosts, addViewedPost } from '@/utils/viewedPosts';
 import apiClient from '@/services/apiClient';
 import PropertyCard from '../components/PropertyCard';
+import { useCookieConsent } from '@/contexts/CookieContext';
 import { 
   getFavoritePosts, 
   addFavoritePost, 
@@ -128,6 +129,8 @@ export default function HomePageContent({
     }
   }, [router]);
   
+    const { cookiesAccepted } = useCookieConsent();  // ← Context-ből jön
+  const [cookiesDecided, setCookiesDecided] = useState(false);
   // State-ek
   const [isStreetViewMode, setIsStreetViewMode] = useState(false);
   const [viewMode, setViewMode] = useState(viewModeDefault);
@@ -138,7 +141,6 @@ export default function HomePageContent({
   const [isNavbarMenuOpen, setNavbarMenuOpen] = useState(false);
   const [isProfileMenuOpen, setProfileMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [cookiesAccepted, setCookiesAccepted] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
   const [locationSearchOpen, setLocationSearchOpen] = useState(false);
@@ -422,11 +424,6 @@ export default function HomePageContent({
     checkAuthStatus();
   }, [pathname, navigate]);
   
-  // Cookie consent kezelés
-  useEffect(() => {
-    const hasConsent = document.cookie.includes('ingatlanTerkepCookieConsent=true');
-    setCookiesAccepted(hasConsent);
-  }, []);
   
   // ViewMode CSS osztály kezelés
   useEffect(() => {
