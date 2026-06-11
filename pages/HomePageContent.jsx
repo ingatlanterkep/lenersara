@@ -330,25 +330,27 @@ export default function HomePageContent({
     }
   };
 
-  useEffect(() => {
-    const checkConsent = () => {
-      const hasConsent = document.cookie.includes('ingatlanTerkepCookieConsent=true');
-      setCookiesAccepted(hasConsent);
-    };
-    
+// pages/HomePageContent.js - a cookiesAccepted useEffect-ben
+useEffect(() => {
+  const checkConsent = () => {
+    const hasConsent = document.cookie.includes('ingatlanTerkepCookieConsent=true');
+    console.log('[HomePageContent] Cookie consent changed:', hasConsent);
+    setCookiesAccepted(hasConsent);
+  };
+  
+  checkConsent();
+  
+  const handleConsentChange = () => {
+    console.log('[HomePageContent] cookieConsentChanged event received');
     checkConsent();
-    
-    // Event listener a változásokhoz
-    const handleConsentChange = () => {
-      checkConsent();
-    };
-    
-    window.addEventListener('cookieConsentChanged', handleConsentChange);
-    
-    return () => {
-      window.removeEventListener('cookieConsentChanged', handleConsentChange);
-    };
-  }, []);
+  };
+  
+  window.addEventListener('cookieConsentChanged', handleConsentChange);
+  
+  return () => {
+    window.removeEventListener('cookieConsentChanged', handleConsentChange);
+  };
+}, []);
   
   // URL beolvasása
   useEffect(() => {
