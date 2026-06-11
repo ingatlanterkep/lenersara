@@ -11,6 +11,11 @@ export default function CookieConsentWrapper() {
   const [scriptsLoaded, setScriptsLoaded] = useState(false);
   const { cookiesAccepted, setCookiesAccepted } = useCookie();
   
+  // Debug log
+  useEffect(() => {
+    console.log('[CookieConsentWrapper] cookiesAccepted changed:', cookiesAccepted);
+  }, [cookiesAccepted]);
+  
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -42,9 +47,11 @@ export default function CookieConsentWrapper() {
   
   // GTM betöltése (CSAK elfogadás után)
   useEffect(() => {
+    console.log('[GTM Effect] cookiesAccepted:', cookiesAccepted, 'scriptsLoaded:', scriptsLoaded);
     if (!cookiesAccepted || scriptsLoaded) return;
     if (typeof window === 'undefined') return;
     
+    console.log('[GTM] Betöltés indul...');
     if (!window.dataLayer?.gtmLoaded) {
       if (!window.dataLayer) {
         window.dataLayer = [];
@@ -72,10 +79,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe>`;
   
   // GA4 betöltése (CSAK elfogadás után)
   useEffect(() => {
+    console.log('[GA4 Effect] cookiesAccepted:', cookiesAccepted);
     if (!cookiesAccepted) return;
     if (typeof window === 'undefined') return;
     
     if (!window.gtag) {
+      console.log('[GA4] Betöltés indul...');
       const script = document.createElement('script');
       script.src = 'https://www.googletagmanager.com/gtag/js?id=G-KWH607ZP7H';
       script.async = true;
@@ -101,6 +110,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe>`;
   }, [cookiesAccepted]);
   
   const handleAccept = useCallback(() => {
+    console.log('[CookieConsent] Elfogadás gomb megnyomva - setCookiesAccepted(true) hívás');
     setCookiesAccepted(true);
     setCookie('ingatlanTerkepCookieConsent', 'true', { maxAge: 150 * 24 * 60 * 60 });
     
@@ -148,6 +158,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   }, [setCookiesAccepted]);
   
   const handleDecline = useCallback(() => {
+    console.log('[CookieConsent] Elutasítás gomb megnyomva');
     setCookiesAccepted(false);
     setCookie('ingatlanTerkepCookieConsent', 'false', { maxAge: 150 * 24 * 60 * 60 });
     console.log('[CookieConsent] Elutasítva - marketing trackerek NEM letöltve');
