@@ -116,8 +116,6 @@ export default function HomePageContent({
   serverSeoQuickPosts = [],
   hideFooter = false,
 }) {
-    const { cookiesAccepted } = useCookie(); // ← innen jön!
-
   const router = useRouter();
   const pathname = usePathname();
   
@@ -132,6 +130,8 @@ export default function HomePageContent({
   }, [router]);
   
   // State-ek
+    const [cookiesAccepted, setCookiesAccepted] = useState(false);
+
   const [isStreetViewMode, setIsStreetViewMode] = useState(false);
   const [viewMode, setViewMode] = useState(viewModeDefault);
   const [isNavbarCollapsed, setIsNavbarCollapsed] = useState(false);
@@ -329,6 +329,26 @@ export default function HomePageContent({
       setIsQueuing(false);
     }
   };
+
+  useEffect(() => {
+    const checkConsent = () => {
+      const hasConsent = document.cookie.includes('ingatlanTerkepCookieConsent=true');
+      setCookiesAccepted(hasConsent);
+    };
+    
+    checkConsent();
+    
+    // Event listener a változásokhoz
+    const handleConsentChange = () => {
+      checkConsent();
+    };
+    
+    window.addEventListener('cookieConsentChanged', handleConsentChange);
+    
+    return () => {
+      window.removeEventListener('cookieConsentChanged', handleConsentChange);
+    };
+  }, []);
   
   // URL beolvasása
   useEffect(() => {

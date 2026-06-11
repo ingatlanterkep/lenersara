@@ -1,4 +1,3 @@
-// contexts/CookieContext.tsx
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
@@ -13,16 +12,17 @@ const CookieContext = createContext<CookieContextType | undefined>(undefined);
 
 export function CookieProvider({ children }: { children: ReactNode }) {
   const [cookiesAccepted, setCookiesAccepted] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
+  // Csak client oldalon olvassuk a sütit
   useEffect(() => {
+    setIsClient(true);
     const hasConsent = getCookie('ingatlanTerkepCookieConsent') === 'true';
     setCookiesAccepted(hasConsent);
-    setMounted(true);
   }, []);
 
-  // SSR alatt ne adjuk vissza a context-et, csak client oldalon
-  if (!mounted) {
+  // Ha még nem client oldalon vagyunk, ne rendereljünk context-et
+  if (!isClient) {
     return <>{children}</>;
   }
 
@@ -36,14 +36,9 @@ export function CookieProvider({ children }: { children: ReactNode }) {
 export function useCookie() {
   const context = useContext(CookieContext);
   
-  // SSR alatt ne dobjon hibát
-  if (typeof window === 'undefined') {
-    return { cookiesAccepted: false, setCookiesAccepted: () => {} };
-  }
-  
-  // Ha nincs context, akkor se dobjunk hibát, hanem adjunk vissza alapértelmezett értékeket
+  // Ha nincs context (SSR vagy hiba), adjunk vissza alapértelmezett értékeket
   if (!context) {
-    console.warn('useCookie called outside of CookieProvider - returning default values');
+    // Ne dobjunk hibát, csak adjunk vissza default értékeket
     return { cookiesAccepted: false, setCookiesAccepted: () => {} };
   }
   
