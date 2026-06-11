@@ -15,8 +15,7 @@ import ImageGallery from '../components/ImageGallery';
 import { getViewedPosts, addViewedPost } from '@/utils/viewedPosts';
 import apiClient from '@/services/apiClient';
 import PropertyCard from '../components/PropertyCard';
-// Helyette használd a context-et:
-import { useCookie } from '@/contexts/CookieContext';
+import { useCookie } from '@/contexts/CookieContext';  // ← ADD EZT
 import { 
   getFavoritePosts, 
   addFavoritePost, 
