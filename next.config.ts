@@ -1,3 +1,4 @@
+// next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
@@ -6,12 +7,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_BACKEND_BASEURL || 'http://localhost:5000'}/api/:path*`,
-      },
-      // 🔥 JAVÍTVA: XML fájlok közvetlenül a backend API-ra
-      {
-        source: '/xml/:path*',
-        destination: `${process.env.NEXT_PUBLIC_BACKEND_BASEURL || 'http://localhost:5000'}/api/xml/:path*`,
+        destination: 'http://localhost:5000/api/:path*',
       },
     ];
   },
@@ -21,6 +17,8 @@ const nextConfig = {
   },
   
   transpilePackages: ['leaflet', 'react-leaflet'],
+  
+  // 🔴 ISR beállítások
   staticPageGenerationTimeout: 120,
 };
 
