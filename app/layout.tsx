@@ -4,7 +4,6 @@ import './globals.css';
 import QueryProvider from '@/components/QueryProvider';
 import CookieConsentWrapper from '@/components/CookieConsentWrapper';
 import NavbarWrapper from '@/components/NavbarWrapper';
-import { CookieProvider } from '@/contexts/CookieContext';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -33,14 +32,13 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/l.png" />
       </head>
       <body className={inter.className}>
-        <CookieProvider>
-          <NavbarWrapper />
-          <QueryProvider>
-            {children}
-          </QueryProvider>
-          <CookieConsentWrapper />
-          <div id="fullscreen-gallery-root"></div>
-        </CookieProvider>
+        <NavbarWrapper />
+        <QueryProvider>
+          {children}
+        </QueryProvider>
+        <CookieConsentWrapper />
+        {/* 🔴 EZ A FONTOS - Portál konténer a FullScreenGallery számára */}
+        <div id="fullscreen-gallery-root"></div>
       </body>
     </html>
   );
