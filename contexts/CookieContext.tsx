@@ -1,3 +1,4 @@
+// contexts/CookieContext.tsx
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
@@ -34,12 +35,17 @@ export function CookieProvider({ children }: { children: ReactNode }) {
 
 export function useCookie() {
   const context = useContext(CookieContext);
+  
   // SSR alatt ne dobjon hibát
   if (typeof window === 'undefined') {
     return { cookiesAccepted: false, setCookiesAccepted: () => {} };
   }
+  
+  // Ha nincs context, akkor se dobjunk hibát, hanem adjunk vissza alapértelmezett értékeket
   if (!context) {
-    throw new Error('useCookie must be used within CookieProvider');
+    console.warn('useCookie called outside of CookieProvider - returning default values');
+    return { cookiesAccepted: false, setCookiesAccepted: () => {} };
   }
+  
   return context;
 }
