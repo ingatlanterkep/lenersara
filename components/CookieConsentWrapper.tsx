@@ -16,7 +16,32 @@ export default function CookieConsentWrapper() {
     setMounted(true);
   }, []);
   
-  // GTM betöltése
+  // 🔥 BARION PIXEL - MINDIG BETÖLTŐDIK (függetlenül a süti elfogadástól)
+  useEffect(() => {
+    if (window.bp) return; // már betöltve
+    
+    window.bp = function() {
+      (window.bp.q = window.bp.q || []).push(arguments);
+    };
+    window.bp.l = Date.now();
+    
+    const scriptElement = document.createElement('script');
+    scriptElement.async = true;
+    scriptElement.src = 'https://pixel.barion.com/bp.js';
+    document.head.appendChild(scriptElement);
+    
+    window.barion_pixel_id = 'BP-YQqhhb7YpN-9B';
+    
+    // Kis késleltetés, hogy a script betöltődjön
+    setTimeout(() => {
+      if (window.bp) {
+        window.bp('init', 'addBarionPixelId', window.barion_pixel_id);
+        console.log('[Barion] Pixel betöltve (mindig)');
+      }
+    }, 500);
+  }, []); // ← NINCS cookiesAccepted függőség!
+  
+  // GTM betöltése (CSAAK elfogadás után)
   useEffect(() => {
     if (!cookiesAccepted || scriptsLoaded) return;
     
@@ -45,7 +70,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe>`;
     setScriptsLoaded(true);
   }, [cookiesAccepted, scriptsLoaded]);
   
-  // GA4 betöltése
+  // GA4 betöltése (CSAAK elfogadás után)
   useEffect(() => {
     if (!cookiesAccepted) return;
     
@@ -72,29 +97,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe>`;
       
       console.log('[GA4] Betöltve');
     }
-  }, [cookiesAccepted]);
-  
-  // Barion Pixel betöltése
-  useEffect(() => {
-    if (!cookiesAccepted) return;
-    if (window.bp) return;
-    
-    window.bp = function() {
-      (window.bp!.q = window.bp!.q || []).push(arguments);
-    };
-    window.bp.l = Date.now();
-    
-    const scriptElement = document.createElement('script');
-    scriptElement.async = true;
-    scriptElement.src = 'https://pixel.barion.com/bp.js';
-    document.head.appendChild(scriptElement);
-    
-    window.barion_pixel_id = 'BP-YQqhhb7YpN-9B';
-    if (window.bp) {
-      window.bp('init', 'addBarionPixelId', window.barion_pixel_id);
-    }
-    
-    console.log('[Barion] Pixel betöltve');
   }, [cookiesAccepted]);
   
   const handleAccept = useCallback(() => {
@@ -145,14 +147,40 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   const handleDecline = useCallback(() => {
     setCookiesAccepted(false);
     setCookie('ingatlanTerkepCookieConsent', 'false', { maxAge: 150 * 24 * 60 * 60 });
-    console.log('[CookieConsent] Elutasítva - trackerek NEM letöltve');
+    console.log('[CookieConsent] Elutasítva - marketing trackerek NEM letöltve');
   }, []);
   
   if (!mounted) return null;
   
   return (
     <>
-      {/* Meta Pixel - Next.js Script komponenssel, csak akkor töltődik, ha elfogadták */}
+      {/* 🔥 BARION PIXEL - MINDIG BETÖLTŐDIK (függetlenül a süti állapottól) */}
+      <Script
+        id="barion-pixel"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.bp = window.bp || function() {
+              (window.bp.q = window.bp.q || []).push(arguments);
+            };
+            window.bp.l = 1 * new Date();
+            window.barion_pixel_id = 'BP-YQqhhb7YpN-9B';
+          `,
+        }}
+      />
+      <Script
+        id="barion-pixel-loader"
+        strategy="afterInteractive"
+        src="https://pixel.barion.com/bp.js"
+        onLoad={() => {
+          if (window.bp) {
+            window.bp('init', 'addBarionPixelId', window.barion_pixel_id);
+            console.log('[Barion] Pixel inicializálva');
+          }
+        }}
+      />
+      
+      {/* Meta Pixel - CSAK elfogadás után */}
       {cookiesAccepted && (
         <Script
           id="meta-pixel"
