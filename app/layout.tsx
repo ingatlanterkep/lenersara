@@ -1,12 +1,9 @@
-// app/layout.tsx
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import { ReactNode } from 'react';
 import './globals.css';
 import QueryProvider from '@/components/QueryProvider';
 import CookieConsentWrapper from '@/components/CookieConsentWrapper';
 import NavbarWrapper from '@/components/NavbarWrapper';
-import ClientCookieProvider from '@/components/ClientCookieProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -18,11 +15,11 @@ export const metadata: Metadata = {
   },
 };
 
-interface RootLayoutProps {
-  children: ReactNode;
-}
-
-export default function RootLayout({ children }: RootLayoutProps) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="hu">
       <head>
@@ -35,14 +32,13 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <link rel="apple-touch-icon" href="/l.png" />
       </head>
       <body className={inter.className}>
-        <ClientCookieProvider>
-          <NavbarWrapper />
-          <QueryProvider>
-            {children}
-          </QueryProvider>
-          <CookieConsentWrapper />
-          <div id="fullscreen-gallery-root"></div>
-        </ClientCookieProvider>
+        <NavbarWrapper />
+        <QueryProvider>
+          {children}
+        </QueryProvider>
+        <CookieConsentWrapper />
+        {/* 🔴 EZ A FONTOS - Portál konténer a FullScreenGallery számára */}
+        <div id="fullscreen-gallery-root"></div>
       </body>
     </html>
   );
