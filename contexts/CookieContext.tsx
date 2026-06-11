@@ -20,6 +20,7 @@ export function CookieProvider({ children }: CookieProviderProps) {
   const [mounted, setMounted] = useState<boolean>(false);
 
   useEffect(() => {
+    // Csak kliensoldalon fut
     const hasConsent = getCookie('ingatlanTerkepCookieConsent') === 'true';
     setCookiesAccepted(hasConsent);
     setMounted(true);
@@ -29,7 +30,14 @@ export function CookieProvider({ children }: CookieProviderProps) {
     setCookiesAccepted(accepted);
   };
 
-  if (!mounted) return null;
+  // Szerveroldalon egy placeholder értéket adunk vissza
+  if (!mounted) {
+    return (
+      <CookieContext.Provider value={{ cookiesAccepted: false, updateCookieConsent }}>
+        {children}
+      </CookieContext.Provider>
+    );
+  }
 
   return (
     <CookieContext.Provider value={{ cookiesAccepted, updateCookieConsent }}>
@@ -41,6 +49,10 @@ export function CookieProvider({ children }: CookieProviderProps) {
 export function useCookieConsent(): CookieContextType {
   const context = useContext(CookieContext);
   if (context === undefined) {
+    // Szerveroldalon ne dobjunk errort, adjunk vissza egy default értéket
+    if (typeof window === 'undefined') {
+      return { cookiesAccepted: false, updateCookieConsent: () => {} };
+    }
     throw new Error('useCookieConsent must be used within CookieProvider');
   }
   return context;

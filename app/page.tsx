@@ -1,4 +1,10 @@
-import HomePageContent from '@/pages/HomePageContent';
+// app/page.tsx
+import dynamic from 'next/dynamic';
+
+const HomePageContent = dynamic(
+  () => import('@/pages/HomePageContent'),
+  { ssr: false }  // ← Kikapcsolja az SSR-t erre a komponensre
+);
 
 export default function HomePage() {
   return (
