@@ -8,10 +8,10 @@ const nextConfig = {
         source: '/api/:path*',
         destination: `${process.env.NEXT_PUBLIC_BACKEND_BASEURL || 'http://localhost:5000'}/api/:path*`,
       },
-      // 🔥 XML útvonalak átirányítása a backendre vagy az API route-okra
+      // 🔥 JAVÍTVA: XML fájlok közvetlenül a backend API-ra
       {
         source: '/xml/:path*',
-        destination: '/api/xml/:path*', // Ezt fogjuk létrehozni
+        destination: `${process.env.NEXT_PUBLIC_BACKEND_BASEURL || 'http://localhost:5000'}/api/xml/:path*`,
       },
     ];
   },
