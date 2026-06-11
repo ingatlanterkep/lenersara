@@ -15,7 +15,6 @@ import ImageGallery from '../components/ImageGallery';
 import { getViewedPosts, addViewedPost } from '@/utils/viewedPosts';
 import apiClient from '@/services/apiClient';
 import PropertyCard from '../components/PropertyCard';
-import { useCookie } from '@/contexts/CookieContext';  // ← ADD EZT
 import { 
   getFavoritePosts, 
   addFavoritePost, 
@@ -130,8 +129,6 @@ export default function HomePageContent({
   }, [router]);
   
   // State-ek
-    const [cookiesAccepted, setCookiesAccepted] = useState(false);
-
   const [isStreetViewMode, setIsStreetViewMode] = useState(false);
   const [viewMode, setViewMode] = useState(viewModeDefault);
   const [isNavbarCollapsed, setIsNavbarCollapsed] = useState(false);
@@ -141,6 +138,7 @@ export default function HomePageContent({
   const [isNavbarMenuOpen, setNavbarMenuOpen] = useState(false);
   const [isProfileMenuOpen, setProfileMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [cookiesAccepted, setCookiesAccepted] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
   const [locationSearchOpen, setLocationSearchOpen] = useState(false);
@@ -329,28 +327,6 @@ export default function HomePageContent({
       setIsQueuing(false);
     }
   };
-
-// pages/HomePageContent.js - a cookiesAccepted useEffect-ben
-useEffect(() => {
-  const checkConsent = () => {
-    const hasConsent = document.cookie.includes('ingatlanTerkepCookieConsent=true');
-    console.log('[HomePageContent] Cookie consent changed:', hasConsent);
-    setCookiesAccepted(hasConsent);
-  };
-  
-  checkConsent();
-  
-  const handleConsentChange = () => {
-    console.log('[HomePageContent] cookieConsentChanged event received');
-    checkConsent();
-  };
-  
-  window.addEventListener('cookieConsentChanged', handleConsentChange);
-  
-  return () => {
-    window.removeEventListener('cookieConsentChanged', handleConsentChange);
-  };
-}, []);
   
   // URL beolvasása
   useEffect(() => {
@@ -446,6 +422,11 @@ useEffect(() => {
     checkAuthStatus();
   }, [pathname, navigate]);
   
+  // Cookie consent kezelés
+  useEffect(() => {
+    const hasConsent = document.cookie.includes('ingatlanTerkepCookieConsent=true');
+    setCookiesAccepted(hasConsent);
+  }, []);
   
   // ViewMode CSS osztály kezelés
   useEffect(() => {
