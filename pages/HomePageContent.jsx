@@ -15,6 +15,8 @@ import ImageGallery from '../components/ImageGallery';
 import { getViewedPosts, addViewedPost } from '@/utils/viewedPosts';
 import apiClient from '@/services/apiClient';
 import PropertyCard from '../components/PropertyCard';
+// Helyette használd a context-et:
+import { useCookie } from '@/contexts/CookieContext';
 import { 
   getFavoritePosts, 
   addFavoritePost, 
@@ -115,6 +117,8 @@ export default function HomePageContent({
   serverSeoQuickPosts = [],
   hideFooter = false,
 }) {
+    const { cookiesAccepted } = useCookie(); // ← innen jön!
+
   const router = useRouter();
   const pathname = usePathname();
   
@@ -138,7 +142,6 @@ export default function HomePageContent({
   const [isNavbarMenuOpen, setNavbarMenuOpen] = useState(false);
   const [isProfileMenuOpen, setProfileMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [cookiesAccepted, setCookiesAccepted] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
   const [locationSearchOpen, setLocationSearchOpen] = useState(false);
@@ -422,11 +425,6 @@ export default function HomePageContent({
     checkAuthStatus();
   }, [pathname, navigate]);
   
-  // Cookie consent kezelés
-  useEffect(() => {
-    const hasConsent = document.cookie.includes('ingatlanTerkepCookieConsent=true');
-    setCookiesAccepted(hasConsent);
-  }, []);
   
   // ViewMode CSS osztály kezelés
   useEffect(() => {
