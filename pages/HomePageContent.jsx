@@ -138,6 +138,7 @@ export default function HomePageContent({
   const [isNavbarMenuOpen, setNavbarMenuOpen] = useState(false);
   const [isProfileMenuOpen, setProfileMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [cookiesAccepted, setCookiesAccepted] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
   const [locationSearchOpen, setLocationSearchOpen] = useState(false);
