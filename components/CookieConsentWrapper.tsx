@@ -18,30 +18,34 @@ export default function CookieConsentWrapper() {
   
   // 🔥 BARION PIXEL - MINDIG BETÖLTŐDIK (függetlenül a süti elfogadástól)
   useEffect(() => {
-    if (window.bp) return; // már betöltve
+    // Ellenőrizzük, hogy a bp már létezik-e
+    if (typeof window !== 'undefined' && window.bp) return;
     
-    window.bp = function() {
-      (window.bp.q = window.bp.q || []).push(arguments);
-    };
-    window.bp.l = Date.now();
-    
-    const scriptElement = document.createElement('script');
-    scriptElement.async = true;
-    scriptElement.src = 'https://pixel.barion.com/bp.js';
-    document.head.appendChild(scriptElement);
-    
-    window.barion_pixel_id = 'BP-YQqhhb7YpN-9B';
-    
-    // Kis késleltetés, hogy a script betöltődjön
-    setTimeout(() => {
-      if (window.bp) {
-        window.bp('init', 'addBarionPixelId', window.barion_pixel_id);
-        console.log('[Barion] Pixel betöltve (mindig)');
-      }
-    }, 500);
+    // Biztonságos definiálás
+    if (typeof window !== 'undefined') {
+      window.bp = function(...args: any[]) {
+        (window.bp!.q = window.bp!.q || []).push(args);
+      };
+      window.bp.l = Date.now();
+      
+      const scriptElement = document.createElement('script');
+      scriptElement.async = true;
+      scriptElement.src = 'https://pixel.barion.com/bp.js';
+      document.head.appendChild(scriptElement);
+      
+      window.barion_pixel_id = 'BP-YQqhhb7YpN-9B';
+      
+      // Kis késleltetés, hogy a script betöltődjön
+      setTimeout(() => {
+        if (window.bp) {
+          window.bp('init', 'addBarionPixelId', window.barion_pixel_id);
+          console.log('[Barion] Pixel betöltve (mindig)');
+        }
+      }, 500);
+    }
   }, []); // ← NINCS cookiesAccepted függőség!
   
-  // GTM betöltése (CSAAK elfogadás után)
+  // GTM betöltése (CSAK elfogadás után)
   useEffect(() => {
     if (!cookiesAccepted || scriptsLoaded) return;
     
@@ -70,7 +74,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe>`;
     setScriptsLoaded(true);
   }, [cookiesAccepted, scriptsLoaded]);
   
-  // GA4 betöltése (CSAAK elfogadás után)
+  // GA4 betöltése (CSAK elfogadás után)
   useEffect(() => {
     if (!cookiesAccepted) return;
     
@@ -84,8 +88,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe>`;
         window.dataLayer = [];
       }
       
-      window.gtag = function() {
-        window.dataLayer.push(arguments);
+      window.gtag = function(...args: any[]) {
+        window.dataLayer.push(args);
       };
       
       const now = new Date();
@@ -130,8 +134,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         window.dataLayer = [];
       }
       
-      window.gtag = function() {
-        window.dataLayer.push(arguments);
+      window.gtag = function(...args: any[]) {
+        window.dataLayer.push(args);
       };
       
       const now = new Date();
@@ -160,11 +164,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         strategy="afterInteractive"
         dangerouslySetInnerHTML={{
           __html: `
-            window.bp = window.bp || function() {
-              (window.bp.q = window.bp.q || []).push(arguments);
-            };
-            window.bp.l = 1 * new Date();
-            window.barion_pixel_id = 'BP-YQqhhb7YpN-9B';
+            if (typeof window !== 'undefined') {
+              window.bp = window.bp || function() {
+                (window.bp.q = window.bp.q || []).push(arguments);
+              };
+              window.bp.l = 1 * new Date();
+              window.barion_pixel_id = 'BP-YQqhhb7YpN-9B';
+            }
           `,
         }}
       />
@@ -173,7 +179,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         strategy="afterInteractive"
         src="https://pixel.barion.com/bp.js"
         onLoad={() => {
-          if (window.bp) {
+          if (typeof window !== 'undefined' && window.bp && window.barion_pixel_id) {
             window.bp('init', 'addBarionPixelId', window.barion_pixel_id);
             console.log('[Barion] Pixel inicializálva');
           }
