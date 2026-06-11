@@ -1,4 +1,3 @@
-// pages/PostDetailsPage.js - a fájl elején
 'use client';
 
 import React, { useState, useEffect, useCallback, Suspense } from 'react';
@@ -6,7 +5,7 @@ import { useParams, useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import sanitizeHtml from 'sanitize-html';
 import '../styles/PostDetailsPage.css';
-import { analyzePropertyAI } from '../services/apiService';
+import { analyzePropertyAI, getPostDetails, getSimilarPosts } from '../services/apiService';  // ← HIÁNYZOTT getSimilarPosts!
 import { 
   getFavoritePosts, 
   addFavoritePost,  
