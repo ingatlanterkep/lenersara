@@ -6,7 +6,12 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:5000/api/:path*',
+        destination: `${process.env.NEXT_PUBLIC_BACKEND_BASEURL || 'http://localhost:5000'}/api/:path*`,
+      },
+      // 🔥 XML útvonalak átirányítása a backendre vagy az API route-okra
+      {
+        source: '/xml/:path*',
+        destination: '/api/xml/:path*', // Ezt fogjuk létrehozni
       },
     ];
   },
@@ -16,15 +21,7 @@ const nextConfig = {
   },
   
   transpilePackages: ['leaflet', 'react-leaflet'],
-  
-  // 🔥 ISR és SSG beállítások
-  staticPageGenerationTimeout: 120, // 2 perc timeout nagyobb build-eknél
-  
-  // Opcionális: készíts statikus exportot (ha teljesen statikus akarsz)
-  // output: 'export', // Csak akkor, ha tényleg teljesen statikus kell
-  
-  // Traffic cop kikapcsolása (ha szükséges)
-  // trailingSlash: false,
+  staticPageGenerationTimeout: 120,
 };
 
 module.exports = nextConfig;
