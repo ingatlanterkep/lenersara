@@ -107,6 +107,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe>`;
     setCookiesAccepted(true);
     setCookie('ingatlanTerkepCookieConsent', 'true', { maxAge: 150 * 24 * 60 * 60 });
     
+  // Fontos! Értesítjük a HomePageContent-et
+  window.dispatchEvent(new CustomEvent('cookiesAccepted'));
+
     // GTM betöltése
     if (!window.dataLayer?.gtmLoaded) {
       if (!window.dataLayer) {

@@ -327,23 +327,6 @@ export default function HomePageContent({
       setIsQueuing(false);
     }
   };
-
-  useEffect(() => {
-  const checkConsent = () => {
-    const hasConsent = document.cookie.includes('ingatlanTerkepCookieConsent=true');
-    setCookiesAccepted(hasConsent);
-  };
-
-  checkConsent();
-
-  const interval = setInterval(checkConsent, 500); // durva, de működik
-  window.addEventListener('cookiesAccepted', checkConsent);
-
-  return () => {
-    clearInterval(interval);
-    window.removeEventListener('cookiesAccepted', checkConsent);
-  };
-}, []);
   
   // URL beolvasása
   useEffect(() => {
@@ -439,11 +422,37 @@ export default function HomePageContent({
     checkAuthStatus();
   }, [pathname, navigate]);
   
-  // Cookie consent kezelés
-  useEffect(() => {
+// === COOKIE CONSENT KEZELÉS (csak ez maradjon meg!) ===
+useEffect(() => {
+  const checkConsent = () => {
     const hasConsent = document.cookie.includes('ingatlanTerkepCookieConsent=true');
-    setCookiesAccepted(hasConsent);
-  }, []);
+    if (hasConsent !== cookiesAccepted) {           // csak ha változott
+      setCookiesAccepted(hasConsent);
+      console.log('[HomePageContent] Cookie state frissítve:', hasConsent);
+    }
+  };
+
+  // Kezdeti ellenőrzés
+  checkConsent();
+
+  // Event listener (a CookieConsentWrapper-ből fog jönni)
+  window.addEventListener('cookiesAccepted', checkConsent);
+  window.addEventListener('cookiesDeclined', checkConsent);
+
+  // Biztonsági polling (max 2 másodpercig, utána leáll)
+  const interval = setInterval(() => {
+    checkConsent();
+  }, 800);
+
+  // 5 másodperc után leállítjuk a pollingot
+  setTimeout(() => clearInterval(interval), 5000);
+
+  return () => {
+    window.removeEventListener('cookiesAccepted', checkConsent);
+    window.removeEventListener('cookiesDeclined', checkConsent);
+    clearInterval(interval);
+  };
+}, [cookiesAccepted]);   // ← fontos: cookiesAccepted dependency
   
   // ViewMode CSS osztály kezelés
   useEffect(() => {
