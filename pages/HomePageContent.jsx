@@ -327,6 +327,23 @@ export default function HomePageContent({
       setIsQueuing(false);
     }
   };
+
+  useEffect(() => {
+  const checkConsent = () => {
+    const hasConsent = document.cookie.includes('ingatlanTerkepCookieConsent=true');
+    setCookiesAccepted(hasConsent);
+  };
+
+  checkConsent();
+
+  const interval = setInterval(checkConsent, 500); // durva, de működik
+  window.addEventListener('cookiesAccepted', checkConsent);
+
+  return () => {
+    clearInterval(interval);
+    window.removeEventListener('cookiesAccepted', checkConsent);
+  };
+}, []);
   
   // URL beolvasása
   useEffect(() => {
