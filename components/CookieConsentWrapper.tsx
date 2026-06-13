@@ -151,11 +151,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     console.log('[CookieConsent] Elfogadva - trackerek betöltve');
   }, []);
   
-  const handleDecline = useCallback(() => {
-    setCookiesAccepted(false);
-    setCookie('ingatlanTerkepCookieConsent', 'false', { maxAge: 150 * 24 * 60 * 60 });
-    console.log('[CookieConsent] Elutasítva - marketing trackerek NEM letöltve');
-  }, []);
+const handleDecline = useCallback(() => {
+  setCookiesAccepted(false);
+  setCookie('ingatlanTerkepCookieConsent', 'false', { maxAge: 150 * 24 * 60 * 60 });
+  window.dispatchEvent(new CustomEvent('cookiesDeclined'));
+}, []);
   
   if (!mounted) return null;
   
