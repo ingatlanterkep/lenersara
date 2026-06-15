@@ -1,4 +1,4 @@
-// CookieConsentWrapper.tsx - JAVÍTOTT VERZIÓ
+// CookieConsentWrapper.tsx - TISZTÁN GA4, GTM NÉLKÜL
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -8,7 +8,6 @@ import { setCookie, getCookie } from 'cookies-next';
 declare global {
   interface Window {
     gtag?: (...args: any[]) => void;
-
     fbq?: (...args: any[]) => void;
   }
 }
@@ -23,29 +22,31 @@ export default function CookieConsentWrapper() {
     setMounted(true);
   }, []);
 
-  // GA4 betöltése CSAK elfogadás után
+  // GA4 betöltése CSAK elfogadás után (GTM NÉLKÜL)
   useEffect(() => {
     if (!cookiesAccepted) return;
     if ((window as any).ga4Loaded) return;
 
     console.log('[GA4] Betöltése...');
 
-    // 1. gtag.js betöltése
+    // 1. Inicializáljuk a dataLayer-t (ha még nincs)
+    window.dataLayer = window.dataLayer || [];
+
+    // 2. gtag függvény definiálása
+    function gtag(...args: any[]) {
+      window.dataLayer.push(args);
+    }
+    window.gtag = gtag;
+
+    // 3. GA4 script betöltése
     const script = document.createElement('script');
     script.src = 'https://www.googletagmanager.com/gtag/js?id=G-KWH607ZP7H';
     script.async = true;
-    document.head.appendChild(script);
-
-    // 2. Várunk a script betöltődésére, majd inicializálunk
+    
     script.onload = () => {
       console.log('[GA4] Script betöltődött');
       
-      window.dataLayer = window.dataLayer || [];
-      function gtag(...args: any[]) {
-        window.dataLayer.push(args);
-      }
-      window.gtag = gtag;
-
+      // 4. Inicializálás
       gtag('js', new Date());
       gtag('config', 'G-KWH607ZP7H', {
         send_page_view: true,
@@ -55,7 +56,7 @@ export default function CookieConsentWrapper() {
       (window as any).ga4Loaded = true;
       console.log('[GA4] Inicializálva');
 
-      // Teszt event
+      // 5. Teszt event (opcionális)
       gtag('event', 'consent_granted', {
         event_category: 'cookie_consent',
         event_label: 'user_accepted'
@@ -67,6 +68,15 @@ export default function CookieConsentWrapper() {
       console.error('[GA4] Script betöltési hiba');
     };
 
+    document.head.appendChild(script);
+
+    // Cleanup (opcionális)
+    return () => {
+      // Nem távolítjuk el a scriptet, csak megjelöljük, hogy ne töltsük be újra
+      if (script.parentNode) {
+        // Ne távolítsuk el, mert később kellhet
+      }
+    };
   }, [cookiesAccepted]);
 
   const handleAccept = () => {
@@ -75,6 +85,15 @@ export default function CookieConsentWrapper() {
       maxAge: 150 * 24 * 60 * 60, 
       path: '/' 
     });
+    
+    // Ha már van gtag, küldjünk eventet
+    if (window.gtag) {
+      window.gtag('event', 'page_view', {
+        page_path: window.location.pathname,
+        send_to: 'G-KWH607ZP7H'
+      });
+    }
+    
     window.dispatchEvent(new CustomEvent('cookiesAccepted'));
     console.log('[CookieConsent] Elfogadva');
   };
