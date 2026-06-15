@@ -1,11 +1,9 @@
-// src/components/LayerPanel.js - MÓDOSÍTOTT
+// src/components/LayerPanel.js
 import React, { useEffect, useRef } from 'react';
-import { useGA4 } from '@/hooks/useGA4';
 import '../styles/HomePage.css';
 
 const LayerPanel = ({ zoom, layers, setLayers, onClose, cookiesAccepted }) => {
-  const prevLayersRef = useRef(layers);
-  const { sendEvent, isReady } = useGA4();
+  const prevLayersRef = useRef(layers); // Inicializáljuk a jelenlegi layers-szel
 
   const allLayers = [
     { key: 'satellite', name: 'Műhold' },
@@ -20,12 +18,11 @@ const LayerPanel = ({ zoom, layers, setLayers, onClose, cookiesAccepted }) => {
     { key: 'religion', name: 'Vallás' },
   ];
 
-  useEffect(() => {
-    // Csak akkor küldünk eventet, ha:
-    // 1. Elfogadták a sütiket
-    // 2. A GA4 készen áll
-    // 3. Van változás a rétegekben
-    if (!cookiesAccepted || !isReady) return;
+useEffect(() => {
+  if (!cookiesAccepted || !window.gtag) {
+    console.log('[LayerPanel] GA4 skipped', { cookiesAccepted, gtag: !!window.gtag });
+    return;
+  }
 
     const prevLayers = prevLayersRef.current;
     const changedKeys = Object.keys(layers).filter(
@@ -34,7 +31,7 @@ const LayerPanel = ({ zoom, layers, setLayers, onClose, cookiesAccepted }) => {
 
     if (changedKeys.length > 0) {
       changedKeys.forEach(key => {
-        sendEvent('layer_toggle', {
+        window.gtag('event', 'layer_toggle', {
           layer_name: key,
           layer_state: layers[key] ? 'enabled' : 'disabled',
           active_layers: Object.keys(layers).filter(k => layers[k]).join(',') || 'none'
@@ -42,30 +39,36 @@ const LayerPanel = ({ zoom, layers, setLayers, onClose, cookiesAccepted }) => {
       });
     }
 
+    // Frissítjük a ref-et a következő összehasonlításhoz
     prevLayersRef.current = layers;
-  }, [layers, cookiesAccepted, isReady, sendEvent]);
+  }, [layers, cookiesAccepted]);
 
   const handleChange = (key, checked) => {
+    console.log('Réteg váltás:', key, checked); // Debug, ha kell
+
     setLayers(prev => ({
       ...prev,
       [key]: checked
     }));
   };
 
+  const visibleLayers = allLayers;
+
   return (
     <div className="layer-panel-modern">
       <button className="close-button" onClick={onClose}>×</button>
+
       <div className="layer-panel-content">
         <div className="layer-bar-scrollable">
           <div className="layer-bar">
-            {allLayers.map(({ key, name }) => (
+            {visibleLayers.map(({ key, name }) => (
               <label
                 key={key}
                 className={`layer-control-label ${key}-label ${layers[key] ? 'checked' : ''}`}
               >
                 <input
                   type="checkbox"
-                  checked={!!layers[key]}
+                  checked={!!layers[key]} // biztonság kedvéért !!
                   onChange={(e) => handleChange(key, e.target.checked)}
                 />
                 <span className="layer-text">{name}</span>
