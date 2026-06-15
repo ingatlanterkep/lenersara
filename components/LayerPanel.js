@@ -18,13 +18,11 @@ const LayerPanel = ({ zoom, layers, setLayers, onClose, cookiesAccepted }) => {
     { key: 'religion', name: 'Vallás' },
   ];
 
-  // Analytics csak itt, az useEffect-ben
-  useEffect(() => {
-    if (!cookiesAccepted || !window.gtag) {
-      // Opcionális: debug log, ha szeretnéd látni, miért nem küldünk
-      console.log('Analytics kihagyva:', { cookiesAccepted, gtagAvailable: !!window.gtag });
-      return;
-    }
+useEffect(() => {
+  if (!cookiesAccepted || !window.gtag) {
+    console.log('[LayerPanel] GA4 skipped', { cookiesAccepted, gtag: !!window.gtag });
+    return;
+  }
 
     const prevLayers = prevLayersRef.current;
     const changedKeys = Object.keys(layers).filter(
