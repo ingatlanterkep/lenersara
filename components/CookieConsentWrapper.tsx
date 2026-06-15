@@ -1,4 +1,4 @@
-// CookieConsentWrapper.tsx - SIMA GA4 verzió (GTM nélkül)
+// CookieConsentWrapper.tsx - JAVÍTOTT VERZIÓ
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -8,6 +8,7 @@ import { setCookie, getCookie } from 'cookies-next';
 declare global {
   interface Window {
     gtag?: (...args: any[]) => void;
+
     fbq?: (...args: any[]) => void;
   }
 }
@@ -22,7 +23,7 @@ export default function CookieConsentWrapper() {
     setMounted(true);
   }, []);
 
-  // GA4 betöltése CSAK elfogadás után - SIMÁN, GTM NÉLKÜL!
+  // GA4 betöltése CSAK elfogadás után
   useEffect(() => {
     if (!cookiesAccepted) return;
     if ((window as any).ga4Loaded) return;
@@ -35,31 +36,36 @@ export default function CookieConsentWrapper() {
     script.async = true;
     document.head.appendChild(script);
 
-    // 2. gtag függvény definiálása
-    window.dataLayer = window.dataLayer || [];
-    function gtag(...args: any[]) {
-      window.dataLayer.push(args);
-    }
-    window.gtag = gtag;
+    // 2. Várunk a script betöltődésére, majd inicializálunk
+    script.onload = () => {
+      console.log('[GA4] Script betöltődött');
+      
+      window.dataLayer = window.dataLayer || [];
+      function gtag(...args: any[]) {
+        window.dataLayer.push(args);
+      }
+      window.gtag = gtag;
 
-    // 3. Inicializálás
-    gtag('js', new Date());
-    gtag('config', 'G-KWH607ZP7H', {
-      send_page_view: true,
-      cookie_flags: 'SameSite=None;Secure'
-    });
+      gtag('js', new Date());
+      gtag('config', 'G-KWH607ZP7H', {
+        send_page_view: true,
+        cookie_flags: 'SameSite=None;Secure'
+      });
 
-    (window as any).ga4Loaded = true;
-    console.log('[GA4] Inicializálva');
+      (window as any).ga4Loaded = true;
+      console.log('[GA4] Inicializálva');
 
-    // 4. Teszt event
-    setTimeout(() => {
+      // Teszt event
       gtag('event', 'consent_granted', {
         event_category: 'cookie_consent',
         event_label: 'user_accepted'
       });
       console.log('[GA4] Teszt event elküldve');
-    }, 500);
+    };
+
+    script.onerror = () => {
+      console.error('[GA4] Script betöltési hiba');
+    };
 
   }, [cookiesAccepted]);
 
