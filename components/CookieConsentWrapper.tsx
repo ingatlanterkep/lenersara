@@ -1,4 +1,4 @@
-// CookieConsentWrapper.tsx - Teljesen működő verzió
+// CookieConsentWrapper.tsx - VÉGLEGES, MŰKÖDŐ VERZIÓ (GTM-en keresztül)
 
 'use client';
 
@@ -11,74 +11,66 @@ export default function CookieConsentWrapper() {
   const [mounted, setMounted] = useState(false);
   const [cookiesAccepted, setCookiesAccepted] = useState(false);
 
-  // Kezdeti állapot betöltése
   useEffect(() => {
     const hasConsent = getCookie('ingatlanTerkepCookieConsent') === 'true';
     setCookiesAccepted(hasConsent);
     setMounted(true);
   }, []);
 
-  // Cookie elfogadás kezelése
-  const handleAccept = () => {
-    setCookiesAccepted(true);
-    setCookie('ingatlanTerkepCookieConsent', 'true', { 
-      maxAge: 150 * 24 * 60 * 60, 
-      path: '/' 
-    });
-    
-    // 1. GA4 consent update - type guarddal
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('consent', 'update', {
-        'analytics_storage': 'granted',
-        'ad_storage': 'granted'
-      });
-      
-      window.gtag('event', 'consent_accepted', {
-        'event_category': 'cookie_consent',
-        'event_label': 'user_accepted'
-      });
-      console.log('[GA4] Consent granted - event sent');
-    } else {
-      console.log('[GA4] gtag nem elérhető még');
-    }
-    
-    // 2. Meta Pixel consent
-    if (typeof window !== 'undefined' && window.fbq) {
-      window.fbq('consent', 'grant');
-      setTimeout(() => {
-        if (window.fbq) {
-          window.fbq('track', 'PageView');
-        }
-      }, 100);
-    }
-    
-    window.dispatchEvent(new CustomEvent('cookiesAccepted'));
-    console.log('[CookieConsent] Elfogadva');
-  };
+// CookieConsentWrapper.tsx - csak a handleAccept és handleDecline függvényeket módosítsd:
 
-  const handleDecline = () => {
-    setCookiesAccepted(false);
-    setCookie('ingatlanTerkepCookieConsent', 'false', { 
-      maxAge: 150 * 24 * 60 * 60, 
-      path: '/' 
+const handleAccept = () => {
+  setCookiesAccepted(true);
+  setCookie('ingatlanTerkepCookieConsent', 'true', { 
+    maxAge: 150 * 24 * 60 * 60, 
+    path: '/' 
+  });
+  
+  // Consent update a GTM-nek - optional chaining operatorral (?.)
+  if (typeof window !== 'undefined') {
+    window.gtag?.('consent', 'update', {
+      'analytics_storage': 'granted',
+      'ad_storage': 'granted'
     });
-    
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('consent', 'update', {
-        'analytics_storage': 'denied',
-        'ad_storage': 'denied'
-      });
-    }
-    
-    window.dispatchEvent(new CustomEvent('cookiesDeclined'));
-    console.log('[CookieConsent] Elutasítva');
-  };
+    console.log('[GA4] Consent granted via GTM');
+  }
+  
+  if (typeof window !== 'undefined' && window.fbq) {
+    window.fbq('consent', 'grant');
+    setTimeout(() => {
+      window.fbq?.('track', 'PageView');
+    }, 100);
+  }
+  
+  window.dispatchEvent(new CustomEvent('cookiesAccepted'));
+  console.log('[CookieConsent] Elfogadva');
+};
+
+const handleDecline = () => {
+  setCookiesAccepted(false);
+  setCookie('ingatlanTerkepCookieConsent', 'false', { 
+    maxAge: 150 * 24 * 60 * 60, 
+    path: '/' 
+  });
+  
+  if (typeof window !== 'undefined') {
+    window.gtag?.('consent', 'update', {
+      'analytics_storage': 'denied',
+      'ad_storage': 'denied'
+    });
+  }
+  
+  window.dispatchEvent(new CustomEvent('cookiesDeclined'));
+  console.log('[CookieConsent] Elutasítva');
+};
+
 
   if (!mounted) return null;
 
   return (
     <>
-      {/* ========== GOOGLE TAG MANAGER & GA4 ========== */}
+      {/* ========== GOOGLE TAG MANAGER (EGYBEN TARTALMAZZA A GA4-ET) ========== */}
+      {/* Consent Mode - Alapértelmezett denied */}
       <Script
         id="gtm-consent"
         strategy="beforeInteractive"
@@ -94,18 +86,12 @@ export default function CookieConsentWrapper() {
               'wait_for_update': 500
             });
             
-            gtag('js', new Date());
-            gtag('config', 'G-KWH607ZP7H', {
-              'send_page_view': false,
-              'cookie_flags': 'SameSite=None;Secure'
-            });
-            
-            console.log('[GA4] Initialized with consent denied');
+            console.log('[GTM] Consent mode initialized');
           `,
         }}
       />
 
-      {/* GTM Script */}
+      {/* GTM Container Script */}
       <Script
         id="gtm-script"
         strategy="afterInteractive"
@@ -116,7 +102,7 @@ export default function CookieConsentWrapper() {
             j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
             })(window,document,'script','dataLayer','GTM-WVS766GK');
-            console.log('[GTM] Script loaded');
+            console.log('[GTM] Container loaded');
           `,
         }}
       />
@@ -159,7 +145,7 @@ export default function CookieConsentWrapper() {
               'https://connect.facebook.net/en_US/fbevents.js');
               fbq('init', '1588029335599358');
               fbq('track', 'PageView');
-              console.log('[Meta Pixel] Loaded and initialized');
+              console.log('[Meta Pixel] Loaded');
             `,
           }}
         />
