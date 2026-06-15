@@ -81,7 +81,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe>`;
     setCookie('ingatlanTerkepCookieConsent', 'false', { 
       maxAge: 150 * 24 * 60 * 60, 
       path: '/' 
-    });
+    }); 
     
     window.dispatchEvent(new CustomEvent('cookiesDeclined'));
     console.log('[CookieConsent] Elutasítva');
