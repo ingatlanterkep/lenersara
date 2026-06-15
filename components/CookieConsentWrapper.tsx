@@ -39,56 +39,67 @@ export default function CookieConsentWrapper() {
     }, 400);
   }, []);
 
-  // Analytics betöltése (GTM + GA4)
+  // ==================== ANALYTICS ====================
   const loadAnalytics = useCallback(() => {
-    if (window.gtag) return; // Már betöltve
+    if (window.gtag) {
+      console.log('[GA4] Már létezett');
+      return;
+    }
 
-    // GTM
-    if (!window.dataLayer) window.dataLayer = [];
-    window.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+    console.log('[GA4] Betöltés elkezdődött...');
 
-    const gtmScript = document.createElement('script');
-    gtmScript.async = true;
-    gtmScript.src = 'https://www.googletagmanager.com/gtm.js?id=GTM-WVS766GK';
-    document.head.appendChild(gtmScript);
+    window.dataLayer = window.dataLayer || [];
 
-    // GA4
-    const gaScript = document.createElement('script');
-    gaScript.async = true;
-    gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-KWH607ZP7H';
-    document.head.appendChild(gaScript);
-
+    // Biztonságos gtag definíció
     window.gtag = function (...args: any[]) {
-      window.dataLayer.push(args);
+      console.log('[GA4] gtag hívás:', args);
+      window.dataLayer?.push(args);
     };
 
-    window.gtag('js', new Date());
-    window.gtag('config', 'G-KWH607ZP7H', {
-      send_page_view: true,
-      cookie_flags: 'SameSite=None;Secure'
-    });
+    // GA4 script betöltése
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = 'https://www.googletagmanager.com/gtag/js?id=G-KWH607ZP7H';
+    document.head.appendChild(script);
 
-    console.log('[Analytics] GA4 + GTM sikeresen betöltve');
+    // Várunk a script betöltődésére
+    setTimeout(() => {
+      if (!window.gtag) return;
+
+      window.gtag('js', new Date());
+      window.gtag('config', 'G-KWH607ZP7H', {
+        send_page_view: true,
+        cookie_flags: 'SameSite=None;Secure'
+      });
+
+      // Teszt event
+      window.gtag('event', 'consent_accepted', {
+        event_category: 'cookie_consent',
+        event_label: 'user_accepted'
+      });
+
+      console.log('[GA4] Config + teszt event elküldve');
+    }, 1200);
   }, []);
 
   const handleAccept = useCallback(() => {
     setCookiesAccepted(true);
     setCookie('ingatlanTerkepCookieConsent', 'true', { 
-      maxAge: 150 * 24 * 60 * 60,
-      path: '/'
+      maxAge: 150 * 24 * 60 * 60, 
+      path: '/' 
     });
 
     window.dispatchEvent(new CustomEvent('cookiesAccepted'));
     loadAnalytics();
 
-    console.log('[CookieConsent] Elfogadva → trackerek betöltve');
+    console.log('[CookieConsent] Elfogadva → GA4 betöltése elindítva');
   }, [loadAnalytics]);
 
   const handleDecline = useCallback(() => {
     setCookiesAccepted(false);
     setCookie('ingatlanTerkepCookieConsent', 'false', { 
-      maxAge: 150 * 24 * 60 * 60,
-      path: '/'
+      maxAge: 150 * 24 * 60 * 60, 
+      path: '/' 
     });
     window.dispatchEvent(new CustomEvent('cookiesDeclined'));
     console.log('[CookieConsent] Elutasítva');
@@ -98,7 +109,7 @@ export default function CookieConsentWrapper() {
 
   return (
     <>
-      {/* Barion Pixel - Mindig */}
+      {/* Barion Pixel */}
       <Script
         id="barion-pixel"
         strategy="afterInteractive"
@@ -118,14 +129,9 @@ export default function CookieConsentWrapper() {
         id="barion-pixel-loader"
         strategy="afterInteractive"
         src="https://pixel.barion.com/bp.js"
-        onLoad={() => {
-          if (window.bp && window.barion_pixel_id) {
-            window.bp('init', 'addBarionPixelId', window.barion_pixel_id);
-          }
-        }}
       />
 
-      {/* Meta Pixel - Csak elfogadás után */}
+      {/* Meta Pixel */}
       {cookiesAccepted && (
         <Script
           id="meta-pixel"
