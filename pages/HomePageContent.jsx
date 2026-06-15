@@ -264,26 +264,30 @@ export default function HomePageContent({
     });
   };
   
-  const fetchPostDetails = async (postId) => {
-    try {
-      const postDetails = await getPostDetails(postId);
-      const newPost = postDetails.data;
-      if (cookiesAccepted && window.gtag) {
-        window.gtag('event', 'preview_open', {
-          post_id: newPost._id,
-          listing_type: newPost.listing_type,
-          price: newPost.price || newPost.rental_price,
-        });
-      }
-      setSelectedPost(newPost);
-      addViewedPost(newPost._id);
-      setViewedPosts(prev => new Set(prev).add(newPost._id));
-      return postDetails;
-    } catch (error) {
-      console.error('Hiba a hirdetés részleteinek lekérdezésekor:', error);
-      throw error;
+// HomePageContent.tsx - a fetchPostDetails függvényben
+const fetchPostDetails = async (postId) => {
+  try {
+    const postDetails = await getPostDetails(postId);
+    const newPost = postDetails.data;
+    
+    // GA4 event küldés - már nem kell ellenőrizni a gtag létezését külön
+    if (cookiesAccepted) {
+      window.gtag?.('event', 'preview_open', {
+        post_id: newPost._id,
+        listing_type: newPost.listing_type,
+        price: newPost.price || newPost.rental_price,
+      });
     }
-  };
+    
+    setSelectedPost(newPost);
+    addViewedPost(newPost._id);
+    setViewedPosts(prev => new Set(prev).add(newPost._id));
+    return postDetails;
+  } catch (error) {
+    console.error('Hiba:', error);
+    throw error;
+  }
+};
   
   const loadListData = async (page = 1, append = false) => {
     if (listLoading) return;
