@@ -1,4 +1,4 @@
-// CookieConsentWrapper.tsx - VÉGLEGES, MŰKÖDŐ VERZIÓ (GTM-en keresztül)
+// CookieConsentWrapper.tsx - TELJESEN MŰKÖDŐ VERZIÓ
 
 'use client';
 
@@ -10,6 +10,7 @@ import Script from 'next/script';
 export default function CookieConsentWrapper() {
   const [mounted, setMounted] = useState(false);
   const [cookiesAccepted, setCookiesAccepted] = useState(false);
+  const [gtmReady, setGtmReady] = useState(false);
 
   useEffect(() => {
     const hasConsent = getCookie('ingatlanTerkepCookieConsent') === 'true';
@@ -17,60 +18,84 @@ export default function CookieConsentWrapper() {
     setMounted(true);
   }, []);
 
-// CookieConsentWrapper.tsx - csak a handleAccept és handleDecline függvényeket módosítsd:
+  // Ellenőrizzük, hogy a GTM script betöltődött-e
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.gtag) {
+      setGtmReady(true);
+    } else {
+      const checkInterval = setInterval(() => {
+        if (typeof window !== 'undefined' && window.gtag) {
+          setGtmReady(true);
+          clearInterval(checkInterval);
+        }
+      }, 100);
+      return () => clearInterval(checkInterval);
+    }
+  }, []);
 
-const handleAccept = () => {
-  setCookiesAccepted(true);
-  setCookie('ingatlanTerkepCookieConsent', 'true', { 
-    maxAge: 150 * 24 * 60 * 60, 
-    path: '/' 
-  });
-  
-  // Consent update a GTM-nek - optional chaining operatorral (?.)
-  if (typeof window !== 'undefined') {
-    window.gtag?.('consent', 'update', {
-      'analytics_storage': 'granted',
-      'ad_storage': 'granted'
+  const handleAccept = () => {
+    setCookiesAccepted(true);
+    setCookie('ingatlanTerkepCookieConsent', 'true', { 
+      maxAge: 150 * 24 * 60 * 60, 
+      path: '/' 
     });
-    console.log('[GA4] Consent granted via GTM');
-  }
-  
-  if (typeof window !== 'undefined' && window.fbq) {
-    window.fbq('consent', 'grant');
-    setTimeout(() => {
-      window.fbq?.('track', 'PageView');
-    }, 100);
-  }
-  
-  window.dispatchEvent(new CustomEvent('cookiesAccepted'));
-  console.log('[CookieConsent] Elfogadva');
-};
+    
+    // Várunk egy kicsit, hogy a GTM betöltődjön, majd consent update
+    const sendConsentUpdate = () => {
+      if (typeof window !== 'undefined' && window.gtag) {
+        window.gtag('consent', 'update', {
+          'analytics_storage': 'granted',
+          'ad_storage': 'granted'
+        });
+        console.log('[GA4] Consent granted via GTM');
+        
+        // Küldünk egy teszt eventet
+        window.gtag('event', 'consent_granted_test', {
+          'event_category': 'cookie_consent',
+          'event_label': 'test_event'
+        });
+      } else {
+        // Ha még nincs kész, próbáljuk újra 100ms múlva
+        setTimeout(sendConsentUpdate, 100);
+      }
+    };
+    
+    sendConsentUpdate();
+    
+    if (typeof window !== 'undefined' && window.fbq) {
+      window.fbq('consent', 'grant');
+      setTimeout(() => {
+        window.fbq?.('track', 'PageView');
+      }, 100);
+    }
+    
+    window.dispatchEvent(new CustomEvent('cookiesAccepted'));
+    console.log('[CookieConsent] Elfogadva');
+  };
 
-const handleDecline = () => {
-  setCookiesAccepted(false);
-  setCookie('ingatlanTerkepCookieConsent', 'false', { 
-    maxAge: 150 * 24 * 60 * 60, 
-    path: '/' 
-  });
-  
-  if (typeof window !== 'undefined') {
-    window.gtag?.('consent', 'update', {
-      'analytics_storage': 'denied',
-      'ad_storage': 'denied'
+  const handleDecline = () => {
+    setCookiesAccepted(false);
+    setCookie('ingatlanTerkepCookieConsent', 'false', { 
+      maxAge: 150 * 24 * 60 * 60, 
+      path: '/' 
     });
-  }
-  
-  window.dispatchEvent(new CustomEvent('cookiesDeclined'));
-  console.log('[CookieConsent] Elutasítva');
-};
-
+    
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('consent', 'update', {
+        'analytics_storage': 'denied',
+        'ad_storage': 'denied'
+      });
+    }
+    
+    window.dispatchEvent(new CustomEvent('cookiesDeclined'));
+    console.log('[CookieConsent] Elutasítva');
+  };
 
   if (!mounted) return null;
 
   return (
     <>
-      {/* ========== GOOGLE TAG MANAGER (EGYBEN TARTALMAZZA A GA4-ET) ========== */}
-      {/* Consent Mode - Alapértelmezett denied */}
+      {/* ========== GOOGLE TAG MANAGER ========== */}
       <Script
         id="gtm-consent"
         strategy="beforeInteractive"
@@ -86,8 +111,12 @@ const handleDecline = () => {
               'wait_for_update': 500
             });
             
-            console.log('[GTM] Consent mode initialized');
+            console.log('[GTM] Consent mode initialized, gtag ready');
           `,
+        }}
+        onLoad={() => {
+          console.log('[GTM] Consent script loaded');
+          setGtmReady(true);
         }}
       />
 
@@ -95,15 +124,9 @@ const handleDecline = () => {
       <Script
         id="gtm-script"
         strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer','GTM-WVS766GK');
-            console.log('[GTM] Container loaded');
-          `,
+        src="https://www.googletagmanager.com/gtm.js?id=GTM-WVS766GK"
+        onLoad={() => {
+          console.log('[GTM] Container loaded');
         }}
       />
 
