@@ -12,6 +12,95 @@ export const AnalyticsProvider = ({ children }) => {
   const checkIntervalRef = useRef(null);
   const pendingEventsRef = useRef([]);
   const isGtagLoadingRef = useRef(false);
+  const gaMeasurementId = 'G-KWH607ZP7H';
+
+  // 🔥 Gtag inicializálás - EGYSZERŰSÍTETT verzió
+  const initGtag = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    if (window.gtag) {
+      setIsGtagLoaded(true);
+      return true;
+    }
+
+    try {
+      console.log('[AnalyticsContext] GA4 inicializálása...');
+      
+      // DataLayer inicializálás
+      if (!window.dataLayer) {
+        window.dataLayer = [];
+      }
+
+      // Gtag függvény definiálása
+      window.gtag = function(...args) {
+        window.dataLayer.push(args);
+        console.log('[AnalyticsContext] gtag hívva:', args);
+      };
+
+      // GA4 konfiguráció
+      window.gtag('js', new Date());
+      window.gtag('config', gaMeasurementId, {
+        send_page_view: true,
+        cookie_flags: 'SameSite=None;Secure',
+        cookie_domain: 'auto',
+        cookie_expires: 63072000, // 2 év
+      });
+
+      setIsGtagLoaded(true);
+      console.log('[AnalyticsContext] ✅ GA4 inicializálva');
+      
+      // 🔥 Küldjünk egy page_view eseményt
+      window.gtag('event', 'page_view', {
+        page_title: document.title || 'Ingatlan-Térkép',
+        page_location: window.location.href,
+      });
+      
+      return true;
+    } catch (error) {
+      console.error('[AnalyticsContext] ❌ GA4 inicializálási hiba:', error);
+      return false;
+    }
+  }, [gaMeasurementId]);
+
+  // 🔥 Gtag script betöltés
+  const loadGtagScript = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    if (isGtagLoadingRef.current) return;
+    if (document.querySelector('script[src*="gtag/js"]')) {
+      isGtagLoadingRef.current = true;
+      // Ha a script már létezik, próbáljuk inicializálni
+      setTimeout(() => {
+        if (!window.gtag) {
+          initGtag();
+        }
+      }, 500);
+      return;
+    }
+
+    console.log('[AnalyticsContext] GA4 script betöltése...');
+    isGtagLoadingRef.current = true;
+    
+    const script = document.createElement('script');
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`;
+    script.async = true;
+    script.onload = () => {
+      console.log('[AnalyticsContext] ✅ GA4 script betöltve');
+      initGtag();
+      isGtagLoadingRef.current = false;
+      // Függőben lévő események küldése
+      flushPendingEvents();
+    };
+    script.onerror = () => {
+      console.error('[AnalyticsContext] ❌ GA4 script betöltési hiba');
+      isGtagLoadingRef.current = false;
+      // Ha a script nem töltődik be, próbáljuk közvetlenül
+      setTimeout(() => {
+        if (!window.gtag) {
+          initGtag();
+        }
+      }, 1000);
+    };
+    document.head.appendChild(script);
+  }, [gaMeasurementId, initGtag]);
 
   // 🔥 Cookie ellenőrzés
   const checkCookieConsent = useCallback(() => {
@@ -24,59 +113,17 @@ export const AnalyticsProvider = ({ children }) => {
       setCookiesAccepted(hasConsent);
       
       if (hasConsent) {
-        loadGtag();
-        setTimeout(() => flushPendingEvents(), 300);
+        // Próbáljuk betölteni a gtag-et
+        if (!window.gtag) {
+          loadGtagScript();
+        } else {
+          initGtag();
+        }
+        setTimeout(() => flushPendingEvents(), 500);
       }
     }
     return hasConsent;
-  }, [cookiesAccepted]);
-
-  // 🔥 Gtag betöltése
-  const loadGtag = useCallback(() => {
-    if (typeof window === 'undefined') return;
-    if (isGtagLoadingRef.current) return;
-    
-    if (window.gtag) {
-      setIsGtagLoaded(true);
-      flushPendingEvents();
-      return;
-    }
-
-    if (document.querySelector('script[src*="gtag/js?id=G-KWH607ZP7H"]')) {
-      isGtagLoadingRef.current = true;
-      return;
-    }
-
-    console.log('[AnalyticsContext] GA4 betöltése...');
-    isGtagLoadingRef.current = true;
-    
-    const script = document.createElement('script');
-    script.src = 'https://www.googletagmanager.com/gtag/js?id=G-KWH607ZP7H';
-    script.async = true;
-    script.onload = () => {
-      if (!window.dataLayer) {
-        window.dataLayer = [];
-      }
-      window.gtag = function(...args) {
-        window.dataLayer.push(args);
-      };
-      window.gtag('js', new Date());
-      window.gtag('config', 'G-KWH607ZP7H', {
-        send_page_view: true,
-        cookie_flags: 'SameSite=None;Secure'
-      });
-      setIsGtagLoaded(true);
-      isGtagLoadingRef.current = false;
-      console.log('[AnalyticsContext] ✅ GA4 betöltve');
-      
-      flushPendingEvents();
-    };
-    script.onerror = () => {
-      console.error('[AnalyticsContext] ❌ GA4 betöltési hiba');
-      isGtagLoadingRef.current = false;
-    };
-    document.head.appendChild(script);
-  }, []);
+  }, [cookiesAccepted, loadGtagScript, initGtag]);
 
   // 🔥 Függőben lévő események küldése
   const flushPendingEvents = useCallback(() => {
@@ -94,6 +141,8 @@ export const AnalyticsProvider = ({ children }) => {
         console.log(`[Analytics] ✅ Függőben lévő esemény elküldve: ${eventName}`, eventParams);
       } catch (error) {
         console.error(`[Analytics] Hiba a függőben lévő esemény küldésekor (${eventName}):`, error);
+        // Ha hiba van, tegyük vissza a sorba
+        pendingEventsRef.current.push({ eventName, eventParams });
       }
     });
   }, []);
@@ -106,7 +155,7 @@ export const AnalyticsProvider = ({ children }) => {
     setIsLoading(false);
     
     if (hasConsent) {
-      loadGtag();
+      loadGtagScript();
     }
     
     // 🔥 Rendszeres ellenőrzés (minden 500ms)
@@ -137,44 +186,35 @@ export const AnalyticsProvider = ({ children }) => {
       window.removeEventListener('cookieConsentUpdated', handleCookieUpdate);
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, [checkCookieConsent, loadGtag]);
+  }, [checkCookieConsent, loadGtagScript]);
 
   // 🔥 Biztonságos esemény küldés
   const sendEvent = useCallback((eventName, eventParams = {}) => {
-    // 🔥 1. Ellenőrizzük a cookie-t (MINDIG friss értéket olvasunk)
     const hasConsent = document.cookie.includes('ingatlanTerkepCookieConsent=true');
     
     console.log(`[Analytics] sendEvent hívva: ${eventName}`, { 
-      cookiesAccepted,        // State értéke (lehet elavult)
-      hasConsent,            // Friss cookie érték
+      cookiesAccepted,
+      hasConsent,
+      gtagExists: !!window.gtag,
       isGtagLoaded,
-      gtagExists: !!window.gtag
     });
     
-    // 🔥 2. Frissítsük a state-et, ha a cookie és a state eltér
-    if (hasConsent !== cookiesAccepted) {
-      console.log(`[Analytics] 🔄 State frissítése: ${cookiesAccepted} -> ${hasConsent}`);
-      setCookiesAccepted(hasConsent);
-      
-      // Ha most lett elfogadva, töltsük be a gtag-et
-      if (hasConsent && !window.gtag) {
-        loadGtag();
-      }
-    }
-    
-    // 🔥 3. Ha nincs elfogadás, ne küldjünk
     if (!hasConsent) {
       console.log(`[Analytics] ⛔ Kihagyva (nincs süti elfogadás): ${eventName}`);
       return false;
     }
 
-    // 🔥 4. Ellenőrizzük a gtag-et
+    if (hasConsent !== cookiesAccepted) {
+      setCookiesAccepted(hasConsent);
+    }
+
+    // 🔥 Ha nincs gtag, próbáljuk betölteni
     if (!window.gtag) {
       console.log(`[Analytics] ⏳ gtag nem elérhető, esemény sorba rakva: ${eventName}`);
       pendingEventsRef.current.push({ eventName, eventParams });
+      loadGtagScript();
       
-      loadGtag();
-      
+      // Próbáljuk újra 500ms múlva
       setTimeout(() => {
         if (window.gtag && pendingEventsRef.current.length > 0) {
           flushPendingEvents();
@@ -184,19 +224,30 @@ export const AnalyticsProvider = ({ children }) => {
       return false;
     }
 
-    // 🔥 5. ESEMÉNY KÜLDÉSE
+    // 🔥 ESEMÉNY KÜLDÉSE
     try {
+      // 🔥 Biztosítsuk, hogy a config be van állítva
+      if (!window._ga_configured) {
+        window.gtag('config', 'G-KWH607ZP7H', {
+          send_page_view: false,
+          cookie_flags: 'SameSite=None;Secure',
+        });
+        window._ga_configured = true;
+      }
+      
       window.gtag('event', eventName, {
         ...eventParams,
         timestamp: new Date().toISOString(),
+        send_to: 'G-KWH607ZP7H', // 🔥 KÜLÖN MEGADJUK A CÉLT!
       });
+      
       console.log(`[Analytics] ✅ Elküldve: ${eventName}`, eventParams);
       return true;
     } catch (error) {
       console.error(`[Analytics] ❌ Hiba a küldés során (${eventName}):`, error);
       return false;
     }
-  }, [cookiesAccepted, loadGtag, flushPendingEvents]);
+  }, [cookiesAccepted, loadGtagScript, flushPendingEvents, isGtagLoaded]);
 
   return (
     <AnalyticsContext.Provider value={{
