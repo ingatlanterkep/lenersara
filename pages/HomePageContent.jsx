@@ -671,7 +671,6 @@ export default function HomePageContent({
                   layers={layers}
                   setLayers={setLayers}
                   onClose={() => setShowLayerSidebar(false)}
-                  cookiesAccepted={cookiesAccepted}
                 />  
               </div>
             )}
@@ -948,7 +947,7 @@ export default function HomePageContent({
               <div className="handle-grip"></div>
             </div>
             <div className={`mobile-layer-panel ${!showLayerSidebar ? 'closed' : ''}`}>
-              <LayerPanel zoom={zoom} layers={layers} setLayers={setLayers} onClose={() => setShowLayerSidebar(false)} cookiesAccepted={cookiesAccepted} />
+              <LayerPanel zoom={zoom} layers={layers} setLayers={setLayers} onClose={() => setShowLayerSidebar(false)}/>
             </div>
             <div className={`mobile-smart-panel ${!isSmartToolsVisible ? 'closed' : ''}`}>
               <SmartToolsPanel 

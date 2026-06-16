@@ -1,9 +1,11 @@
+// app/layout.js
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import QueryProvider from '@/components/QueryProvider';
 import CookieConsentWrapper from '@/components/CookieConsentWrapper';
 import NavbarWrapper from '@/components/NavbarWrapper';
+import { AnalyticsProvider } from '@/context/AnalyticsContext';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -32,13 +34,14 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/l.png" />
       </head>
       <body className={inter.className}>
-        <NavbarWrapper />
-        <QueryProvider>
-          {children}
-        </QueryProvider>
-        <CookieConsentWrapper />
-        {/* 🔴 EZ A FONTOS - Portál konténer a FullScreenGallery számára */}
-        <div id="fullscreen-gallery-root"></div>
+        <AnalyticsProvider>
+          <NavbarWrapper />
+          <QueryProvider>
+            {children}
+          </QueryProvider>
+          <CookieConsentWrapper />
+          <div id="fullscreen-gallery-root"></div>
+        </AnalyticsProvider>
       </body>
     </html>
   );

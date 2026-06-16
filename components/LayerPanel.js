@@ -1,9 +1,12 @@
 // src/components/LayerPanel.js
 import React, { useEffect, useRef } from 'react';
-import { sendLayerToggleEvent } from '@/utils/analytics';
+import { useAnalytics } from '@/context/AnalyticsContext';
 import '../styles/HomePage.css';
 
-const LayerPanel = ({ zoom, layers, setLayers, onClose, cookiesAccepted }) => {
+const LayerPanel = ({ zoom, layers, setLayers, onClose }) => {
+  const { cookiesAccepted, sendEvent } = useAnalytics();
+  const prevLayersRef = useRef(layers);
+  
   const allLayers = [
     { key: 'satellite', name: 'Műhold' },
     { key: 'crimeHeat', name: 'Közbiztonság' },
@@ -16,22 +19,6 @@ const LayerPanel = ({ zoom, layers, setLayers, onClose, cookiesAccepted }) => {
     { key: 'sport', name: 'Sport' },
     { key: 'religion', name: 'Vallás' },
   ];
-
-  // Ellenőrizzük a cookie-t a komponens mountolásakor
-  const [hasConsent, setHasConsent] = React.useState(() => {
-    // Ellenőrizzük a cookie-t rögtön a mount előtt
-    if (typeof document !== 'undefined') {
-      return document.cookie.includes('ingatlanTerkepCookieConsent=true');
-    }
-    return cookiesAccepted || false;
-  });
-
-  // Frissítsük, ha változik a prop
-  useEffect(() => {
-    if (cookiesAccepted) {
-      setHasConsent(true);
-    }
-  }, [cookiesAccepted]);
 
   const handleChange = (key, checked) => {
     // 1. Frissítjük a state-et
@@ -46,12 +33,29 @@ const LayerPanel = ({ zoom, layers, setLayers, onClose, cookiesAccepted }) => {
       .filter(k => currentLayers[k])
       .join(',');
 
-    // 3. 🔥 KÖZVETLEN ANALYTICS KÜLDÉS - átadjuk a tényleges consent állapotot
-    // A sendLayerToggleEvent automatikusan ellenőrzi a cookie-t, ha a cookiesAccepted null/undefined
-    const result = sendLayerToggleEvent(key, checked, activeLayers, hasConsent);
+    // 3. 🔥 ANALYTICS KÜLDÉS a context segítségével
+    const result = sendEvent('layer_toggle', {
+      layer_name: key,
+      layer_state: checked ? 'enabled' : 'disabled',
+      active_layers: activeLayers || 'none',
+      zoom_level: zoom || 7,
+    });
     
     console.log(`[LayerPanel] Réteg váltás: ${key} -> ${checked ? '✅' : '❌'} (analytics: ${result ? '✅' : '❌'})`);
   };
+
+  // Változások nyomon követése (opcionális)
+  useEffect(() => {
+    const changedKeys = Object.keys(layers).filter(
+      key => layers[key] !== prevLayersRef.current[key]
+    );
+
+    if (changedKeys.length > 0 && cookiesAccepted) {
+      console.log('[LayerPanel] Változás észlelve (már elküldve a handleChange által):', changedKeys);
+    }
+
+    prevLayersRef.current = layers;
+  }, [layers, cookiesAccepted]);
 
   return (
     <div className="layer-panel-modern">
