@@ -422,37 +422,11 @@ export default function HomePageContent({
     checkAuthStatus();
   }, [pathname, navigate]);
   
-// === COOKIE CONSENT KEZELÉS (csak ez maradjon meg!) ===
-useEffect(() => {
-  const checkConsent = () => {
+  // Cookie consent kezelés
+  useEffect(() => {
     const hasConsent = document.cookie.includes('ingatlanTerkepCookieConsent=true');
-    if (hasConsent !== cookiesAccepted) {           // csak ha változott
-      setCookiesAccepted(hasConsent);
-      console.log('[HomePageContent] Cookie state frissítve:', hasConsent);
-    }
-  };
-
-  // Kezdeti ellenőrzés
-  checkConsent();
-
-  // Event listener (a CookieConsentWrapper-ből fog jönni)
-  window.addEventListener('cookiesAccepted', checkConsent);
-  window.addEventListener('cookiesDeclined', checkConsent);
-
-  // Biztonsági polling (max 2 másodpercig, utána leáll)
-  const interval = setInterval(() => {
-    checkConsent();
-  }, 800);
-
-  // 5 másodperc után leállítjuk a pollingot
-  setTimeout(() => clearInterval(interval), 5000);
-
-  return () => {
-    window.removeEventListener('cookiesAccepted', checkConsent);
-    window.removeEventListener('cookiesDeclined', checkConsent);
-    clearInterval(interval);
-  };
-}, [cookiesAccepted]);   // ← fontos: cookiesAccepted dependency
+    setCookiesAccepted(hasConsent);
+  }, []);
   
   // ViewMode CSS osztály kezelés
   useEffect(() => {
