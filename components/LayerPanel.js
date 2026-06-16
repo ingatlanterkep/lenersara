@@ -1,5 +1,5 @@
-// src/components/LayerPanel.js - Helper verzió
-import React from 'react';
+// src/components/LayerPanel.js
+import React, { useEffect, useRef } from 'react';
 import { sendLayerToggleEvent } from '@/utils/analytics';
 import '../styles/HomePage.css';
 
@@ -17,6 +17,22 @@ const LayerPanel = ({ zoom, layers, setLayers, onClose, cookiesAccepted }) => {
     { key: 'religion', name: 'Vallás' },
   ];
 
+  // Ellenőrizzük a cookie-t a komponens mountolásakor
+  const [hasConsent, setHasConsent] = React.useState(() => {
+    // Ellenőrizzük a cookie-t rögtön a mount előtt
+    if (typeof document !== 'undefined') {
+      return document.cookie.includes('ingatlanTerkepCookieConsent=true');
+    }
+    return cookiesAccepted || false;
+  });
+
+  // Frissítsük, ha változik a prop
+  useEffect(() => {
+    if (cookiesAccepted) {
+      setHasConsent(true);
+    }
+  }, [cookiesAccepted]);
+
   const handleChange = (key, checked) => {
     // 1. Frissítjük a state-et
     setLayers(prev => ({
@@ -24,14 +40,17 @@ const LayerPanel = ({ zoom, layers, setLayers, onClose, cookiesAccepted }) => {
       [key]: checked
     }));
 
-    // 2. Aktív rétegek listája (a jelenlegi állapot alapján)
+    // 2. Aktív rétegek listája
     const currentLayers = { ...layers, [key]: checked };
     const activeLayers = Object.keys(currentLayers)
       .filter(k => currentLayers[k])
       .join(',');
 
-    // 3. KÖZVETLEN ANALYTICS KÜLDÉS
-    sendLayerToggleEvent(key, checked, activeLayers, cookiesAccepted);
+    // 3. 🔥 KÖZVETLEN ANALYTICS KÜLDÉS - átadjuk a tényleges consent állapotot
+    // A sendLayerToggleEvent automatikusan ellenőrzi a cookie-t, ha a cookiesAccepted null/undefined
+    const result = sendLayerToggleEvent(key, checked, activeLayers, hasConsent);
+    
+    console.log(`[LayerPanel] Réteg váltás: ${key} -> ${checked ? '✅' : '❌'} (analytics: ${result ? '✅' : '❌'})`);
   };
 
   return (
