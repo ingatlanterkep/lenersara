@@ -15,5 +15,7 @@ declare global {
     };
     barion_pixel_id?: string;
     _fbq?: any;
+    // 🔥 Új: függőben lévő események tárolása
+    _pendingEvents?: Array<{ eventName: string; eventParams: any }>;
   }
 }
