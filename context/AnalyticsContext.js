@@ -11,17 +11,21 @@ export const AnalyticsProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const checkIntervalRef = useRef(null);
   const pendingEventsRef = useRef([]);
+  const isGtagLoadingRef = useRef(false);
 
-  // 🔥 Cookie ellenőrzés - rendszeresen és eseményekre
+  // 🔥 Cookie ellenőrzés
   const checkCookieConsent = useCallback(() => {
+    if (typeof document === 'undefined') return false;
+    
     const hasConsent = document.cookie.includes('ingatlanTerkepCookieConsent=true');
+    
     if (hasConsent !== cookiesAccepted) {
       console.log(`[AnalyticsContext] Cookie állapot változás: ${cookiesAccepted} -> ${hasConsent}`);
       setCookiesAccepted(hasConsent);
       
-      // Ha most lett elfogadva, próbáljuk betölteni a gtag-et
       if (hasConsent) {
         loadGtag();
+        setTimeout(() => flushPendingEvents(), 300);
       }
     }
     return hasConsent;
@@ -30,21 +34,21 @@ export const AnalyticsProvider = ({ children }) => {
   // 🔥 Gtag betöltése
   const loadGtag = useCallback(() => {
     if (typeof window === 'undefined') return;
+    if (isGtagLoadingRef.current) return;
     
-    // Ha már betöltött, ne töltsük újra
     if (window.gtag) {
       setIsGtagLoaded(true);
-      // Függőben lévő események küldése
       flushPendingEvents();
       return;
     }
 
-    // Ellenőrizzük, hogy a script már létezik-e
     if (document.querySelector('script[src*="gtag/js?id=G-KWH607ZP7H"]')) {
+      isGtagLoadingRef.current = true;
       return;
     }
 
     console.log('[AnalyticsContext] GA4 betöltése...');
+    isGtagLoadingRef.current = true;
     
     const script = document.createElement('script');
     script.src = 'https://www.googletagmanager.com/gtag/js?id=G-KWH607ZP7H';
@@ -62,13 +66,14 @@ export const AnalyticsProvider = ({ children }) => {
         cookie_flags: 'SameSite=None;Secure'
       });
       setIsGtagLoaded(true);
+      isGtagLoadingRef.current = false;
       console.log('[AnalyticsContext] ✅ GA4 betöltve');
       
-      // Függőben lévő események küldése
       flushPendingEvents();
     };
     script.onerror = () => {
       console.error('[AnalyticsContext] ❌ GA4 betöltési hiba');
+      isGtagLoadingRef.current = false;
     };
     document.head.appendChild(script);
   }, []);
@@ -93,9 +98,10 @@ export const AnalyticsProvider = ({ children }) => {
     });
   }, []);
 
-  // 🔥 Kezdeti cookie ellenőrzés
+  // 🔥 Kezdeti ellenőrzés
   useEffect(() => {
     const hasConsent = document.cookie.includes('ingatlanTerkepCookieConsent=true');
+    console.log(`[AnalyticsContext] Kezdeti cookie állapot: ${hasConsent}`);
     setCookiesAccepted(hasConsent);
     setIsLoading(false);
     
@@ -103,62 +109,82 @@ export const AnalyticsProvider = ({ children }) => {
       loadGtag();
     }
     
-    // 🔥 Rendszeres ellenőrzés (minden 2 másodperc)
+    // 🔥 Rendszeres ellenőrzés (minden 500ms)
     checkIntervalRef.current = setInterval(() => {
       checkCookieConsent();
-    }, 2000);
-    
-    // 🔥 Figyeljük a cookie változását (storage event)
-    const handleStorageChange = () => {
-      checkCookieConsent();
-    };
-    window.addEventListener('storage', handleStorageChange);
+    }, 500);
     
     // 🔥 Figyeljük a custom event-et
     const handleCookieUpdate = () => {
+      console.log('[AnalyticsContext] 🔔 cookieConsentUpdated esemény fogadva');
       checkCookieConsent();
     };
     window.addEventListener('cookieConsentUpdated', handleCookieUpdate);
+    
+    // 🔥 Figyeljük a storage változást
+    const handleStorageChange = (e) => {
+      if (e.key === 'ingatlanTerkepCookieConsent') {
+        console.log('[AnalyticsContext] Storage változás:', e.newValue);
+        checkCookieConsent();
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
     
     return () => {
       if (checkIntervalRef.current) {
         clearInterval(checkIntervalRef.current);
       }
-      window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('cookieConsentUpdated', handleCookieUpdate);
+      window.removeEventListener('storage', handleStorageChange);
     };
   }, [checkCookieConsent, loadGtag]);
 
   // 🔥 Biztonságos esemény küldés
   const sendEvent = useCallback((eventName, eventParams = {}) => {
-    console.log(`[Analytics] sendEvent hívva: ${eventName}`, { cookiesAccepted, isGtagLoaded });
-    
-    // 1. Ellenőrizzük a cookie-t
+    // 🔥 1. Ellenőrizzük a cookie-t (MINDIG friss értéket olvasunk)
     const hasConsent = document.cookie.includes('ingatlanTerkepCookieConsent=true');
+    
+    console.log(`[Analytics] sendEvent hívva: ${eventName}`, { 
+      cookiesAccepted,        // State értéke (lehet elavult)
+      hasConsent,            // Friss cookie érték
+      isGtagLoaded,
+      gtagExists: !!window.gtag
+    });
+    
+    // 🔥 2. Frissítsük a state-et, ha a cookie és a state eltér
+    if (hasConsent !== cookiesAccepted) {
+      console.log(`[Analytics] 🔄 State frissítése: ${cookiesAccepted} -> ${hasConsent}`);
+      setCookiesAccepted(hasConsent);
+      
+      // Ha most lett elfogadva, töltsük be a gtag-et
+      if (hasConsent && !window.gtag) {
+        loadGtag();
+      }
+    }
+    
+    // 🔥 3. Ha nincs elfogadás, ne küldjünk
     if (!hasConsent) {
       console.log(`[Analytics] ⛔ Kihagyva (nincs süti elfogadás): ${eventName}`);
       return false;
     }
 
-    // 2. Ellenőrizzük a gtag-et
+    // 🔥 4. Ellenőrizzük a gtag-et
     if (!window.gtag) {
       console.log(`[Analytics] ⏳ gtag nem elérhető, esemény sorba rakva: ${eventName}`);
       pendingEventsRef.current.push({ eventName, eventParams });
       
-      // Próbáljuk betölteni a gtag-et
       loadGtag();
       
-      // Várunk 1 másodpercet, majd újrapróbálkozunk
       setTimeout(() => {
         if (window.gtag && pendingEventsRef.current.length > 0) {
           flushPendingEvents();
         }
-      }, 1000);
+      }, 500);
       
       return false;
     }
 
-    // 3. ESEMÉNY KÜLDÉSE
+    // 🔥 5. ESEMÉNY KÜLDÉSE
     try {
       window.gtag('event', eventName, {
         ...eventParams,
@@ -170,7 +196,7 @@ export const AnalyticsProvider = ({ children }) => {
       console.error(`[Analytics] ❌ Hiba a küldés során (${eventName}):`, error);
       return false;
     }
-  }, [loadGtag, flushPendingEvents]);
+  }, [cookiesAccepted, loadGtag, flushPendingEvents]);
 
   return (
     <AnalyticsContext.Provider value={{
@@ -178,7 +204,6 @@ export const AnalyticsProvider = ({ children }) => {
       isGtagLoaded,
       isLoading,
       sendEvent,
-      // 🔥 Extra: frissítés manuális triggereléséhez
       refreshConsent: checkCookieConsent,
     }}>
       {children}
