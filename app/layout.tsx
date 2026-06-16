@@ -34,12 +34,13 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/l.png" />
       </head>
       <body className={inter.className}>
+                  <CookieConsentWrapper />
         <AnalyticsProvider>
           <NavbarWrapper />
           <QueryProvider>
             {children}
           </QueryProvider>
-          <CookieConsentWrapper />
+
           <div id="fullscreen-gallery-root"></div>
         </AnalyticsProvider>
       </body>
