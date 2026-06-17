@@ -11,9 +11,19 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
   }
 
   try {
+    // 🔥 1. ELSŐSORBAN GTAG HASZNÁLATA
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', eventName, eventParams);
+      console.log(`[DirectAnalytics] ✅ Elküldve (gtag): ${eventName}`, eventParams);
+      return true;
+    }
+    
+    // 🔥 2. FALLBACK: HA NINCS GTAG, AKKOR SAJÁT KÉRÉS
+    console.warn('[DirectAnalytics] ⚠️ gtag nem elérhető, fallback módszer');
+    
     const measurementId = 'G-KWH607ZP7H';
     
-    // Client ID lekérése a _ga cookie-ból
+    // Client ID lekérése
     let clientId = 'anonymous';
     const gaCookie = document.cookie.split(';').find(c => c.trim().startsWith('_ga='));
     if (gaCookie) {
@@ -23,7 +33,28 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
       }
     }
     
-    // Session ID lekérése
+    // 🔥 PARAMÉTEREK - POST kéréshez (mint a sikeres példában)
+    const params = new URLSearchParams();
+    params.append('v', '2');
+    params.append('tid', measurementId);
+    params.append('cid', clientId);
+    params.append('en', eventName);
+    params.append('_p', Date.now().toString());
+    params.append('gcd', '13l3l3l2l1l1');
+    params.append('npa', '1');
+    params.append('dma_cps', 'a');
+    params.append('dma', '1');
+    params.append('_eu', 'AAAAAAQ');
+    params.append('are', '1');
+    params.append('frm', '0');
+    params.append('pscdl', 'noapi');
+    params.append('rcb', '7');
+    params.append('sr', `${window.screen.width}x${window.screen.height}`);
+    params.append('ul', navigator.language || 'hu-hu');
+    params.append('dl', window.location.href);
+    params.append('dt', document.title);
+    
+    // Session adatok
     let sessionId = '';
     let sessionCount = '1';
     const gaSessionCookie = document.cookie.split(';').find(c => c.trim().startsWith('_ga_'));
@@ -34,61 +65,17 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
         sessionCount = match[2];
       }
     }
-    
     if (!sessionId) {
       sessionId = Math.floor(Date.now() / 1000).toString();
-      sessionCount = '1';
     }
-
-    // 🔥 PARAMÉTEREK - a sikeres GET kérés mintájára
-    const params = new URLSearchParams();
-    params.append('v', '2');
-    params.append('tid', measurementId);
-    params.append('cid', clientId);
-    params.append('en', eventName);
-    params.append('_s', sessionCount);
     params.append('sid', sessionId);
     params.append('sct', sessionCount);
+    params.append('_s', sessionCount);
     params.append('seg', '0');
-    params.append('dl', window.location.href);
-    params.append('dt', document.title);
-    params.append('dr', document.referrer || '');
-    params.append('ul', navigator.language || 'hu-hu');
-    params.append('sr', `${window.screen.width}x${window.screen.height}`);
-    params.append('_et', '0');
-    params.append('_p', '1');
-    params.append('_ss', '1');
-    
-    // 🔥 HIÁNYZÓ PARAMÉTEREK a sikeres kérésből
-    params.append('gcd', '13l3l3l2l1l1');
-    params.append('npa', '1');
-    params.append('dma_cps', 'a');
-    params.append('dma', '1');
-    params.append('_eu', 'AEAAAAQ');
-    params.append('ae', 'a');
-    params.append('are', '1');
-    params.append('frm', '0');
-    params.append('pscdl', 'noapi');
-    params.append('rcb', '1');
-    
-    // User agent adatok
-    const ua = navigator.userAgent;
-    params.append('uaa', '');
-    params.append('uab', '64');
-    params.append('uafvl', '"Google Chrome";v="147", "Not.A/Brand";v="8", "Chromium";v="147"');
-    params.append('uam', 'Nexus 5');
-    params.append('uamb', '1');
-    params.append('uap', 'Android');
-    params.append('uapv', '6.0');
-    params.append('uaw', '0');
-    
-    // Tag exp
-    params.append('tag_exp', '115938465~115938468~118395334~119392696~119392704~119456239~119456247');
     
     // Egyedi paraméterek
     Object.entries(eventParams).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
-        // Ha szám, akkor epn., ha string, akkor ep.
         if (typeof value === 'number') {
           params.append(`epn.${key}`, String(value));
         } else {
@@ -97,22 +84,21 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
       }
     });
     
-    // 🔥 IMAGE REQUEST - ez a legmegbízhatóbb módja a GA4 események küldésének
-    // A region1.google-analytics.com-ot használjuk a sikeres kérés mintájára
+    // 🔥 POST KÉRÉS KÜLDÉSE (ugyanúgy, ahogy a GA4 teszi)
     const url = `https://region1.google-analytics.com/g/collect?${params.toString()}`;
     
-    // 🔥 Image objektummal küldjük - nincs CORS probléma
-    const img = new Image(1, 1);
-    img.src = url;
+    fetch(url, {
+      method: 'POST',
+      mode: 'no-cors',
+      cache: 'no-cache',
+      keepalive: true,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: '', // Üres body, minden paraméter az URL-ben van
+    });
     
-    // Nem kell várni a válaszra, az Image betöltése automatikusan elküldi a kérést
-    console.log(`[DirectAnalytics] ✅ Elküldve (Image): ${eventName}`, eventParams);
-    
-    // Memory leak megelőzése
-    setTimeout(() => {
-      img.src = '';
-    }, 10000);
-    
+    console.log(`[DirectAnalytics] ✅ Elküldve (fallback POST): ${eventName}`, eventParams);
     return true;
     
   } catch (error) {
