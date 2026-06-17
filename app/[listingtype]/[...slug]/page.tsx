@@ -3,6 +3,8 @@ import HomePageContentWrapper from '@/components/HomePageContentWrapper';
 import RelatedLinks from '@/components/HomePageRelatedLinks';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 interface PageProps {
   params: Promise<{ 
@@ -11,7 +13,6 @@ interface PageProps {
   }>;
 }
 
-export const revalidate = 3600;
 
 const VALID_LISTING_TYPES = ['elado', 'kiado'];
 const VALID_PROPERTY_TYPES = ['lakas', 'haz', 'iroda', 'telek'];
