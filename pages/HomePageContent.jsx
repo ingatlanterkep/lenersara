@@ -23,6 +23,7 @@ import {
   clearExpiredFavorites 
 } from '@/utils/favoritePosts';
 import SmartToolsPanel from '../components/SmartToolsPanel';
+import { useAnalytics } from '@/context/AnalyticsContext';
 
 
 const MapComponentDynamic = dynamic(
@@ -129,6 +130,7 @@ export default function HomePageContent({
     }
   }, [router]);
   
+    const { cookiesAccepted, sendEvent } = useAnalytics();
   // State-ek
   const [isStreetViewMode, setIsStreetViewMode] = useState(false);
   const [viewMode, setViewMode] = useState(viewModeDefault);
@@ -139,7 +141,6 @@ export default function HomePageContent({
   const [isNavbarMenuOpen, setNavbarMenuOpen] = useState(false);
   const [isProfileMenuOpen, setProfileMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [cookiesAccepted, setCookiesAccepted] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
   const [locationSearchOpen, setLocationSearchOpen] = useState(false);
@@ -215,6 +216,9 @@ export default function HomePageContent({
   } = useFilters(cookiesAccepted);
   
   const validDistricts = budapestDistricts.map(d => d.url);
+
+
+
   
   const generateSlug = (title) => {
     if (!title) return 'unknown';
@@ -422,12 +426,6 @@ export default function HomePageContent({
     };
     checkAuthStatus();
   }, [pathname, navigate]);
-  
-  // Cookie consent kezelés
-  useEffect(() => {
-    const hasConsent = document.cookie.includes('ingatlanTerkepCookieConsent=true');
-    setCookiesAccepted(hasConsent);
-  }, []);
   
   // ViewMode CSS osztály kezelés
   useEffect(() => {
