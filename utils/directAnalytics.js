@@ -10,18 +10,19 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
   }
 
   try {
-    // 1. Elsődleges: gtag (ez a legbiztosabb, ha a script be van töltve)
+    // 1. Elsődleges: gtag (ajánlott)
     if (window.gtag) {
       window.gtag('event', eventName, {
         ...eventParams,
-        send_to: 'G-KWH607ZP7H'   // explicit measurement ID
+        send_to: 'G-KWH607ZP7H'
       });
       console.log(`[Analytics] ✅ gtag elküldve: ${eventName}`, eventParams);
       return true;
     }
 
-    // 2. Tartalék: Measurement Protocol (csak ha gtag nincs)
-    console.warn('[Analytics] gtag nincs, Measurement Protocol tartalék...');
+    // 2. Tartalék: Measurement Protocol
+    console.warn('[Analytics] gtag nincs → Measurement Protocol');
+    
     const measurementId = 'G-KWH607ZP7H';
     const clientId = getOrCreateClientId();
     const sessionId = getOrCreateSessionId();
@@ -50,15 +51,36 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
     if (navigator.sendBeacon) {
       navigator.sendBeacon(url, new Blob([], { type: 'text/plain' }));
     } else {
-      fetch(url, { method: 'POST', keepalive: true, mode: 'no-cors' });
+      fetch(url, { 
+        method: 'POST', 
+        keepalive: true, 
+        mode: 'no-cors' 
+      });
     }
 
-    console.log(`[Analytics] ✅ Measurement Protocol elküldve: ${eventName}`);
+    console.log(`[Analytics] ✅ MP elküldve: ${eventName}`);
     return true;
   } catch (e) {
     console.error('[Analytics] Hiba:', e);
     return false;
   }
+};
+
+// === HIÁNYZÓ FÜGGVÉNYEK ===
+export const sendPageView = (pageTitle, pageLocation) => {
+  return sendDirectAnalyticsEvent('page_view', {
+    page_title: pageTitle || document.title,
+    page_location: pageLocation || window.location.href,
+  });
+};
+
+export const sendLayerToggle = (layerName, state, activeLayers, zoom = 7) => {
+  return sendDirectAnalyticsEvent('layer_toggle', {
+    layer_name: layerName,
+    layer_state: state ? 'enabled' : 'disabled',
+    active_layers: activeLayers || 'none',
+    zoom_level: zoom,
+  });
 };
 
 // Segédfüggvények
@@ -81,12 +103,3 @@ function getOrCreateSessionId() {
   }
   return sid;
 }
-
-export const sendLayerToggle = (layerName, state, activeLayers, zoom = 7) => {
-  return sendDirectAnalyticsEvent('layer_toggle', {
-    layer_name: layerName,
-    layer_state: state ? 'enabled' : 'disabled',
-    active_layers: activeLayers || 'none',
-    zoom_level: zoom,
-  });
-};

@@ -1,4 +1,3 @@
-// src/context/AnalyticsContext.js
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
@@ -12,21 +11,17 @@ export const AnalyticsProvider = ({ children }) => {
   const checkIntervalRef = useRef(null);
   const pendingEventsRef = useRef([]);
 
-  // 🔥 Cookie ellenőrzés
   const checkCookieConsent = useCallback(() => {
     if (typeof document === 'undefined') return false;
     const hasConsent = document.cookie.includes('ingatlanTerkepCookieConsent=true');
     if (hasConsent !== cookiesAccepted) {
-      console.log(`[AnalyticsContext] Cookie állapot változás: ${cookiesAccepted} -> ${hasConsent}`);
       setCookiesAccepted(hasConsent);
     }
     return hasConsent;
   }, [cookiesAccepted]);
 
-  // 🔥 Függőben lévő események küldése
   const flushPendingEvents = useCallback(() => {
     if (pendingEventsRef.current.length === 0) return;
-    
     const events = [...pendingEventsRef.current];
     pendingEventsRef.current = [];
     
@@ -35,87 +30,49 @@ export const AnalyticsProvider = ({ children }) => {
     });
   }, []);
 
-  // 🔥 Kezdeti ellenőrzés
   useEffect(() => {
     const hasConsent = document.cookie.includes('ingatlanTerkepCookieConsent=true');
-    console.log(`[AnalyticsContext] Kezdeti cookie állapot: ${hasConsent}`);
     setCookiesAccepted(hasConsent);
     setIsLoading(false);
-    
+
     if (hasConsent) {
-      // Küldjünk egy page_view-t
-      setTimeout(() => {
-        sendPageView(document.title, window.location.href);
-      }, 500);
+      setTimeout(() => sendPageView(), 800);
     }
-    
-    // 🔥 Rendszeres ellenőrzés
-    checkIntervalRef.current = setInterval(() => {
-      checkCookieConsent();
-    }, 1000);
-    
-    // 🔥 Figyeljük a custom event-et
+
+    checkIntervalRef.current = setInterval(checkCookieConsent, 1000);
+
     const handleCookieUpdate = () => {
-      console.log('[AnalyticsContext] 🔔 cookieConsentUpdated esemény fogadva');
       checkCookieConsent();
-      if (cookiesAccepted) {
-        sendPageView(document.title, window.location.href);
+      if (document.cookie.includes('ingatlanTerkepCookieConsent=true')) {
+        sendPageView();
       }
     };
+
     window.addEventListener('cookieConsentUpdated', handleCookieUpdate);
-    
-    // 🔥 Figyeljük a storage változást
-    const handleStorageChange = (e) => {
-      if (e.key === 'ingatlanTerkepCookieConsent') {
-        console.log('[AnalyticsContext] Storage változás:', e.newValue);
-        checkCookieConsent();
-      }
-    };
-    window.addEventListener('storage', handleStorageChange);
-    
+    window.addEventListener('gtagLoaded', handleCookieUpdate);
+
     return () => {
-      if (checkIntervalRef.current) {
-        clearInterval(checkIntervalRef.current);
-      }
+      if (checkIntervalRef.current) clearInterval(checkIntervalRef.current);
       window.removeEventListener('cookieConsentUpdated', handleCookieUpdate);
-      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('gtagLoaded', handleCookieUpdate);
     };
   }, [checkCookieConsent]);
 
-  // 🔥 ESEMÉNY KÜLDÉS - KÖZVETLEN FETCH
   const sendEvent = useCallback((eventName, eventParams = {}) => {
-    const hasConsent = document.cookie.includes('ingatlanTerkepCookieConsent=true');
-    
-    console.log(`[Analytics] sendEvent hívva: ${eventName}`, { 
-      cookiesAccepted,
-      hasConsent,
-    });
-    
-    if (!hasConsent) {
-      console.log(`[Analytics] ⛔ Kihagyva (nincs süti elfogadás): ${eventName}`);
+    if (!document.cookie.includes('ingatlanTerkepCookieConsent=true')) {
+      console.log(`[Analytics] ⛔ Nincs consent: ${eventName}`);
       return false;
     }
 
-    if (hasConsent !== cookiesAccepted) {
-      setCookiesAccepted(hasConsent);
+    const result = sendDirectAnalyticsEvent(eventName, eventParams);
+
+    if (!result) {
+      pendingEventsRef.current.push({ eventName, eventParams });
+      setTimeout(flushPendingEvents, 800);
     }
 
-    // 🔥 KÖZVETLEN KÜLDÉS FETCH-EL
-    const result = sendDirectAnalyticsEvent(eventName, eventParams);
-    
-    if (!result) {
-      // Ha nem sikerült, tegyük sorba
-      pendingEventsRef.current.push({ eventName, eventParams });
-      // Próbáljuk újra 1 másodperc múlva
-      setTimeout(() => {
-        if (pendingEventsRef.current.length > 0) {
-          flushPendingEvents();
-        }
-      }, 1000);
-    }
-    
     return result;
-  }, [cookiesAccepted, flushPendingEvents]);
+  }, [flushPendingEvents]);
 
   return (
     <AnalyticsContext.Provider value={{
@@ -131,8 +88,6 @@ export const AnalyticsProvider = ({ children }) => {
 
 export const useAnalytics = () => {
   const context = useContext(AnalyticsContext);
-  if (!context) {
-    throw new Error('useAnalytics must be used within an AnalyticsProvider');
-  }
+  if (!context) throw new Error('useAnalytics must be used within AnalyticsProvider');
   return context;
 };
