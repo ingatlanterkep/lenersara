@@ -24,6 +24,7 @@ import {
 } from '@/utils/favoritePosts';
 import SmartToolsPanel from '../components/SmartToolsPanel';
 
+
 const MapComponentDynamic = dynamic(
   () => import('../components/MapComponent'),
   { 
@@ -268,13 +269,13 @@ export default function HomePageContent({
     try {
       const postDetails = await getPostDetails(postId);
       const newPost = postDetails.data;
-      if (cookiesAccepted && window.gtag) {
-        window.gtag('event', 'preview_open', {
-          post_id: newPost._id,
-          listing_type: newPost.listing_type,
-          price: newPost.price || newPost.rental_price,
-        });
-      }
+  if (cookiesAccepted) {
+      sendEvent('preview_open', {
+        post_id: newPost._id,
+        listing_type: newPost.listing_type,
+        price: newPost.price || newPost.rental_price,
+      });
+    }
       setSelectedPost(newPost);
       addViewedPost(newPost._id);
       setViewedPosts(prev => new Set(prev).add(newPost._id));
@@ -755,14 +756,14 @@ export default function HomePageContent({
                   <p className="popup-description">{selectedPost.description || 'Nincs leírás.'}</p>
                   <div className="popup-actions">
                     <button onClick={() => {
-                      if (cookiesAccepted && window.gtag) {
-                        window.gtag('event', 'ad_view', {
-                          post_id: selectedPost._id,
-                          listing_type: selectedPost.listing_type,
-                          price: selectedPost.price || selectedPost.rental_price,
-                          value: 50,
-                        });
-                      }
+if (cookiesAccepted) {
+    sendEvent('ad_view', {
+      post_id: selectedPost._id,
+      listing_type: selectedPost.listing_type,
+      price: selectedPost.price || selectedPost.rental_price,
+      value: 50,
+    });
+  }
                       const slug = generateSlug(selectedPost.title);
                       window.open(`/ingatlan/${selectedPost._id}/${slug}`, '_blank');
                     }} className="action-button view-button">Megtekintem</button>
@@ -777,16 +778,18 @@ export default function HomePageContent({
                         addFavoritePost(postId);
                         setFavoritePosts(prev => new Set([...prev, postId]));
                       }
-                      if (cookiesAccepted && window.gtag) {
-                        const eventName = wasFavorite ? 'remove_from_favorites' : 'add_to_favorites';
-                        window.gtag('event', eventName, {
-                          post_id: postId,
-                          listing_type: selectedPost.listing_type || listingType,
-                          price: selectedPost.price || selectedPost.rental_price || null,
-                          type: selectedPost.type || null,
-                        });
-                      }
-                      window.dispatchEvent(new Event('favoritesUpdated'));
+  // 🔥 Erre cseréld:
+  if (cookiesAccepted) {
+    const eventName = wasFavorite ? 'remove_from_favorites' : 'add_to_favorites';
+    sendEvent(eventName, {
+      post_id: postId,
+      listing_type: selectedPost.listing_type || listingType,
+      price: selectedPost.price || selectedPost.rental_price || null,
+      type: selectedPost.type || null,
+    });
+  }
+  window.dispatchEvent(new Event('favoritesUpdated'));
+
                     }} className={`action-button favorite-button ${isFavoritePost(selectedPost._id) ? 'active' : ''}`}>
                       <img src={isFavoritePost(selectedPost._id) ? '/heart-filled.png' : '/heart-empty.png'} alt="Kedvenc" className="heart-icon" width={18} height={18} />
                     </button>

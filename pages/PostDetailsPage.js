@@ -5,7 +5,7 @@ import { useParams, useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import sanitizeHtml from 'sanitize-html';
 import '../styles/PostDetailsPage.css';
-import { analyzePropertyAI, getPostDetails, getSimilarPosts } from '../services/apiService';  // ← HIÁNYZOTT getSimilarPosts!
+import { analyzePropertyAI, getPostDetails, getSimilarPosts } from '../services/apiService';
 import { 
   getFavoritePosts, 
   addFavoritePost,  
@@ -14,8 +14,16 @@ import {
   clearExpiredFavorites 
 } from '../utils/favoritePosts';
 import ReCAPTCHA from "react-google-recaptcha";
+import { useAnalytics } from '@/context/AnalyticsContext';
+import { 
+  sendGenerateLead, 
+  sendViewItem, 
+  sendAIQuestion, 
+  sendFavoriteToggle, 
+  sendContactClick 
+} from '@/utils/directAnalytics';
 
-// Dinamikus importok (SSR kikapcsolva)
+// Dinamikus importok
 const PostDetailsGallery = dynamic(
   () => import('../components/PostDetailsGallery'),
   { ssr: false, loading: () => <div className="gallery-loading">Képek betöltése...</div> }
@@ -26,7 +34,6 @@ const LazyMiniMapComponent = dynamic(
   { ssr: false, loading: () => <div className="map-loading">Térkép betöltése...</div> }
 );
 
-// Leaflet dinamikus import - csak client oldalon
 let L = null;
 if (typeof window !== 'undefined') {
   import('leaflet').then(module => {
@@ -67,11 +74,13 @@ const maskEmail = (email) => {
   return `${firstTwo}***${lastOne}@${domain.slice(0, 1)}***${domain.slice(-4)}`;
 };
 
-const PostDetailsPage = React.memo(({ cookiesAccepted, cookiesDecided, onLeadEvent }) => {
+const PostDetailsPage = React.memo(({ onLeadEvent }) => {
   const params = useParams();
   const searchParams = useSearchParams();
   const postId = params?.id;
   const title = params?.slug;
+  
+  const { cookiesAccepted, sendEvent } = useAnalytics();
 
   const [post, setPost] = useState(null);
   const [similarPosts, setSimilarPosts] = useState([]);
@@ -163,6 +172,9 @@ const PostDetailsPage = React.memo(({ cookiesAccepted, cookiesDecided, onLeadEve
       if (data.success) {
         setLeadSent(true);
         
+        // 🔥 LEAD ESEMÉNY KÜLDÉSE
+        sendGenerateLead('contact_form', postId);
+        
         if (acceptedPrivacy) {
           try {
             const marketingResponse = await fetch(`${baseUrl}/api/subscribe-marketing`, {
@@ -186,13 +198,6 @@ const PostDetailsPage = React.memo(({ cookiesAccepted, cookiesDecided, onLeadEve
             console.error('[Marketing] Hiba a feliratkozás közben:', marketingErr);
           }
         }
-        
-        if (cookiesAccepted && window.gtag) {
-          window.gtag('event', 'generate_lead', {
-            lead_type: 'contact_form',
-            post_id: postId
-          });
-        }
       } else {
         throw new Error(data.message || 'Hiba történt');
       }
@@ -205,11 +210,8 @@ const PostDetailsPage = React.memo(({ cookiesAccepted, cookiesDecided, onLeadEve
 
   const handleContactClick = useCallback((type, postId, adId = null) => {
     const adSource = getAdSource();
-    const eventData = { postId, ad_id: adId || adSource, content_category: 'property_contact' };
-    if (window.fbq && cookiesAccepted) {
-      window.fbq('trackCustom', `Contact_${type}`, eventData);
-    }
-  }, [getAdSource, cookiesAccepted]);
+    sendContactClick(type, postId, adId || adSource);
+  }, [getAdSource]);
 
   const handleRevealPhone = useCallback(() => {
     setPhoneButtonChanging(true);
@@ -217,19 +219,12 @@ const PostDetailsPage = React.memo(({ cookiesAccepted, cookiesDecided, onLeadEve
       setShowPhoneNumber(true);
       setPhoneButtonChanging(false);
       handleContactClick('Phone_Reveal', postId, post?.ad_id || getAdSource());
-      if (cookiesAccepted && window.gtag) {
-        window.gtag('event', 'generate_lead', {
-          lead_type: 'phone_reveal',
-          post_id: postId,
-          value: 100,
-          currency: 'HUF'
-        });
-      }
+      sendGenerateLead('phone_reveal', postId);
       if (onLeadEvent) {
         onLeadEvent('phone_reveal', postId);
       }
     }, 300);
-  }, [postId, post?.ad_id, handleContactClick, getAdSource, onLeadEvent, cookiesAccepted]);
+  }, [postId, post?.ad_id, handleContactClick, getAdSource, onLeadEvent]);
 
   const handleRevealEmail = useCallback(() => {
     setEmailButtonChanging(true);
@@ -237,32 +232,23 @@ const PostDetailsPage = React.memo(({ cookiesAccepted, cookiesDecided, onLeadEve
       setShowEmail(true);
       setEmailButtonChanging(false);
       handleContactClick('Email_Reveal', postId, post?.ad_id || getAdSource());
-      if (cookiesAccepted && window.gtag) {
-        window.gtag('event', 'generate_lead', {
-          lead_type: 'email_reveal',
-          post_id: postId,
-          value: 100,
-          currency: 'HUF'
-        });
-      }
+      sendGenerateLead('email_reveal', postId);
       if (onLeadEvent) {
         onLeadEvent('email_reveal', postId);
       }
     }, 300);
-  }, [postId, post?.ad_id, handleContactClick, getAdSource, onLeadEvent, cookiesAccepted]);
+  }, [postId, post?.ad_id, handleContactClick, getAdSource, onLeadEvent]);
 
   const trackAIUsage = useCallback((questionKey, questionText) => {
-    if (!cookiesAccepted || !window.gtag) return;
-    window.gtag('event', 'ai_question', {
-      question_key: questionKey,
-      question_text: questionText,
-      post_id: postId,
-      post_type: post?.type,
-      listing_type: post?.listing_type,
-      price: post?.price || post?.rental_price,
-      page_type: 'detail_page'
-    });
-  }, [cookiesAccepted, postId, post]);
+    sendAIQuestion(
+      questionKey, 
+      questionText, 
+      postId, 
+      post?.type, 
+      post?.listing_type, 
+      post?.price || post?.rental_price
+    );
+  }, [postId, post]);
 
   const aiQuestions = [
     { 
@@ -377,19 +363,10 @@ const PostDetailsPage = React.memo(({ cookiesAccepted, cookiesDecided, onLeadEve
     }
   };
 
+  // 🔥 VIEW_ITEM ESEMÉNY - a sikeres kérés mintájára
   useEffect(() => {
-    if (cookiesAccepted && post && window.gtag) {
-      window.gtag('event', 'view_item', {
-        items: [{
-          item_id: postId,
-          item_name: post.title,
-          price: post.listing_type === 'eladó' ? post.price : post.rental_price,
-          currency: 'HUF'
-        }],
-        value: post.listing_type === 'eladó' ? post.price : post.rental_price,
-        currency: 'HUF',
-        send_to: 'G-KWH607ZP7H'
-      });
+    if (cookiesAccepted && post && postId) {
+      sendViewItem(post, postId);
     }
   }, [post, cookiesAccepted, postId]);
 
@@ -689,6 +666,23 @@ const PostDetailsPage = React.memo(({ cookiesAccepted, cookiesDecided, onLeadEve
     );
   }, [similarPosts, handleContactClick, postId, getImageUrls, formatPrice, formatAddress]);
 
+  // 🔥 KEDVENC GOMB KEZELÉSE
+  const handleFavoriteToggle = useCallback((postIdToToggle) => {
+    const wasFavorite = isFavoritePost(postIdToToggle);
+    
+    if (wasFavorite) {
+      removeFavoritePost(postIdToToggle);
+      setFavoritePosts(prev => new Set([...prev].filter(id => id !== postIdToToggle)));
+      sendFavoriteToggle(postIdToToggle, 'remove', post?.listing_type, post?.price || post?.rental_price, post?.type);
+    } else {
+      addFavoritePost(postIdToToggle);
+      setFavoritePosts(prev => new Set([...prev, postIdToToggle]));
+      sendFavoriteToggle(postIdToToggle, 'add', post?.listing_type, post?.price || post?.rental_price, post?.type);
+    }
+    
+    window.dispatchEvent(new Event('favoritesUpdated'));
+  }, [post]);
+
   if (error) return <p className="error-text">{error}</p>;
   if (loading) return <p className="loading-text">Betöltés...</p>;
   if (!post) return null;
@@ -727,31 +721,7 @@ const PostDetailsPage = React.memo(({ cookiesAccepted, cookiesDecided, onLeadEve
             </div>
             
             <button
-              onClick={() => {
-                const postIdToToggle = post._id;
-                const wasFavorite = isFavoritePost(postIdToToggle);
-
-                if (wasFavorite) {
-                  removeFavoritePost(postIdToToggle);
-                  setFavoritePosts(prev => new Set([...prev].filter(id => id !== postIdToToggle)));
-                } else {
-                  addFavoritePost(postIdToToggle);
-                  setFavoritePosts(prev => new Set([...prev, postIdToToggle]));
-                }
-
-                if (cookiesAccepted && window.gtag) {
-                  const eventName = wasFavorite ? 'remove_from_favorites' : 'add_to_favorites';
-                  window.gtag('event', eventName, {
-                    post_id: postIdToToggle,
-                    listing_type: post.listing_type,
-                    price: post.price || post.rental_price || null,
-                    type: post.type || null,
-                    page_type: 'detail_page'
-                  });
-                }
-
-                window.dispatchEvent(new Event('favoritesUpdated'));
-              }}
+              onClick={() => handleFavoriteToggle(post._id)}
               className={`favorite-header-button ${isFavoritePost(post._id) ? 'active' : ''}`}
             >
               <img
@@ -829,7 +799,7 @@ const PostDetailsPage = React.memo(({ cookiesAccepted, cookiesDecided, onLeadEve
                 images={post.images?.filter(img => img?.url && typeof img.url === 'string')?.map(img => getFullImageUrl(img.url)) || []}
                 post={post}
                 cookiesAccepted={cookiesAccepted}
-                cookiesDecided={cookiesDecided}
+                cookiesDecided={true}
               />
             ) : (
               <p>Nincsenek képek.</p>
@@ -837,7 +807,7 @@ const PostDetailsPage = React.memo(({ cookiesAccepted, cookiesDecided, onLeadEve
           </div>
           <div className="post-map">
             <h2>Térkép</h2>
-            {cookiesDecided && post.geolocation && post.geolocation.lat && post.geolocation.lon ? (
+            {post.geolocation && post.geolocation.lat && post.geolocation.lon ? (
               <Suspense fallback={<div>Térkép betöltése...</div>}>
                 <LazyMiniMapComponent
                   post={post}

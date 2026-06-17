@@ -40,7 +40,6 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
       sessionCount = '1';
     }
 
-    // 🔥 PARAMÉTEREK - a sikeres kérés mintájára
     const params = new URLSearchParams();
     params.append('v', '2');
     params.append('tid', measurementId);
@@ -49,7 +48,7 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
     params.append('_s', sessionCount);
     params.append('sid', sessionId);
     params.append('sct', sessionCount);
-    params.append('seg', '0'); // 🔥 Változtatás: 0 -> 1 helyett
+    params.append('seg', '0');
     params.append('dl', window.location.href);
     params.append('dt', document.title);
     params.append('dr', document.referrer || '');
@@ -58,10 +57,8 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
     params.append('_et', '0');
     params.append('_p', '1');
     params.append('_ss', '1');
-    
-    // 🔥 HIÁNYZÓ PARAMÉTEREK - a sikeres kérésből
-    params.append('gcd', '13l3l3l2l1l1'); // Consent állapot
-    params.append('npa', '1'); // Non-personalized ads
+    params.append('gcd', '13l3l3l2l1l1');
+    params.append('npa', '1');
     params.append('dma_cps', 'a');
     params.append('dma', '1');
     params.append('_eu', 'AEAAAAQ');
@@ -70,9 +67,6 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
     params.append('frm', '0');
     params.append('pscdl', 'noapi');
     params.append('rcb', '1');
-    
-    // User agent adatok
-    const ua = navigator.userAgent;
     params.append('uaa', '');
     params.append('uab', '64');
     params.append('uafvl', '"Google Chrome";v="147", "Not.A/Brand";v="8", "Chromium";v="147"');
@@ -81,14 +75,10 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
     params.append('uap', 'Android');
     params.append('uapv', '6.0');
     params.append('uaw', '0');
-    
-    // Tag exp (a sikeres kérésből)
     params.append('tag_exp', '115938465~115938468~118395334~119392696~119392704~119456239~119456247');
     
-    // Egyedi paraméterek - 🔥 FIGYELEM: a típustól függően más a prefix!
     Object.entries(eventParams).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
-        // Ha szám, akkor epn., ha string, akkor ep.
         if (typeof value === 'number') {
           params.append(`epn.${key}`, String(value));
         } else {
@@ -97,10 +87,8 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
       }
     });
     
-    // 🔥 KÜLDÉS POST-tal - ugyanúgy, ahogy a sikeres kérés
     const url = `https://region1.google-analytics.com/g/collect?${params.toString()}`;
     
-    // 🔥 POST kérés küldése
     fetch(url, {
       method: 'POST',
       mode: 'no-cors',
@@ -109,12 +97,10 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: '', // Üres body, minden paraméter az URL-ben van
-    }).catch(() => {
-      // no-cors módban nem látjuk a választ
-    });
+      body: '',
+    }).catch(() => {});
     
-    console.log(`[DirectAnalytics] ✅ Elküldve (POST): ${eventName}`, eventParams);
+    console.log(`[DirectAnalytics] ✅ Elküldve: ${eventName}`, eventParams);
     return true;
     
   } catch (error) {
@@ -123,7 +109,6 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
   }
 };
 
-// A többi export változatlan...
 export const sendPageView = (pageTitle, pageLocation) => {
   return sendDirectAnalyticsEvent('page_view', {
     page_title: pageTitle || document.title,
@@ -131,14 +116,75 @@ export const sendPageView = (pageTitle, pageLocation) => {
   });
 };
 
-/**
- * Layer toggle esemény
- */
 export const sendLayerToggle = (layerName, state, activeLayers, zoom) => {
   return sendDirectAnalyticsEvent('layer_toggle', {
     layer_name: layerName,
     layer_state: state ? 'enabled' : 'disabled',
     active_layers: activeLayers || 'none',
     zoom_level: zoom || 7,
+  });
+};
+
+export const sendGenerateLead = (leadType, postId, value = 100) => {
+  return sendDirectAnalyticsEvent('generate_lead', {
+    lead_type: leadType,
+    post_id: postId,
+    value: value,
+    currency: 'HUF'
+  });
+};
+
+export const sendViewItem = (post, postId) => {
+  return sendDirectAnalyticsEvent('view_item', {
+    items: JSON.stringify([{
+      item_id: postId,
+      item_name: post?.title || 'Unknown',
+      price: post?.listing_type === 'eladó' ? post?.price : post?.rental_price,
+      currency: 'HUF'
+    }]),
+    value: post?.listing_type === 'eladó' ? post?.price : post?.rental_price,
+    currency: 'HUF'
+  });
+};
+
+export const sendAIQuestion = (questionKey, questionText, postId, postType, listingType, price) => {
+  return sendDirectAnalyticsEvent('ai_question', {
+    question_key: questionKey,
+    question_text: questionText,
+    post_id: postId,
+    post_type: postType || 'unknown',
+    listing_type: listingType || 'unknown',
+    price: price || 0
+  });
+};
+
+export const sendFavoriteToggle = (postId, action, listingType, price, postType) => {
+  return sendDirectAnalyticsEvent(`${action}_favorites`, {
+    post_id: postId,
+    listing_type: listingType || 'unknown',
+    price: price || 0,
+    type: postType || 'unknown',
+    page_type: 'detail_page'
+  });
+};
+
+export const sendContactClick = (contactType, postId, adId) => {
+  return sendDirectAnalyticsEvent('contact_click', {
+    contact_type: contactType,
+    post_id: postId,
+    ad_id: adId || 'unknown',
+    content_category: 'property_contact'
+  });
+};
+
+export const sendScroll = (percentScrolled) => {
+  return sendDirectAnalyticsEvent('scroll', {
+    percent_scrolled: percentScrolled
+  });
+};
+
+export const sendFirstVisit = () => {
+  return sendDirectAnalyticsEvent('first_visit', {
+    timestamp: new Date().toISOString()
   });
 };

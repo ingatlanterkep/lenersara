@@ -9,15 +9,15 @@ import {
   getFavoritePosts, 
   removeFavoritePost
 } from '../utils/favoritePosts';
+import { useAnalytics } from '@/context/AnalyticsContext';
+import { sendViewItem } from '@/utils/directAnalytics';
 import '../styles/FavoritesPage.css';
 
-// Dinamikus import a MiniMapComponent-hez (SSR kikapcsolva)
 const MiniMapComponent = dynamic(
   () => import('../components/MiniMapComponent'),
   { ssr: false, loading: () => <div className="map-loading">Térkép betöltése...</div> }
 );
 
-// Dinamikus import a PostDetailsGallery-hez (SSR kikapcsolva)
 const PostDetailsGallery = dynamic(
   () => import('../components/PostDetailsGallery'),
   { ssr: false, loading: () => <div className="gallery-loading">Képek betöltése...</div> }
@@ -25,7 +25,8 @@ const PostDetailsGallery = dynamic(
 
 const FAVORITE_POSTS_KEY = 'favorite_realestate_posts';
 
-const FavoritesPage = ({ cookiesAccepted = false }) => {
+const FavoritesPage = () => {
+  const { cookiesAccepted, sendEvent } = useAnalytics();
   const [favorites, setFavorites] = useState([]);
   const [selectedPost, setSelectedPost] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -65,16 +66,17 @@ const FavoritesPage = ({ cookiesAccepted = false }) => {
     return "Ár nincs megadva";
   };
 
+  // 🔥 FAVORITES PAGE VIEW ESEMÉNY
   useEffect(() => {
     if (!isClient) return;
-    if (cookiesAccepted && window.gtag && favorites.length > 0) {
-      window.gtag('event', 'view_favorites_page', {
+    if (cookiesAccepted && favorites.length > 0) {
+      sendEvent('view_favorites_page', {
         favorite_count: favorites.length,
         most_expensive: Math.max(...favorites.map(p => p.price || p.rental_price || 0)),
         avg_price: favorites.reduce((sum, p) => sum + (p.price || p.rental_price || 0), 0) / favorites.length
       });
     }
-  }, [favorites, cookiesAccepted, isClient]);
+  }, [favorites, cookiesAccepted, isClient, sendEvent]);
 
   useEffect(() => {
     if (!isClient) return;
@@ -148,6 +150,10 @@ const FavoritesPage = ({ cookiesAccepted = false }) => {
       window.open(url, '_blank');
     } else {
       setSelectedPost(post);
+      // 🔥 VIEW_ITEM ESEMÉNY a kiválasztott poszthoz
+      if (cookiesAccepted) {
+        sendViewItem(post, post._id);
+      }
     }
   };
 
@@ -268,7 +274,7 @@ const FavoritesPage = ({ cookiesAccepted = false }) => {
                         ?.filter(img => img?.url && typeof img.url === 'string')
                         ?.map(img => getFullImageUrl(img.url)) || []}
                       post={selectedPost}
-                      cookiesAccepted={true}
+                      cookiesAccepted={cookiesAccepted}
                       cookiesDecided={true}
                     />
                   </div>
