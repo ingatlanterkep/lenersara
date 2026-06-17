@@ -103,6 +103,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe>`;
     } catch (error) {
       console.error('[CookieConsent] Hiba a GTM betöltésekor:', error);
     }
+
+    // Majd gtag
+if (!window.gtag) {
+  const script = document.createElement('script');
+  script.src = 'https://www.googletagmanager.com/gtag/js?id=G-KWH607ZP7H';
+  script.async = true;
+  document.head.appendChild(script);
+
+  window.gtag = function() { window.dataLayer.push(arguments); };
+  window.gtag('js', new Date());
+  window.gtag('config', 'G-KWH607ZP7H', { 
+    send_page_view: true,
+    cookie_flags: 'SameSite=None;Secure'
+  });
+}
     
     // 3. GA4 betöltése
     try {

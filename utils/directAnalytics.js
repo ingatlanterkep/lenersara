@@ -1,131 +1,92 @@
-// src/utils/directAnalytics.js
 'use client';
-
-// src/utils/directAnalytics.js - hibrid megoldás
 
 export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
   if (typeof window === 'undefined') return false;
-  
+
   const hasConsent = document.cookie.includes('ingatlanTerkepCookieConsent=true');
   if (!hasConsent) {
-    console.log(`[DirectAnalytics] ⛔ Nincs süti elfogadás: ${eventName}`);
+    console.log(`[Analytics] ⛔ Nincs consent: ${eventName}`);
     return false;
   }
 
   try {
-    let success = false;
-    
-    // 1. Próbáljuk gtag-gel (ez a legmegbízhatóbb custom eventekhez)
+    // 1. Elsődleges: gtag (ez a legbiztosabb, ha a script be van töltve)
     if (window.gtag) {
-      try {
-        window.gtag('event', eventName, {
-          ...eventParams,
-          send_to: 'G-KWH607ZP7H'
-        });
-        console.log(`[DirectAnalytics] ✅ Elküldve (gtag): ${eventName}`, eventParams);
-        success = true;
-      } catch (gtagError) {
-        console.warn('[DirectAnalytics] gtag hiba, próbálom Measurement Protocol-lal:', gtagError);
-      }
-    }
-    
-    // 2. Mindig küldjük Measurement Protocol-lal is (kettős küldés)
-    // Ez biztosítja, hogy a GA4 DebugView-ban is látszódjon
-    const measurementId = 'G-KWH607ZP7H';
-    let clientId = 'anonymous';
-    const gaCookie = document.cookie.split(';').find(c => c.trim().startsWith('_ga='));
-    if (gaCookie) {
-      const match = gaCookie.match(/GA1\.\d+\.(\d+)\.(\d+)/);
-      if (match) {
-        clientId = match[1] + '.' + match[2];
-      }
-    }
-    
-    let sessionId = '';
-    let sessionCount = '1';
-    const gaSessionCookie = document.cookie.split(';').find(c => c.trim().startsWith('_ga_'));
-    if (gaSessionCookie) {
-      const match = gaSessionCookie.match(/GS1\.\d+\.(\d+)\.(\d+)/);
-      if (match) {
-        sessionId = match[1];
-        sessionCount = match[2];
-      }
-    }
-    
-    if (!sessionId) {
-      sessionId = Math.floor(Date.now() / 1000).toString();
-      sessionCount = '1';
+      window.gtag('event', eventName, {
+        ...eventParams,
+        send_to: 'G-KWH607ZP7H'   // explicit measurement ID
+      });
+      console.log(`[Analytics] ✅ gtag elküldve: ${eventName}`, eventParams);
+      return true;
     }
 
-    const params = new URLSearchParams();
-    params.append('v', '2');
-    params.append('tid', measurementId);
-    params.append('cid', clientId);
-    params.append('en', eventName);
-    params.append('_s', sessionCount);
-    params.append('sid', sessionId);
-    params.append('sct', sessionCount);
-    params.append('seg', '1');
-    params.append('dl', window.location.href);
-    params.append('dt', document.title);
-    params.append('dr', document.referrer || '');
-    params.append('ul', navigator.language || 'hu-hu');
-    params.append('sr', `${window.screen.width}x${window.screen.height}`);
-    params.append('_et', '0');
-    params.append('_p', '1');
-    
-    if (sessionCount === '1') {
-      params.append('_ss', '1');
-    }
-    
-    Object.entries(eventParams).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        params.append(`ep.${key}`, String(value));
-      }
+    // 2. Tartalék: Measurement Protocol (csak ha gtag nincs)
+    console.warn('[Analytics] gtag nincs, Measurement Protocol tartalék...');
+    const measurementId = 'G-KWH607ZP7H';
+    const clientId = getOrCreateClientId();
+    const sessionId = getOrCreateSessionId();
+
+    const params = new URLSearchParams({
+      v: '2',
+      tid: measurementId,
+      cid: clientId,
+      en: eventName,
+      sid: sessionId,
+      _s: '1',
+      sct: '1',
+      seg: '1',
+      dl: window.location.href,
+      dt: document.title,
+      ul: navigator.language || 'hu-hu',
+      sr: `${window.screen.width}x${window.screen.height}`,
     });
-    
+
+    Object.entries(eventParams).forEach(([key, value]) => {
+      if (value != null) params.append(`ep.${key}`, String(value));
+    });
+
     const url = `https://www.google-analytics.com/g/collect?${params.toString()}`;
-    
+
     if (navigator.sendBeacon) {
-      const blob = new Blob([params.toString()], { type: 'application/x-www-form-urlencoded' });
-      navigator.sendBeacon(url, blob);
+      navigator.sendBeacon(url, new Blob([], { type: 'text/plain' }));
     } else {
-      fetch(url, {
-        method: 'POST',
-        keepalive: true,
-        mode: 'no-cors',
-        cache: 'no-cache',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: params.toString(),
-      }).catch(() => {});
+      fetch(url, { method: 'POST', keepalive: true, mode: 'no-cors' });
     }
-    
-    console.log(`[DirectAnalytics] ✅ Elküldve (measurement): ${eventName}`, eventParams);
+
+    console.log(`[Analytics] ✅ Measurement Protocol elküldve: ${eventName}`);
     return true;
-  } catch (error) {
-    console.error(`[DirectAnalytics] ❌ Hiba (${eventName}):`, error);
+  } catch (e) {
+    console.error('[Analytics] Hiba:', e);
     return false;
   }
 };
 
+// Segédfüggvények
+function getOrCreateClientId() {
+  let cid = 'anonymous';
+  const gaCookie = document.cookie.split(';').find(c => c.trim().startsWith('_ga='));
+  if (gaCookie) {
+    const match = gaCookie.match(/GA1\.\d+\.(.+)/);
+    if (match) cid = match[1];
+  }
+  return cid;
+}
 
-export const sendPageView = (pageTitle, pageLocation) => {
-  return sendDirectAnalyticsEvent('page_view', {
-    page_title: pageTitle || document.title,
-    page_location: pageLocation || window.location.href,
-  });
-};
+function getOrCreateSessionId() {
+  let sid = Date.now().toString();
+  const sessionCookie = document.cookie.split(';').find(c => c.trim().startsWith('_ga_'));
+  if (sessionCookie) {
+    const match = sessionCookie.match(/GS1\.\d+\.(\d+)\./);
+    if (match) sid = match[1];
+  }
+  return sid;
+}
 
-/**
- * Layer toggle esemény
- */
-export const sendLayerToggle = (layerName, state, activeLayers, zoom) => {
+export const sendLayerToggle = (layerName, state, activeLayers, zoom = 7) => {
   return sendDirectAnalyticsEvent('layer_toggle', {
     layer_name: layerName,
     layer_state: state ? 'enabled' : 'disabled',
     active_layers: activeLayers || 'none',
-    zoom_level: zoom || 7,
+    zoom_level: zoom,
   });
 };
