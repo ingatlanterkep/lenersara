@@ -3,7 +3,6 @@ import '../styles/HomePage.css';
 
 const LayerPanel = ({ zoom, layers, setLayers, onClose }) => {
   const prevLayersRef = useRef(layers);
-  const hasLoggedRef = useRef(false);
   
   const allLayers = [
     { key: 'satellite', name: 'Műhold' },
@@ -18,42 +17,16 @@ const LayerPanel = ({ zoom, layers, setLayers, onClose }) => {
     { key: 'religion', name: 'Vallás' },
   ];
 
-  // 🔥 LOGOLJUK A KOMPONENS ÁLLAPOTÁT
+  // 🔥 useEffect a layers változására
   useEffect(() => {
-    if (!hasLoggedRef.current) {
-      console.log('[LayerPanel] 🔍 Komponens betöltve:', {
-        hasGtag: typeof window !== 'undefined' && !!window.gtag,
-        cookiesAccepted: typeof document !== 'undefined' && document.cookie.includes('ingatlanTerkepCookieConsent=true'),
-        layers: Object.keys(layers).filter(k => layers[k]),
-        zoom
-      });
-      hasLoggedRef.current = true;
-    }
-  }, []);
-
-  // 🔥 EZ A KULCS: useEffect a layers változásának figyelésére
-  useEffect(() => {
-    // Ellenőrizzük, hogy létezik-e a gtag
-    const gtagAvailable = typeof window !== 'undefined' && !!window.gtag;
-    
-    // Cookie ellenőrzés
+    // Ellenőrizzük a feltételeket
+    const hasGtag = typeof window !== 'undefined' && typeof window.gtag === 'function';
     const hasConsent = typeof document !== 'undefined' && 
       document.cookie.includes('ingatlanTerkepCookieConsent=true');
     
-    console.log('[LayerPanel] 🔄 useEffect fut:', {
-      hasConsent,
-      gtagAvailable,
-      changedKeys: Object.keys(layers).filter(key => layers[key] !== prevLayersRef.current[key]),
-      currentLayers: Object.keys(layers).filter(k => layers[k])
-    });
-    
-    // Csak akkor küldünk, ha van cookie elfogadás ÉS létezik a gtag
-    if (!hasConsent || !gtagAvailable) {
-      console.log('[LayerPanel] ⛔ Analytics kihagyva:', { 
-        hasConsent, 
-        gtagAvailable,
-        reason: !hasConsent ? 'nincs cookie elfogadás' : 'nincs gtag'
-      });
+    // Ha nincs gtag vagy nincs consent, ne küldjünk
+    if (!hasGtag || !hasConsent) {
+      console.log('[LayerPanel] ⛔ Nem küldhető:', { hasGtag, hasConsent });
       return;
     }
 
@@ -62,33 +35,38 @@ const LayerPanel = ({ zoom, layers, setLayers, onClose }) => {
       key => layers[key] !== prevLayers[key]
     );
 
-    if (changedKeys.length > 0) {
-      changedKeys.forEach(key => {
-        // 🔥 KÖZVETLEN gtag HÍVÁS
-        try {
-          const eventData = {
-            layer_name: key,
-            layer_state: layers[key] ? 'enabled' : 'disabled',
-            active_layers: Object.keys(layers).filter(k => layers[k]).join(',') || 'none',
-            zoom_level: zoom || 7,
-          };
-          
-          window.gtag('event', 'layer_toggle', eventData);
-          console.log(`[LayerPanel] ✅ layer_toggle elküldve (gtag):`, eventData);
-        } catch (error) {
-          console.error('[LayerPanel] ❌ gtag hiba:', error);
-        }
-      });
+    if (changedKeys.length === 0) {
+      return;
     }
 
-    // Frissítjük a ref-et a következő összehasonlításhoz
+    // 🔥 ESEMÉNYEK KÜLDÉSE
+    changedKeys.forEach(key => {
+      const eventData = {
+        layer_name: key,
+        layer_state: layers[key] ? 'enabled' : 'disabled',
+        active_layers: Object.keys(layers).filter(k => layers[k]).join(',') || 'none',
+        zoom_level: zoom || 7,
+      };
+      
+      try {
+        // 🔥 OPCIONÁLIS LÁNCOLÁS - BIZTONSÁGOS HÍVÁS
+        if (window.gtag) {
+          window.gtag('event', 'layer_toggle', eventData);
+          console.log(`[LayerPanel] ✅ layer_toggle elküldve:`, eventData);
+        } else {
+          console.warn('[LayerPanel] ⚠️ gtag nem elérhető');
+        }
+      } catch (error) {
+        console.error('[LayerPanel] ❌ Hiba:', error);
+      }
+    });
+
+    // Frissítjük a ref-et
     prevLayersRef.current = layers;
   }, [layers, zoom]);
 
   const handleChange = (key, checked) => {
-    console.log(`[LayerPanel] 👆 Réteg váltás: ${key} -> ${checked ? '✅ bekapcsolva' : '❌ kikapcsolva'}`);
-    
-    // 🔥 Csak a state-et frissítjük - az useEffect majd küldi az eseményt!
+    console.log(`[LayerPanel] 👆 ${key} -> ${checked ? 'ON' : 'OFF'}`);
     setLayers(prev => ({
       ...prev,
       [key]: checked
