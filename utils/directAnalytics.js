@@ -1,14 +1,11 @@
+// src/utils/directAnalytics.js
 'use client';
 
-/**
- * Közvetlen GA4 esemény küldés - gtag prioritással
- * Ha elérhető a gtag, azzal küld (ez működik custom eventekre),
- * különben Measurement Protocol-lal próbálkozik.
- */
+// src/utils/directAnalytics.js - hibrid megoldás
+
 export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
   if (typeof window === 'undefined') return false;
   
-  // 1. Cookie ellenőrzés
   const hasConsent = document.cookie.includes('ingatlanTerkepCookieConsent=true');
   if (!hasConsent) {
     console.log(`[DirectAnalytics] ⛔ Nincs süti elfogadás: ${eventName}`);
@@ -16,22 +13,25 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
   }
 
   try {
-    // 🔥 1. PRIORITÁS: gtag használata (ez működik custom eventekre)
+    let success = false;
+    
+    // 1. Próbáljuk gtag-gel (ez a legmegbízhatóbb custom eventekhez)
     if (window.gtag) {
-      window.gtag('event', eventName, {
-        ...eventParams,
-        send_to: 'G-KWH607ZP7H'
-      });
-      console.log(`[DirectAnalytics] ✅ Elküldve (gtag): ${eventName}`, eventParams);
-      return true;
+      try {
+        window.gtag('event', eventName, {
+          ...eventParams,
+          send_to: 'G-KWH607ZP7H'
+        });
+        console.log(`[DirectAnalytics] ✅ Elküldve (gtag): ${eventName}`, eventParams);
+        success = true;
+      } catch (gtagError) {
+        console.warn('[DirectAnalytics] gtag hiba, próbálom Measurement Protocol-lal:', gtagError);
+      }
     }
-
-    // 2. FALLBACK: Measurement Protocol (ha nincs gtag)
-    console.log(`[DirectAnalytics] gtag nem elérhető, Measurement Protocol használata: ${eventName}`);
     
+    // 2. Mindig küldjük Measurement Protocol-lal is (kettős küldés)
+    // Ez biztosítja, hogy a GA4 DebugView-ban is látszódjon
     const measurementId = 'G-KWH607ZP7H';
-    
-    // Client ID lekérése a GA cookie-ból
     let clientId = 'anonymous';
     const gaCookie = document.cookie.split(';').find(c => c.trim().startsWith('_ga='));
     if (gaCookie) {
@@ -41,7 +41,6 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
       }
     }
     
-    // Session ID és session count lekérése
     let sessionId = '';
     let sessionCount = '1';
     const gaSessionCookie = document.cookie.split(';').find(c => c.trim().startsWith('_ga_'));
@@ -58,7 +57,6 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
       sessionCount = '1';
     }
 
-    // Paraméterek összeállítása
     const params = new URLSearchParams();
     params.append('v', '2');
     params.append('tid', measurementId);
@@ -80,7 +78,6 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
       params.append('_ss', '1');
     }
     
-    // Egyedi paraméterek (ep. prefix)
     Object.entries(eventParams).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         params.append(`ep.${key}`, String(value));
@@ -89,26 +86,21 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
     
     const url = `https://www.google-analytics.com/g/collect?${params.toString()}`;
     
-    // Küldés sendBeaconnel vagy fetch-el
     if (navigator.sendBeacon) {
       const blob = new Blob([params.toString()], { type: 'application/x-www-form-urlencoded' });
-      const success = navigator.sendBeacon(url, blob);
-      if (success) {
-        console.log(`[DirectAnalytics] ✅ Elküldve (beacon): ${eventName}`, eventParams);
-        return true;
-      }
+      navigator.sendBeacon(url, blob);
+    } else {
+      fetch(url, {
+        method: 'POST',
+        keepalive: true,
+        mode: 'no-cors',
+        cache: 'no-cache',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params.toString(),
+      }).catch(() => {});
     }
-    
-    fetch(url, {
-      method: 'POST',
-      keepalive: true,
-      mode: 'no-cors',
-      cache: 'no-cache',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: params.toString(),
-    }).catch(() => {});
     
     console.log(`[DirectAnalytics] ✅ Elküldve (measurement): ${eventName}`, eventParams);
     return true;
@@ -118,9 +110,7 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
   }
 };
 
-/**
- * Page view küldés
- */
+
 export const sendPageView = (pageTitle, pageLocation) => {
   return sendDirectAnalyticsEvent('page_view', {
     page_title: pageTitle || document.title,

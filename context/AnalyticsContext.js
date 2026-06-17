@@ -1,7 +1,8 @@
+// src/context/AnalyticsContext.js
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
-import { sendDirectAnalyticsEvent, sendPageView } from '@/utils/directAnalytics';
+import { sendDirectAnalyticsEvent, sendPageView, sendLayerToggle } from '@/utils/directAnalytics';
 
 const AnalyticsContext = createContext();
 
@@ -10,7 +11,6 @@ export const AnalyticsProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const checkIntervalRef = useRef(null);
   const pendingEventsRef = useRef([]);
-  const isInitializedRef = useRef(false);
 
   // 🔥 Cookie ellenőrzés
   const checkCookieConsent = useCallback(() => {
@@ -35,11 +35,8 @@ export const AnalyticsProvider = ({ children }) => {
     });
   }, []);
 
-  // 🔥 Kezdeti ellenőrzés és gtag elérhetőség figyelése
+  // 🔥 Kezdeti ellenőrzés
   useEffect(() => {
-    if (isInitializedRef.current) return;
-    isInitializedRef.current = true;
-
     const hasConsent = document.cookie.includes('ingatlanTerkepCookieConsent=true');
     console.log(`[AnalyticsContext] Kezdeti cookie állapot: ${hasConsent}`);
     setCookiesAccepted(hasConsent);
@@ -60,9 +57,8 @@ export const AnalyticsProvider = ({ children }) => {
     // 🔥 Figyeljük a custom event-et
     const handleCookieUpdate = () => {
       console.log('[AnalyticsContext] 🔔 cookieConsentUpdated esemény fogadva');
-      const hasConsentNow = document.cookie.includes('ingatlanTerkepCookieConsent=true');
-      setCookiesAccepted(hasConsentNow);
-      if (hasConsentNow) {
+      checkCookieConsent();
+      if (cookiesAccepted) {
         sendPageView(document.title, window.location.href);
       }
     };
@@ -86,14 +82,13 @@ export const AnalyticsProvider = ({ children }) => {
     };
   }, [checkCookieConsent]);
 
-  // 🔥 ESEMÉNY KÜLDÉS
+  // 🔥 ESEMÉNY KÜLDÉS - KÖZVETLEN FETCH
   const sendEvent = useCallback((eventName, eventParams = {}) => {
     const hasConsent = document.cookie.includes('ingatlanTerkepCookieConsent=true');
     
     console.log(`[Analytics] sendEvent hívva: ${eventName}`, { 
       cookiesAccepted,
       hasConsent,
-      gtagAvailable: !!window.gtag
     });
     
     if (!hasConsent) {
@@ -105,7 +100,7 @@ export const AnalyticsProvider = ({ children }) => {
       setCookiesAccepted(hasConsent);
     }
 
-    // 🔥 KÖZVETLEN KÜLDÉS
+    // 🔥 KÖZVETLEN KÜLDÉS FETCH-EL
     const result = sendDirectAnalyticsEvent(eventName, eventParams);
     
     if (!result) {

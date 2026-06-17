@@ -1,9 +1,10 @@
-import React, { useRef } from 'react';
+// src/components/LayerPanel.js
+import React, { useEffect, useRef } from 'react';
 import { useAnalytics } from '@/context/AnalyticsContext';
 import '../styles/HomePage.css';
 
 const LayerPanel = ({ zoom, layers, setLayers, onClose }) => {
-  const { sendEvent } = useAnalytics();
+  const { cookiesAccepted, sendEvent } = useAnalytics();
   const prevLayersRef = useRef(layers);
   
   const allLayers = [
@@ -19,20 +20,21 @@ const LayerPanel = ({ zoom, layers, setLayers, onClose }) => {
     { key: 'religion', name: 'Vallás' },
   ];
 
-  const handleChange = (key, checked) => {
-    // 1. Frissítjük a state-et
-    setLayers(prev => ({
-      ...prev,
-      [key]: checked
-    }));
+const handleChange = (key, checked) => {
+  // 1. Frissítjük a state-et
+  setLayers(prev => ({
+    ...prev,
+    [key]: checked
+  }));
 
-    // 2. Aktív rétegek listája
-    const currentLayers = { ...layers, [key]: checked };
-    const activeLayers = Object.keys(currentLayers)
-      .filter(k => currentLayers[k])
-      .join(',');
+  // 2. Aktív rétegek listája
+  const currentLayers = { ...layers, [key]: checked };
+  const activeLayers = Object.keys(currentLayers)
+    .filter(k => currentLayers[k])
+    .join(',');
 
-    // 3. 🔥 ANALYTICS KÜLDÉS - közvetlenül
+  // 3. 🔥 ANALYTICS KÜLDÉS - KIS KÉSLELTETÉSSEL, HOGY A STATE FRISSÜLJÖN
+  setTimeout(() => {
     const result = sendEvent('layer_toggle', {
       layer_name: key,
       layer_state: checked ? 'enabled' : 'disabled',
@@ -41,7 +43,21 @@ const LayerPanel = ({ zoom, layers, setLayers, onClose }) => {
     });
     
     console.log(`[LayerPanel] Réteg váltás: ${key} -> ${checked ? '✅' : '❌'} (analytics: ${result ? '✅' : '❌'})`);
-  };
+  }, 50);
+};
+
+  // Változások nyomon követése (opcionális)
+  useEffect(() => {
+    const changedKeys = Object.keys(layers).filter(
+      key => layers[key] !== prevLayersRef.current[key]
+    );
+
+    if (changedKeys.length > 0 && cookiesAccepted) {
+      console.log('[LayerPanel] Változás észlelve (már elküldve a handleChange által):', changedKeys);
+    }
+
+    prevLayersRef.current = layers;
+  }, [layers, cookiesAccepted]);
 
   return (
     <div className="layer-panel-modern">
