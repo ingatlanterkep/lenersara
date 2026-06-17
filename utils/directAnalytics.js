@@ -1,3 +1,6 @@
+// src/utils/directAnalytics.js
+'use client';
+
 // src/utils/directAnalytics.js - hibrid megoldás
 
 export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
@@ -105,4 +108,24 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
     console.error(`[DirectAnalytics] ❌ Hiba (${eventName}):`, error);
     return false;
   }
+};
+
+
+export const sendPageView = (pageTitle, pageLocation) => {
+  return sendDirectAnalyticsEvent('page_view', {
+    page_title: pageTitle || document.title,
+    page_location: pageLocation || window.location.href,
+  });
+};
+
+/**
+ * Layer toggle esemény
+ */
+export const sendLayerToggle = (layerName, state, activeLayers, zoom) => {
+  return sendDirectAnalyticsEvent('layer_toggle', {
+    layer_name: layerName,
+    layer_state: state ? 'enabled' : 'disabled',
+    active_layers: activeLayers || 'none',
+    zoom_level: zoom || 7,
+  });
 };
