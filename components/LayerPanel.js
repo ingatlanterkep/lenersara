@@ -1,10 +1,9 @@
-// src/components/LayerPanel.js
 import React, { useEffect, useRef } from 'react';
 import { useAnalytics } from '@/context/AnalyticsContext';
 import '../styles/HomePage.css';
 
 const LayerPanel = ({ zoom, layers, setLayers, onClose }) => {
-  const { cookiesAccepted, sendEvent } = useAnalytics();
+  const { cookiesAccepted } = useAnalytics();
   const prevLayersRef = useRef(layers);
   
   const allLayers = [
@@ -20,44 +19,46 @@ const LayerPanel = ({ zoom, layers, setLayers, onClose }) => {
     { key: 'religion', name: 'Vallás' },
   ];
 
-const handleChange = (key, checked) => {
-  // 1. Frissítjük a state-et
-  setLayers(prev => ({
-    ...prev,
-    [key]: checked
-  }));
-
-  // 2. Aktív rétegek listája
-  const currentLayers = { ...layers, [key]: checked };
-  const activeLayers = Object.keys(currentLayers)
-    .filter(k => currentLayers[k])
-    .join(',');
-
-  // 3. 🔥 ANALYTICS KÜLDÉS - KIS KÉSLELTETÉSSEL, HOGY A STATE FRISSÜLJÖN
-  setTimeout(() => {
-    const result = sendEvent('layer_toggle', {
-      layer_name: key,
-      layer_state: checked ? 'enabled' : 'disabled',
-      active_layers: activeLayers || 'none',
-      zoom_level: zoom || 7,
-    });
-    
-    console.log(`[LayerPanel] Réteg váltás: ${key} -> ${checked ? '✅' : '❌'} (analytics: ${result ? '✅' : '❌'})`);
-  }, 50);
-};
-
-  // Változások nyomon követése (opcionális)
+  // 🔥 EZ A KULCS: useEffect a layers változásának figyelésére (UGYANAZ, MINT A RÉGI KÓDBAN!)
   useEffect(() => {
-    const changedKeys = Object.keys(layers).filter(
-      key => layers[key] !== prevLayersRef.current[key]
-    );
-
-    if (changedKeys.length > 0 && cookiesAccepted) {
-      console.log('[LayerPanel] Változás észlelve (már elküldve a handleChange által):', changedKeys);
+    // Csak akkor küldünk, ha van cookie elfogadás ÉS létezik a gtag
+    if (!cookiesAccepted || !window.gtag) {
+      console.log('[LayerPanel] Analytics kihagyva:', { 
+        cookiesAccepted, 
+        gtagAvailable: !!window.gtag 
+      });
+      return;
     }
 
+    const prevLayers = prevLayersRef.current;
+    const changedKeys = Object.keys(layers).filter(
+      key => layers[key] !== prevLayers[key]
+    );
+
+    if (changedKeys.length > 0) {
+      changedKeys.forEach(key => {
+        // 🔥 KÖZVETLEN gtag HÍVÁS - UGYANAZ, MINT A RÉGI KÓDBAN!
+        window.gtag('event', 'layer_toggle', {
+          layer_name: key,
+          layer_state: layers[key] ? 'enabled' : 'disabled',
+          active_layers: Object.keys(layers).filter(k => layers[k]).join(',') || 'none',
+          zoom_level: zoom || 7,
+        });
+        console.log(`[LayerPanel] ✅ layer_toggle elküldve (gtag): ${key} -> ${layers[key] ? 'enabled' : 'disabled'}`);
+      });
+    }
+
+    // Frissítjük a ref-et a következő összehasonlításhoz
     prevLayersRef.current = layers;
-  }, [layers, cookiesAccepted]);
+  }, [layers, cookiesAccepted, zoom]); // ← zoom is függőség!
+
+  const handleChange = (key, checked) => {
+    // 🔥 Csak a state-et frissítjük - az useEffect majd küldi az eseményt!
+    setLayers(prev => ({
+      ...prev,
+      [key]: checked
+    }));
+  };
 
   return (
     <div className="layer-panel-modern">
