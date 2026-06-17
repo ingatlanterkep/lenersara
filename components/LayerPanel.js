@@ -1,9 +1,40 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useAnalytics } from '@/context/AnalyticsContext';
 import '../styles/HomePage.css';
 
 const LayerPanel = ({ zoom, layers, setLayers, onClose }) => {
+  const { cookiesAccepted } = useAnalytics();
   const prevLayersRef = useRef(layers);
-  
+  const [gtagReady, setGtagReady] = useState(false);
+
+  // 🔥 Figyeljük a gtag betöltődését
+  useEffect(() => {
+    const checkGtag = () => {
+      if (window.gtag && !gtagReady) {
+        console.log('[LayerPanel] ✅ gtag elérhető!');
+        setGtagReady(true);
+      }
+    };
+
+    // Ellenőrizzük rögtön
+    checkGtag();
+
+    // 🔥 FIGYELJÜK A GTAG LOADED ESEMÉNYT
+    const handleGtagLoaded = () => {
+      console.log('[LayerPanel] 🔔 gtagLoaded esemény fogadva');
+      checkGtag();
+    };
+    window.addEventListener('gtagLoaded', handleGtagLoaded);
+
+    // És időközönként is ellenőrizzük
+    const interval = setInterval(checkGtag, 1000);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('gtagLoaded', handleGtagLoaded);
+    };
+  }, [gtagReady]);
+
   const allLayers = [
     { key: 'satellite', name: 'Műhold' },
     { key: 'crimeHeat', name: 'Közbiztonság' },
@@ -19,14 +50,13 @@ const LayerPanel = ({ zoom, layers, setLayers, onClose }) => {
 
   // 🔥 useEffect a layers változására
   useEffect(() => {
-    // Ellenőrizzük a feltételeket
-    const hasGtag = typeof window !== 'undefined' && typeof window.gtag === 'function';
-    const hasConsent = typeof document !== 'undefined' && 
-      document.cookie.includes('ingatlanTerkepCookieConsent=true');
-    
-    // Ha nincs gtag vagy nincs consent, ne küldjünk
-    if (!hasGtag || !hasConsent) {
-      console.log('[LayerPanel] ⛔ Nem küldhető:', { hasGtag, hasConsent });
+    // Csak akkor küldünk, ha van cookie elfogadás ÉS a gtag elérhető
+    if (!cookiesAccepted || !gtagReady || !window.gtag) {
+      console.log('[LayerPanel] Analytics kihagyva:', { 
+        cookiesAccepted, 
+        gtagReady,
+        gtagAvailable: !!window.gtag
+      });
       return;
     }
 
@@ -35,38 +65,22 @@ const LayerPanel = ({ zoom, layers, setLayers, onClose }) => {
       key => layers[key] !== prevLayers[key]
     );
 
-    if (changedKeys.length === 0) {
-      return;
+    if (changedKeys.length > 0) {
+      changedKeys.forEach(key => {
+        window.gtag('event', 'layer_toggle', {
+          layer_name: key,
+          layer_state: layers[key] ? 'enabled' : 'disabled',
+          active_layers: Object.keys(layers).filter(k => layers[k]).join(',') || 'none',
+          zoom_level: zoom || 7,
+        });
+        console.log(`[LayerPanel] ✅ layer_toggle elküldve (gtag): ${key} -> ${layers[key] ? 'enabled' : 'disabled'}`);
+      });
     }
 
-    // 🔥 ESEMÉNYEK KÜLDÉSE
-    changedKeys.forEach(key => {
-      const eventData = {
-        layer_name: key,
-        layer_state: layers[key] ? 'enabled' : 'disabled',
-        active_layers: Object.keys(layers).filter(k => layers[k]).join(',') || 'none',
-        zoom_level: zoom || 7,
-      };
-      
-      try {
-        // 🔥 OPCIONÁLIS LÁNCOLÁS - BIZTONSÁGOS HÍVÁS
-        if (window.gtag) {
-          window.gtag('event', 'layer_toggle', eventData);
-          console.log(`[LayerPanel] ✅ layer_toggle elküldve:`, eventData);
-        } else {
-          console.warn('[LayerPanel] ⚠️ gtag nem elérhető');
-        }
-      } catch (error) {
-        console.error('[LayerPanel] ❌ Hiba:', error);
-      }
-    });
-
-    // Frissítjük a ref-et
     prevLayersRef.current = layers;
-  }, [layers, zoom]);
+  }, [layers, cookiesAccepted, gtagReady, zoom]);
 
   const handleChange = (key, checked) => {
-    console.log(`[LayerPanel] 👆 ${key} -> ${checked ? 'ON' : 'OFF'}`);
     setLayers(prev => ({
       ...prev,
       [key]: checked
