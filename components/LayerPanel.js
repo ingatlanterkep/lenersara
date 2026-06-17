@@ -1,55 +1,46 @@
-import React, { useEffect, useRef } from 'react';
-import { useAnalytics } from '@/context/AnalyticsContext'; // ha van
+import React, { useRef } from 'react';
+import { useAnalytics } from '@/context/AnalyticsContext';
 import '../styles/HomePage.css';
 
 const LayerPanel = ({ zoom, layers, setLayers, onClose }) => {
+  const { sendEvent } = useAnalytics();
   const prevLayersRef = useRef(layers);
-  const { sendEvent } = useAnalytics?.() || {}; // ha van context
-
+  
   const allLayers = [
     { key: 'satellite', name: 'Műhold' },
     { key: 'crimeHeat', name: 'Közbiztonság' },
     { key: 'transport', name: 'Közlekedés' },
-    // ... többi
+    { key: 'education', name: 'Oktatás' },
+    { key: 'shop', name: 'Boltok' },
+    { key: 'health', name: 'Egészségügy' },
+    { key: 'bank', name: 'Bankok' },
+    { key: 'outdoor', name: 'Szabadtér' },
+    { key: 'sport', name: 'Sport' },
+    { key: 'religion', name: 'Vallás' },
   ];
 
-  // === FŐ ANALYTICS LOGIKA (useEffect) ===
-  useEffect(() => {
-    if (!document.cookie.includes('ingatlanTerkepCookieConsent=true')) return;
-
-    const prev = prevLayersRef.current;
-    const changedKeys = Object.keys(layers).filter(key => layers[key] !== prev[key]);
-
-    if (changedKeys.length > 0) {
-      changedKeys.forEach(key => {
-        const newState = layers[key];
-
-        // 1. gtag (legjobb)
-        if (window.gtag) {
-          window.gtag('event', 'layer_toggle', {
-            layer_name: key,
-            layer_state: newState ? 'enabled' : 'disabled',
-            active_layers: Object.keys(layers).filter(k => layers[k]).join(',') || 'none',
-            zoom_level: zoom || 7,
-          });
-        } 
-        // 2. context fallback
-        else if (sendEvent) {
-          sendEvent('layer_toggle', {
-            layer_name: key,
-            layer_state: newState ? 'enabled' : 'disabled',
-            active_layers: Object.keys(layers).filter(k => layers[k]).join(',') || 'none',
-            zoom_level: zoom || 7,
-          });
-        }
-      });
-    }
-
-    prevLayersRef.current = { ...layers };
-  }, [layers, zoom, sendEvent]);
-
   const handleChange = (key, checked) => {
-    setLayers(prev => ({ ...prev, [key]: checked }));
+    // 1. Frissítjük a state-et
+    setLayers(prev => ({
+      ...prev,
+      [key]: checked
+    }));
+
+    // 2. Aktív rétegek listája
+    const currentLayers = { ...layers, [key]: checked };
+    const activeLayers = Object.keys(currentLayers)
+      .filter(k => currentLayers[k])
+      .join(',');
+
+    // 3. 🔥 ANALYTICS KÜLDÉS - közvetlenül
+    const result = sendEvent('layer_toggle', {
+      layer_name: key,
+      layer_state: checked ? 'enabled' : 'disabled',
+      active_layers: activeLayers || 'none',
+      zoom_level: zoom || 7,
+    });
+    
+    console.log(`[LayerPanel] Réteg váltás: ${key} -> ${checked ? '✅' : '❌'} (analytics: ${result ? '✅' : '❌'})`);
   };
 
   return (
@@ -59,11 +50,14 @@ const LayerPanel = ({ zoom, layers, setLayers, onClose }) => {
         <div className="layer-bar-scrollable">
           <div className="layer-bar">
             {allLayers.map(({ key, name }) => (
-              <label key={key} className={`layer-control-label ${key}-label ${layers[key] ? 'checked' : ''}`}>
+              <label
+                key={key}
+                className={`layer-control-label ${key}-label ${layers[key] ? 'checked' : ''}`}
+              >
                 <input
                   type="checkbox"
                   checked={!!layers[key]}
-                  onChange={e => handleChange(key, e.target.checked)}
+                  onChange={(e) => handleChange(key, e.target.checked)}
                 />
                 <span className="layer-text">{name}</span>
               </label>
