@@ -45,7 +45,6 @@ const handleChange = (key, checked) => {
     console.log(`[LayerPanel] Réteg váltás: ${key} -> ${checked ? '✅' : '❌'} (analytics: ${result ? '✅' : '❌'})`);
   }, 50);
 };
-
   // Változások nyomon követése (opcionális)
   useEffect(() => {
     const changedKeys = Object.keys(layers).filter(
