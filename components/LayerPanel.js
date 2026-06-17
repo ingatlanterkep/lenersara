@@ -20,20 +20,21 @@ const LayerPanel = ({ zoom, layers, setLayers, onClose }) => {
     { key: 'religion', name: 'Vallás' },
   ];
 
-  const handleChange = (key, checked) => {
-    // 1. Frissítjük a state-et
-    setLayers(prev => ({
-      ...prev,
-      [key]: checked
-    }));
+const handleChange = (key, checked) => {
+  // 1. Frissítjük a state-et
+  setLayers(prev => ({
+    ...prev,
+    [key]: checked
+  }));
 
-    // 2. Aktív rétegek listája
-    const currentLayers = { ...layers, [key]: checked };
-    const activeLayers = Object.keys(currentLayers)
-      .filter(k => currentLayers[k])
-      .join(',');
+  // 2. Aktív rétegek listája
+  const currentLayers = { ...layers, [key]: checked };
+  const activeLayers = Object.keys(currentLayers)
+    .filter(k => currentLayers[k])
+    .join(',');
 
-    // 3. 🔥 ANALYTICS KÜLDÉS a context segítségével
+  // 3. 🔥 ANALYTICS KÜLDÉS - KIS KÉSLELTETÉSSEL, HOGY A STATE FRISSÜLJÖN
+  setTimeout(() => {
     const result = sendEvent('layer_toggle', {
       layer_name: key,
       layer_state: checked ? 'enabled' : 'disabled',
@@ -42,7 +43,8 @@ const LayerPanel = ({ zoom, layers, setLayers, onClose }) => {
     });
     
     console.log(`[LayerPanel] Réteg váltás: ${key} -> ${checked ? '✅' : '❌'} (analytics: ${result ? '✅' : '❌'})`);
-  };
+  }, 50);
+};
 
   // Változások nyomon követése (opcionális)
   useEffect(() => {

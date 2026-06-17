@@ -1,10 +1,6 @@
 // src/utils/directAnalytics.js
 'use client';
 
-/**
- * Közvetlen GA4 esemény küldés fetch-el
- * Nem függ a gtag-től, közvetlenül a GA4 API-nak küld
- */
 export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
   if (typeof window === 'undefined') return false;
   
@@ -28,23 +24,35 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
       }
     }
     
-    // 3. Session ID generálása (ha nincs)
-    let sessionId = window._ga_session_id;
-    if (!sessionId) {
-      sessionId = Math.floor(Date.now() / 1000).toString();
-      window._ga_session_id = sessionId;
+    // 3. Session ID és session count lekérése a _ga cookie-ból
+    let sessionId = '';
+    let sessionCount = '1';
+    const gaSessionCookie = document.cookie.split(';').find(c => c.trim().startsWith('_ga_'));
+    if (gaSessionCookie) {
+      const match = gaSessionCookie.match(/GS1\.\d+\.(\d+)\.(\d+)/);
+      if (match) {
+        sessionId = match[1];
+        sessionCount = match[2];
+      }
     }
     
+    // Ha nincs session cookie, generáljunk egyet
+    if (!sessionId) {
+      sessionId = Math.floor(Date.now() / 1000).toString();
+      sessionCount = '1';
+    }
+
     // 4. Paraméterek összeállítása
     const params = new URLSearchParams();
     params.append('v', '2'); // GA4 protocol version
     params.append('tid', measurementId); // Measurement ID
     params.append('cid', clientId); // Client ID
     params.append('en', eventName); // Event name
-    params.append('_s', '1'); // Session count
-    params.append('_ss', '1'); // Session start
+    
+    // 🔥 SESSION PARAMÉTEREK - helyesen
+    params.append('_s', sessionCount); // Session count
     params.append('sid', sessionId); // Session ID
-    params.append('sct', '1'); // Session count
+    params.append('sct', sessionCount); // Session count
     params.append('seg', '1'); // Segment
     params.append('dl', window.location.href); // Document location
     params.append('dt', document.title); // Document title
@@ -53,6 +61,14 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
     params.append('sr', `${window.screen.width}x${window.screen.height}`); // Screen resolution
     params.append('_et', '0'); // Engagement time
     
+    // 🔥 PRIVACY PARAMÉTER - EZ HIÁNYZOTT!
+    params.append('_p', '1'); // Privacy: 1 = consented
+    
+    // Csak akkor küldjük a _ss paramétert, ha ez az első kérés
+    if (sessionCount === '1') {
+      params.append('_ss', '1');
+    }
+    
     // 5. Egyedi paraméterek hozzáadása (ep. prefix)
     Object.entries(eventParams).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
@@ -60,10 +76,20 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
       }
     });
     
-    // 🔥 6. KÜLDÉS
+    // 🔥 6. KÜLDÉS - POST helyett GET, mert a GA4 a GET-et preferálja a collect végponthoz
     const url = `https://www.google-analytics.com/g/collect?${params.toString()}`;
     
-    // 🔥 NO-CORS módban küldjük, hogy ne blokkolja a böngésző
+    // 🔥 Használjunk navigator.sendBeacon-t a megbízhatóbb küldésért
+    if (navigator.sendBeacon) {
+      const blob = new Blob([params.toString()], { type: 'application/x-www-form-urlencoded' });
+      const success = navigator.sendBeacon(url, blob);
+      if (success) {
+        console.log(`[DirectAnalytics] ✅ Elküldve (beacon): ${eventName}`, eventParams);
+        return true;
+      }
+    }
+    
+    // Ha a beacon nem sikerült, használjuk a fetch-et
     fetch(url, {
       method: 'POST',
       keepalive: true,
@@ -72,12 +98,12 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
+      body: params.toString(),
     }).catch(() => {
-      // no-cors módban nem látjuk a választ, de a fetch nem dob hibát
+      // no-cors módban nem látjuk a választ
     });
     
-    console.log(`[DirectAnalytics] ✅ Elküldve: ${eventName}`, eventParams);
-    console.log(`[DirectAnalytics] 📤 URL: ${url}`);
+    console.log(`[DirectAnalytics] ✅ Elküldve (fetch): ${eventName}`, eventParams);
     return true;
   } catch (error) {
     console.error(`[DirectAnalytics] ❌ Hiba (${eventName}):`, error);
@@ -85,9 +111,7 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
   }
 };
 
-/**
- * Page view küldés
- */
+
 export const sendPageView = (pageTitle, pageLocation) => {
   return sendDirectAnalyticsEvent('page_view', {
     page_title: pageTitle || document.title,
