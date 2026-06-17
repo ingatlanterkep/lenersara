@@ -1,40 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useAnalytics } from '@/context/AnalyticsContext';
+import React, { useEffect, useRef } from 'react';
 import '../styles/HomePage.css';
 
 const LayerPanel = ({ zoom, layers, setLayers, onClose }) => {
-  const { cookiesAccepted } = useAnalytics();
   const prevLayersRef = useRef(layers);
-  const [gtagReady, setGtagReady] = useState(false);
-
-  // 🔥 Figyeljük a gtag betöltődését
-  useEffect(() => {
-    const checkGtag = () => {
-      if (window.gtag && !gtagReady) {
-        console.log('[LayerPanel] ✅ gtag elérhető!');
-        setGtagReady(true);
-      }
-    };
-
-    // Ellenőrizzük rögtön
-    checkGtag();
-
-    // 🔥 FIGYELJÜK A GTAG LOADED ESEMÉNYT
-    const handleGtagLoaded = () => {
-      console.log('[LayerPanel] 🔔 gtagLoaded esemény fogadva');
-      checkGtag();
-    };
-    window.addEventListener('gtagLoaded', handleGtagLoaded);
-
-    // És időközönként is ellenőrizzük
-    const interval = setInterval(checkGtag, 1000);
-
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener('gtagLoaded', handleGtagLoaded);
-    };
-  }, [gtagReady]);
-
+  const hasLoggedRef = useRef(false);
+  
   const allLayers = [
     { key: 'satellite', name: 'Műhold' },
     { key: 'crimeHeat', name: 'Közbiztonság' },
@@ -48,14 +18,41 @@ const LayerPanel = ({ zoom, layers, setLayers, onClose }) => {
     { key: 'religion', name: 'Vallás' },
   ];
 
-  // 🔥 useEffect a layers változására
+  // 🔥 LOGOLJUK A KOMPONENS ÁLLAPOTÁT
   useEffect(() => {
-    // Csak akkor küldünk, ha van cookie elfogadás ÉS a gtag elérhető
-    if (!cookiesAccepted || !gtagReady || !window.gtag) {
-      console.log('[LayerPanel] Analytics kihagyva:', { 
-        cookiesAccepted, 
-        gtagReady,
-        gtagAvailable: !!window.gtag
+    if (!hasLoggedRef.current) {
+      console.log('[LayerPanel] 🔍 Komponens betöltve:', {
+        hasGtag: typeof window !== 'undefined' && !!window.gtag,
+        cookiesAccepted: typeof document !== 'undefined' && document.cookie.includes('ingatlanTerkepCookieConsent=true'),
+        layers: Object.keys(layers).filter(k => layers[k]),
+        zoom
+      });
+      hasLoggedRef.current = true;
+    }
+  }, []);
+
+  // 🔥 EZ A KULCS: useEffect a layers változásának figyelésére
+  useEffect(() => {
+    // Ellenőrizzük, hogy létezik-e a gtag
+    const gtagAvailable = typeof window !== 'undefined' && !!window.gtag;
+    
+    // Cookie ellenőrzés
+    const hasConsent = typeof document !== 'undefined' && 
+      document.cookie.includes('ingatlanTerkepCookieConsent=true');
+    
+    console.log('[LayerPanel] 🔄 useEffect fut:', {
+      hasConsent,
+      gtagAvailable,
+      changedKeys: Object.keys(layers).filter(key => layers[key] !== prevLayersRef.current[key]),
+      currentLayers: Object.keys(layers).filter(k => layers[k])
+    });
+    
+    // Csak akkor küldünk, ha van cookie elfogadás ÉS létezik a gtag
+    if (!hasConsent || !gtagAvailable) {
+      console.log('[LayerPanel] ⛔ Analytics kihagyva:', { 
+        hasConsent, 
+        gtagAvailable,
+        reason: !hasConsent ? 'nincs cookie elfogadás' : 'nincs gtag'
       });
       return;
     }
@@ -67,20 +64,31 @@ const LayerPanel = ({ zoom, layers, setLayers, onClose }) => {
 
     if (changedKeys.length > 0) {
       changedKeys.forEach(key => {
-        window.gtag('event', 'layer_toggle', {
-          layer_name: key,
-          layer_state: layers[key] ? 'enabled' : 'disabled',
-          active_layers: Object.keys(layers).filter(k => layers[k]).join(',') || 'none',
-          zoom_level: zoom || 7,
-        });
-        console.log(`[LayerPanel] ✅ layer_toggle elküldve (gtag): ${key} -> ${layers[key] ? 'enabled' : 'disabled'}`);
+        // 🔥 KÖZVETLEN gtag HÍVÁS
+        try {
+          const eventData = {
+            layer_name: key,
+            layer_state: layers[key] ? 'enabled' : 'disabled',
+            active_layers: Object.keys(layers).filter(k => layers[k]).join(',') || 'none',
+            zoom_level: zoom || 7,
+          };
+          
+          window.gtag('event', 'layer_toggle', eventData);
+          console.log(`[LayerPanel] ✅ layer_toggle elküldve (gtag):`, eventData);
+        } catch (error) {
+          console.error('[LayerPanel] ❌ gtag hiba:', error);
+        }
       });
     }
 
+    // Frissítjük a ref-et a következő összehasonlításhoz
     prevLayersRef.current = layers;
-  }, [layers, cookiesAccepted, gtagReady, zoom]);
+  }, [layers, zoom]);
 
   const handleChange = (key, checked) => {
+    console.log(`[LayerPanel] 👆 Réteg váltás: ${key} -> ${checked ? '✅ bekapcsolva' : '❌ kikapcsolva'}`);
+    
+    // 🔥 Csak a state-et frissítjük - az useEffect majd küldi az eseményt!
     setLayers(prev => ({
       ...prev,
       [key]: checked

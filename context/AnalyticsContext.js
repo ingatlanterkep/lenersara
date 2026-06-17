@@ -1,8 +1,6 @@
-// src/context/AnalyticsContext.js
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
-import { sendDirectAnalyticsEvent, sendPageView, sendLayerToggle } from '@/utils/directAnalytics';
 
 const AnalyticsContext = createContext();
 
@@ -31,8 +29,89 @@ export const AnalyticsProvider = ({ children }) => {
     pendingEventsRef.current = [];
     
     events.forEach(({ eventName, eventParams }) => {
-      sendDirectAnalyticsEvent(eventName, eventParams);
+      sendDirectEvent(eventName, eventParams);
     });
+  }, []);
+
+  // 🔥 Közvetlen esemény küldés
+  const sendDirectEvent = useCallback((eventName, eventParams = {}) => {
+    if (typeof window === 'undefined') return false;
+    
+    const hasConsent = document.cookie.includes('ingatlanTerkepCookieConsent=true');
+    if (!hasConsent) {
+      console.log(`[DirectAnalytics] ⛔ Nincs süti elfogadás: ${eventName}`);
+      return false;
+    }
+
+    try {
+      // 🔥 PRÓBÁLJUK GTAG-GEL
+      if (window.gtag) {
+        window.gtag('event', eventName, eventParams);
+        console.log(`[DirectAnalytics] ✅ Elküldve (gtag): ${eventName}`, eventParams);
+        return true;
+      }
+      
+      // 🔥 HA NINCS GTAG, PRÓBÁLJUK MEASUREMENT PROTOCOL-LAL
+      const measurementId = 'G-KWH607ZP7H';
+      let clientId = 'anonymous';
+      const gaCookie = document.cookie.split(';').find(c => c.trim().startsWith('_ga='));
+      if (gaCookie) {
+        const match = gaCookie.match(/GA1\.\d+\.(\d+)\.(\d+)/);
+        if (match) {
+          clientId = match[1] + '.' + match[2];
+        }
+      }
+      
+      let sessionId = Math.floor(Date.now() / 1000).toString();
+      
+      const params = new URLSearchParams();
+      params.append('v', '2');
+      params.append('tid', measurementId);
+      params.append('cid', clientId);
+      params.append('en', eventName);
+      params.append('sid', sessionId);
+      params.append('sct', '1');
+      params.append('seg', '1');
+      params.append('dl', window.location.href);
+      params.append('dt', document.title);
+      params.append('dr', document.referrer || '');
+      params.append('ul', navigator.language || 'hu-hu');
+      params.append('sr', `${window.screen.width}x${window.screen.height}`);
+      params.append('_et', '0');
+      params.append('_p', '1');
+      params.append('_ss', '1');
+      params.append('_s', '1');
+      
+      Object.entries(eventParams).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          params.append(`ep.${key}`, String(value));
+        }
+      });
+      
+      const url = `https://www.google-analytics.com/g/collect?${params.toString()}`;
+      
+      if (navigator.sendBeacon) {
+        const blob = new Blob([params.toString()], { type: 'application/x-www-form-urlencoded' });
+        navigator.sendBeacon(url, blob);
+      } else {
+        fetch(url, {
+          method: 'POST',
+          keepalive: true,
+          mode: 'no-cors',
+          cache: 'no-cache',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: params.toString(),
+        }).catch(() => {});
+      }
+      
+      console.log(`[DirectAnalytics] ✅ Elküldve (measurement): ${eventName}`, eventParams);
+      return true;
+    } catch (error) {
+      console.error(`[DirectAnalytics] ❌ Hiba (${eventName}):`, error);
+      return false;
+    }
   }, []);
 
   // 🔥 Kezdeti ellenőrzés
@@ -43,9 +122,11 @@ export const AnalyticsProvider = ({ children }) => {
     setIsLoading(false);
     
     if (hasConsent) {
-      // Küldjünk egy page_view-t
       setTimeout(() => {
-        sendPageView(document.title, window.location.href);
+        sendDirectEvent('page_view', {
+          page_title: document.title,
+          page_location: window.location.href,
+        });
       }, 500);
     }
     
@@ -54,17 +135,29 @@ export const AnalyticsProvider = ({ children }) => {
       checkCookieConsent();
     }, 1000);
     
-    // 🔥 Figyeljük a custom event-et
+    // 🔥 Figyeljük a custom event-eket
     const handleCookieUpdate = () => {
       console.log('[AnalyticsContext] 🔔 cookieConsentUpdated esemény fogadva');
       checkCookieConsent();
       if (cookiesAccepted) {
-        sendPageView(document.title, window.location.href);
+        sendDirectEvent('page_view', {
+          page_title: document.title,
+          page_location: window.location.href,
+        });
       }
     };
     window.addEventListener('cookieConsentUpdated', handleCookieUpdate);
     
-    // 🔥 Figyeljük a storage változást
+    // 🔥 FIGYELJÜK A GTAG BETÖLTŐDÉSÉT
+    const handleGtagLoaded = () => {
+      console.log('[AnalyticsContext] 🔔 gtagLoaded esemény fogadva');
+      // Ha van függőben lévő esemény, küldjük el
+      if (pendingEventsRef.current.length > 0) {
+        flushPendingEvents();
+      }
+    };
+    window.addEventListener('gtagLoaded', handleGtagLoaded);
+    
     const handleStorageChange = (e) => {
       if (e.key === 'ingatlanTerkepCookieConsent') {
         console.log('[AnalyticsContext] Storage változás:', e.newValue);
@@ -78,11 +171,12 @@ export const AnalyticsProvider = ({ children }) => {
         clearInterval(checkIntervalRef.current);
       }
       window.removeEventListener('cookieConsentUpdated', handleCookieUpdate);
+      window.removeEventListener('gtagLoaded', handleGtagLoaded);
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, [checkCookieConsent]);
+  }, [checkCookieConsent, cookiesAccepted, flushPendingEvents, sendDirectEvent]);
 
-  // 🔥 ESEMÉNY KÜLDÉS - KÖZVETLEN FETCH
+  // 🔥 ESEMÉNY KÜLDÉS
   const sendEvent = useCallback((eventName, eventParams = {}) => {
     const hasConsent = document.cookie.includes('ingatlanTerkepCookieConsent=true');
     
@@ -100,13 +194,12 @@ export const AnalyticsProvider = ({ children }) => {
       setCookiesAccepted(hasConsent);
     }
 
-    // 🔥 KÖZVETLEN KÜLDÉS FETCH-EL
-    const result = sendDirectAnalyticsEvent(eventName, eventParams);
+    // 🔥 KÖZVETLEN KÜLDÉS
+    const result = sendDirectEvent(eventName, eventParams);
     
     if (!result) {
       // Ha nem sikerült, tegyük sorba
       pendingEventsRef.current.push({ eventName, eventParams });
-      // Próbáljuk újra 1 másodperc múlva
       setTimeout(() => {
         if (pendingEventsRef.current.length > 0) {
           flushPendingEvents();
@@ -115,7 +208,7 @@ export const AnalyticsProvider = ({ children }) => {
     }
     
     return result;
-  }, [cookiesAccepted, flushPendingEvents]);
+  }, [cookiesAccepted, flushPendingEvents, sendDirectEvent]);
 
   return (
     <AnalyticsContext.Provider value={{
