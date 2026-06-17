@@ -121,23 +121,14 @@ export const sendPageView = (pageTitle, pageLocation) => {
   });
 };
 
+/**
+ * Layer toggle esemény
+ */
 export const sendLayerToggle = (layerName, state, activeLayers, zoom) => {
-  if (typeof window === 'undefined' || !window.gtag) return false;
-  
-  const hasConsent = document.cookie.includes('ingatlanTerkepCookieConsent=true');
-  if (!hasConsent) return false;
-
-  try {
-    window.gtag('event', 'layer_toggle', {
-      layer_name: layerName,
-      layer_state: state ? 'enabled' : 'disabled',
-      active_layers: activeLayers || 'none',
-      zoom_level: zoom || 7,
-    });
-    console.log(`[Analytics] ✅ layer_toggle elküldve gtag-gel: ${layerName}`);
-    return true;
-  } catch (error) {
-    console.error('[Analytics] Hiba a gtag küldésnél:', error);
-    return false;
-  }
+  return sendDirectAnalyticsEvent('layer_toggle', {
+    layer_name: layerName,
+    layer_state: state ? 'enabled' : 'disabled',
+    active_layers: activeLayers || 'none',
+    zoom_level: zoom || 7,
+  });
 };
