@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { getPostDetails } from '@/services/apiService';
 
-// Dinamikus import a PostDetailsPage-hoz (SSR kikapcsolva)
 const PostDetailsPage = dynamic(
   () => import('@/pages/PostDetailsPage'),
   { 

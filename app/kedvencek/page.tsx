@@ -4,7 +4,6 @@
 import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
 
-// Dinamikus import a FavoritesPage-hoz (SSR kikapcsolva)
 const FavoritesPage = dynamic(
   () => import('@/pages/FavoritesPage'),
   { 
@@ -24,3 +23,4 @@ export default function Favorites() {
     </Suspense>
   );
 }
+
