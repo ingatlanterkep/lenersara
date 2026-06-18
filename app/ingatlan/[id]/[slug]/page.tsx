@@ -3,8 +3,8 @@
 
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { getPostDetails } from '@/services/apiService';
 
+// 🔥 HASZNÁLD A next/dynamic-ot RÖGTÖN az import után
 const PostDetailsPage = dynamic(
   () => import('@/pages/PostDetailsPage'),
   { 
@@ -16,6 +16,10 @@ const PostDetailsPage = dynamic(
     )
   }
 );
+
+// 🔥 EZUTÁN jöhet az export - MÁS NÉVEN!
+export const dynamicConfig = 'force-dynamic';
+export const revalidate = 0;
 
 export default function PropertyDetails({ params }: { params: Promise<{ id: string; slug: string }> }) {
   const [cookiesAccepted, setCookiesAccepted] = useState(false);

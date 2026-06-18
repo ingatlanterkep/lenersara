@@ -131,7 +131,19 @@ export const AnalyticsProvider = ({ children }) => {
 
 export const useAnalytics = () => {
   const context = useContext(AnalyticsContext);
+  
+  // 🔥 Extra védelem: ha nincs Provider, dobjunk egy értelmes hibát
   if (!context) {
+    // Build időben ne dobjunk hibát, csak adjunk vissza egy mock-ot
+    if (typeof window === 'undefined') {
+      console.warn('[Analytics] useAnalytics called during build - returning mock');
+      return {
+        cookiesAccepted: false,
+        isLoading: false,
+        sendEvent: () => false,
+        refreshConsent: () => false,
+      };
+    }
     throw new Error('useAnalytics must be used within an AnalyticsProvider');
   }
   return context;
