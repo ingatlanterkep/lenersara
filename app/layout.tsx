@@ -10,8 +10,8 @@ import { AnalyticsProvider } from '@/context/AnalyticsContext';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Ingatlan-Térkép | Térképes ingatlankereső',
-  description: 'Eladó és kiadó ingatlanok interaktív térképes keresővel.',
+ title: 'Ingatlan-Térkép – Térképes ingatlankereső Magyarországon',
+  description: 'Eladó és kiadó lakások, házak és telkek interaktív térképen. Valós idejű keresés, ár-összehasonlítás és részletes szűrés.',
   icons: {
     icon: '/logo2.ico',
   },

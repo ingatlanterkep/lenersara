@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { getCurrentUser } from '@/services/usersService';
 import '@/styles/ProfileLayout.css';
 import '@/styles/UploadPage.css';
-import '@/styles/MessagesPage.css';
+
 
 
 export default function ProfileLayout({
