@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import { allArticles } from './AllArticles';
 
-// Vármegye -> városok mapping (átemelve a RelatedLinks-ből)
+// Vármegye -> városok mapping
 const countyCities: Record<string, string[]> = {
   'Pest vármegye': ['Érd', 'Budaörs', 'Szentendre', 'Gödöllő', 'Vác', 'Dunakeszi', 'Szigetszentmiklós', 'Vecsés', 'Gyál', 'Monor', 'Cegléd', 'Nagykőrös'],
   'Hajdú-Bihar vármegye': ['Debrecen', 'Hajdúböszörmény', 'Hajdúszoboszló', 'Balmazújváros', 'Püspökladány', 'Hajdúnánás'],
@@ -47,15 +48,6 @@ const countyToSlug: Record<string, string> = {
   'Jász-Nagykun-Szolnok vármegye': 'jasz-nagykun-szolnok-varmegye'
 };
 
-const ALL_TYPES = [
-  { slug: 'lakas', name: 'lakás', display: 'lakások' },
-  { slug: 'haz', name: 'ház', display: 'házak' },
-  { slug: 'telek', name: 'telek', display: 'telkek' },
-  { slug: 'iroda', name: 'iroda', display: 'irodák' },
-  { slug: 'garazs', name: 'garázs', display: 'garázsok' },
-  { slug: 'nyaralo', name: 'nyaraló', display: 'nyaralók' },
-];
-
 const budapestDistricts = [
   'budapest-i-kerulet', 'budapest-ii-kerulet', 'budapest-iii-kerulet',
   'budapest-iv-kerulet', 'budapest-v-kerulet', 'budapest-vi-kerulet',
@@ -78,6 +70,9 @@ function formatDistrictName(district: string): string {
 }
 
 export default function HomePageSEO() {
+  // A 3 legfrissebb cikk (az allArticles elejéről, mert dátum szerint csökkenő sorrendben vannak)
+  const latestArticles = allArticles.slice(0, 3);
+
   return (
     <div className="seo-below-map-section">
       <div className="container relative z-10 mx-auto px-4 py-12 max-w-7xl">
@@ -94,20 +89,20 @@ export default function HomePageSEO() {
               a környékbeli infrastruktúrát és a valós idejű árakat.
             </p>
             <p style={{ marginTop: '0.75rem' }}>
-              Böngésszen <strong>50.000+ aktív ingatlanhirdetés</strong> között, 
-              szűrjön ár, méret, szobaszám és lokáció szerint, és találja meg 
-              álmai otthonát vagy következő befektetését!
+              Böngésszen <strong>100.000+ aktív ingatlanhirdetés</strong> között 
+              <strong>2000+ városból</strong>, szűrjön ár, méret, szobaszám és lokáció szerint, 
+              és találja meg álmai otthonát vagy következő befektetését!
             </p>
           </div>
 
-          {/* ===== STATISZTIKAI KÁRTYÁK ===== */}
+          {/* ===== STATISZTIKAI KÁRTYÁK - JAVÍTOTT ADATOKKAL ===== */}
           <div className="stats-cards">
             <div className="stat-card">
-              <div className="stat-number">50.000+</div>
+              <div className="stat-number">100.000+</div>
               <div className="stat-label">aktív hirdetés</div>
             </div>
             <div className="stat-card">
-              <div className="stat-number">500+</div>
+              <div className="stat-number">2000+</div>
               <div className="stat-label">város és település</div>
             </div>
             <div className="stat-card">
@@ -220,36 +215,66 @@ export default function HomePageSEO() {
             </ul>
           </div>
 
-          {/* ===== BLOG POSZTOK HÍRFEED ===== */}
+          {/* ===== 3 LEGFRISSEBB BLOG POSZT ===== */}
           <div className="seo-recommended" style={{ marginTop: '2rem' }}>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem', color: '#0078A8' }}>
               📰 Legfrissebb híreink és elemzéseink
             </h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-              <div style={{ padding: '1rem', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
-                <Link href="/blog" style={{ color: '#0078A8', fontWeight: 500, textDecoration: 'none' }}>
-                  Melyik kerület a legjobb befektetésre?
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
+              {latestArticles.map((article) => (
+                <Link 
+                  key={article.slug} 
+                  href={`/blog/${article.slug}`}
+                  style={{ 
+                    display: 'block',
+                    padding: '1rem',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px',
+                    textDecoration: 'none',
+                    transition: 'all 0.2s',
+                    background: '#fff'
+                  }}
+                  className="hover:shadow-md hover:border-[#0078A8]"
+                >
+                  {article.image && (
+                    <img 
+                      src={article.image} 
+                      alt={article.title}
+                      style={{ 
+                        width: '100%', 
+                        height: '120px', 
+                        objectFit: 'cover',
+                        borderRadius: '4px',
+                        marginBottom: '0.75rem'
+                      }}
+                      loading="lazy"
+                    />
+                  )}
+                  <h3 style={{ 
+                    fontSize: '1rem', 
+                    fontWeight: 600, 
+                    color: '#0078A8',
+                    marginBottom: '0.5rem',
+                    lineHeight: '1.3'
+                  }}>
+                    {article.title}
+                  </h3>
+                  <p style={{ 
+                    fontSize: '0.85rem', 
+                    color: '#666',
+                    marginBottom: '0.5rem',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden'
+                  }}>
+                    {article.excerpt}
+                  </p>
+                  <p style={{ fontSize: '0.75rem', color: '#999' }}>
+                    {article.author} • {article.date}
+                  </p>
                 </Link>
-                <p style={{ fontSize: '0.85rem', color: '#666', marginTop: '0.5rem' }}>
-                  Tudd meg, hol érdemes ingatlant vásárolni 2026-ban.
-                </p>
-              </div>
-              <div style={{ padding: '1rem', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
-                <Link href="/blog" style={{ color: '#0078A8', fontWeight: 500, textDecoration: 'none' }}>
-                  Lakás vagy ház? Melyiket válaszd?
-                </Link>
-                <p style={{ fontSize: '0.85rem', color: '#666', marginTop: '0.5rem' }}>
-                  Összehasonlítottuk a két ingatlantípust.
-                </p>
-              </div>
-              <div style={{ padding: '1rem', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
-                <Link href="/blog" style={{ color: '#0078A8', fontWeight: 500, textDecoration: 'none' }}>
-                  Ingatlanárak alakulása 2026-ban
-                </Link>
-                <p style={{ fontSize: '0.85rem', color: '#666', marginTop: '0.5rem' }}>
-                  Hogyan változnak az árak az év során?
-                </p>
-              </div>
+              ))}
             </div>
           </div>
 
