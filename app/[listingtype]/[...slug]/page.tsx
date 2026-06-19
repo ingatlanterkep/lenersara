@@ -3,8 +3,7 @@ import HomePageContentWrapper from '@/components/HomePageContentWrapper';
 import RelatedLinks from '@/components/HomePageRelatedLinks';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 3600;
 
 interface PageProps {
   params: Promise<{ 
