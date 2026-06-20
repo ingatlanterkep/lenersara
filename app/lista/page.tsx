@@ -26,7 +26,7 @@ async function getListPageData() {
     console.log('[ListPage] Success:', json.success, 'Items:', json.data?.length);
 
     return { 
-      seoQuickPosts: json.success && json.data ? json.data.slice(0, 20) : [] 
+      seoQuickPosts: json.success && json.data ? json.data.slice(0, 12) : [] 
     };
   } catch (err: any) {
     console.error('[ListPage] Hiba:', err.message);

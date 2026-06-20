@@ -28,7 +28,7 @@ async function getHomepageData() {
 
     // Ha sikerült, visszaadjuk az adatokat, különben üres tömb
     return { 
-      seoQuickPosts: json.success && json.data ? json.data.slice(0, 20) : [] 
+      seoQuickPosts: json.success && json.data ? json.data.slice(0, 10) : [] 
     };
   } catch (err: any) {
     console.error('[Homepage] Hiba:', err.message);
