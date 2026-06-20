@@ -4,7 +4,7 @@ import RelatedLinks from '@/components/HomePageRelatedLinks';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { BreadcrumbSchema } from '@/components/BreadcrumbSchema';
-export const revalidate = 0;
+export const revalidate = 3600;
 
 interface PageProps {
   params: Promise<{ 
