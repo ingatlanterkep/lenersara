@@ -70,19 +70,30 @@ function formatDistrictName(district: string): string {
     .join(' ');
 }
 
-
-
-// EGYETLEN interface definíció - CSAK EZ MARADJON!
 interface HomePageSEOProps {
-  seoQuickPosts?: Post[]; // SSR-ből jövő friss hirdetések
+  seoQuickPosts?: Post[];
 }
-
 
 export default function HomePageSEO({ seoQuickPosts = [] }: HomePageSEOProps) {
   const latestArticles = allArticles.slice(0, 3);
-  
-  // Ha vannak SSR hirdetések, azokat használjuk, különben a statikusakat
-  const displayPosts = seoQuickPosts.length > 0 ? seoQuickPosts : [];
+
+  // Segédfüggvények a kártyákhoz
+  const generateSlug = (title: string) => {
+    if (!title) return 'unknown';
+    return title
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+  };
+
+  const getFullImageUrl = (imagePath: string) => {
+    if (!imagePath || typeof imagePath !== 'string') return '/placeholder.jpg';
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) return imagePath;
+    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASEURL || 'http://localhost:5000';
+    return `${baseUrl}${imagePath}`;
+  };
 
   return (
     <div className="seo-below-map-section">
@@ -106,7 +117,7 @@ export default function HomePageSEO({ seoQuickPosts = [] }: HomePageSEOProps) {
             </p>
           </div>
 
-          {/* ===== STATISZTIKAI KÁRTYÁK - JAVÍTOTT ADATOKKAL ===== */}
+          {/* ===== STATISZTIKAI KÁRTYÁK ===== */}
           <div className="stats-cards">
             <div className="stat-card">
               <div className="stat-number">100.000+</div>
@@ -129,7 +140,54 @@ export default function HomePageSEO({ seoQuickPosts = [] }: HomePageSEOProps) {
             <a href="/elado/haz" className="btn-tertiary">🏡 Eladó házak</a>
           </div>
 
-          {/* NÉPSZERŰ VÁROSOK (BELSŐ LINKELÉS) - kibővítve */}
+          {/* ===== FRISS HIRDETÉSEK - AHOGY A GYŰJTŐOLDALON IS ===== */}
+          {seoQuickPosts && seoQuickPosts.length > 0 && (
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold text-[#0078A8] mb-6 text-center">
+                🏠 Frissen felkerült ingatlanok
+              </h2>
+              <div className="similar-posts-grid">
+                {seoQuickPosts.slice(0, 12).map((post: Post) => (
+                  <a
+                    key={post._id}
+                    href={`/ingatlan/${post._id}/${generateSlug(post.title || '')}`}
+                    className="similar-post-card"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <div className="similar-post-image">
+                      {post.images && post.images.length > 0 ? (
+                        <img
+                          src={getFullImageUrl(post.images[0].url)}
+                          alt={post.title || ''}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="no-image">Nincs kép</div>
+                      )}
+                    </div>
+                    <div className="similar-post-content">
+                      <h3 className="text-sm font-semibold line-clamp-2">{post.title || 'Nincs cím'}</h3>
+                      <p className="similar-post-price font-bold text-[#0078A8]">
+                        {post.listing_type === 'elado' || post.listing_type === 'eladó'
+                          ? `${Math.round((post.price || 0))} M Ft`
+                          : `${Math.round((post.rental_price || 0))} E Ft/hó`}
+                      </p>
+                      {post.area && post.area > 0 && (
+                        <p className="similar-post-area text-xs text-gray-600">Terület: {post.area} m²</p>
+                      )}
+                      <p className="similar-post-address text-xs text-gray-500">
+                        {post.address?.city || ''}{post.address?.region ? `, ${post.address.region}` : ''}
+                      </p>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ===== NÉPSZERŰ VÁROSOK ===== */}
           <div className="seo-recommended">
             <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem', color: '#0078A8' }}>
               📍 Népszerű városok – keressen ingatlant itt is
@@ -163,7 +221,7 @@ export default function HomePageSEO({ seoQuickPosts = [] }: HomePageSEOProps) {
             </div>
           </div>
 
-          {/* BUDAPEST KERÜLETEK */}
+          {/* ===== BUDAPEST KERÜLETEK ===== */}
           <div className="seo-recommended">
             <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem', color: '#0078A8' }}>
               🏙️ Budapest kerületei
@@ -182,7 +240,7 @@ export default function HomePageSEO({ seoQuickPosts = [] }: HomePageSEOProps) {
             </div>
           </div>
 
-          {/* LEGNÉPSZERŰBB KERESÉSEK - ÚJ BLOKK */}
+          {/* ===== LEGNÉPSZERŰBB KERESÉSEK ===== */}
           <div className="seo-recommended" style={{ marginTop: '1.5rem' }}>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem', color: '#0078A8' }}>
               🔥 Legnépszerűbb ingatlankeresések
@@ -214,7 +272,7 @@ export default function HomePageSEO({ seoQuickPosts = [] }: HomePageSEOProps) {
             </div>
           </div>
 
-          {/* MEGYÉK */}
+          {/* ===== MEGYÉK ===== */}
           <div className="seo-recommended" style={{ marginTop: '1.5rem' }}>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem', color: '#0078A8' }}>
               📌 Összes vármegye
@@ -233,7 +291,7 @@ export default function HomePageSEO({ seoQuickPosts = [] }: HomePageSEOProps) {
             </div>
           </div>
 
-          {/* FAQ BLOKK - ÚJ */}
+          {/* ===== FAQ ===== */}
           <div className="seo-recommended" style={{ marginTop: '2rem' }}>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem', color: '#0078A8' }}>
               ❓ Gyakori kérdések
@@ -281,7 +339,7 @@ export default function HomePageSEO({ seoQuickPosts = [] }: HomePageSEOProps) {
             </div>
           </div>
 
-          {/* MIÉRT TÉRKÉPEN KERESS? */}
+          {/* ===== MIÉRT TÉRKÉPEN KERESS? ===== */}
           <div className="seo-recommended" style={{ marginTop: '2rem' }}>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem', color: '#0078A8' }}>
               🗺️ Miért érdemes térképen keresni?
@@ -306,7 +364,7 @@ export default function HomePageSEO({ seoQuickPosts = [] }: HomePageSEOProps) {
             </ul>
           </div>
 
-          {/* 3 LEGFRISSEBB BLOG POSZT */}
+          {/* ===== 3 LEGFRISSEBB BLOG POSZT ===== */}
           <div className="seo-recommended" style={{ marginTop: '2rem' }}>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem', color: '#0078A8' }}>
               📰 Legfrissebb híreink és elemzéseink

@@ -1,17 +1,13 @@
 // app/lista/page.tsx
 import HomePageContent from '@/pages/HomePageContent';
-import HomePageSEO from '@/components/HomePageSEO';
-import RelatedLinks from '@/components/HomePageRelatedLinks';
 import { Post } from '@/types/post';
 
 export const revalidate = 3600;
 
-// Ugyanaz az adatlekérés, mint a főoldalon
 async function getListPageData() {
   const baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASEURL || 'http://localhost:5000';
   
   try {
-    // Friss hirdetések lekérése (országos szinten, bármilyen típus)
     const seoResponse = await fetch(
       `${baseUrl}/api/posts/seo-quick-list/homepage`,
       { 
@@ -27,7 +23,6 @@ async function getListPageData() {
         seoData = seoJson.data || [];
       }
     } catch (e) {
-      // Fallback
       const fallbackResponse = await fetch(
         `${baseUrl}/api/posts/seo-quick-list/elado/lakas/budapest`,
         { next: { revalidate: 3600 } }
@@ -38,12 +33,11 @@ async function getListPageData() {
     
     return { seoQuickPosts: seoData.slice(0, 12) };
   } catch (error) {
-    console.error('[ListPage] Hiba a SEO adatok betöltésekor:', error);
+    console.error('[ListPage] Hiba:', error);
     return { seoQuickPosts: [] };
   }
 }
 
-// Segédfüggvények (másolva a főoldalról)
 function generateSlug(title: string): string {
   if (!title) return 'unknown';
   return title
@@ -61,7 +55,6 @@ function getFullImageUrl(imagePath: string): string {
   return `${baseUrl}${imagePath}`;
 }
 
-// JSON-LD generálás a list oldalra
 function generateListPageJsonLd(seoQuickPosts: Post[]) {
   const organizationJsonLd = {
     "@context": "https://schema.org",
@@ -176,19 +169,15 @@ export default async function ListPage() {
 
   return (
     <>
-      {/* JSON-LD - Organization */}
+      {/* JSON-LD */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
       />
-      
-      {/* JSON-LD - WebSite + SearchAction */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
-      
-      {/* JSON-LD - ItemList (hirdetések) */}
       {itemListJsonLd && (
         <script
           type="application/ld+json"
@@ -196,7 +185,7 @@ export default async function ListPage() {
         />
       )}
 
-      {/* Térkép - list nézetben */}
+      {/* HomePageContent - CSAK EZ, NINCS DUPLA SEO! */}
       <HomePageContent 
         listingType="elado"
         type="lakas"
@@ -204,107 +193,8 @@ export default async function ListPage() {
         viewModeDefault="list"
         serverLocationContent={null}
         serverSeoQuickPosts={seoQuickPosts}
-        hideFooter={true}
+        hideFooter={false}  // ← A footer-t a HomePageContent kezeli
       />
-      
-      {/* SEO tartalom - ugyanaz, mint a főoldalon */}
-      <div className="seo-below-map-section">
-        <div className="container relative z-10 mx-auto px-4 py-12 max-w-7xl">
-          <div className="article-wrapper bg-white rounded-2xl shadow-lg border border-gray-200 p-6 md:p-10">
-            
-            {/* H1 és bevezető - listanézetre optimalizálva */}
-            <h1 className="seo-h1">Ingatlanok listája – Böngésszen az összes hirdetés között</h1>
-            <p className="seo-intro">
-              Az <strong>Ingatlan-Térkép</strong> listanézetében áttekinthetően böngészhet 
-              az összes eladó és kiadó ingatlan között Magyarországon.
-            </p>
-
-            {/* FRISS HIRDETÉSEK - SSR-ben prerenderelve */}
-            {seoQuickPosts && seoQuickPosts.length > 0 && (
-              <div className="mb-12">
-                <h2 className="text-2xl font-bold text-[#0078A8] mb-6 text-center">
-                  🏠 Frissen felkerült ingatlanok
-                </h2>
-                <div className="similar-posts-grid">
-                  {seoQuickPosts.slice(0, 12).map((post: Post) => (
-                    <a
-                      key={post._id}
-                      href={`/ingatlan/${post._id}/${generateSlug(post.title || '')}`}
-                      className="similar-post-card"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <div className="similar-post-image">
-                        {post.images && post.images.length > 0 ? (
-                          <img
-                            src={getFullImageUrl(post.images[0].url)}
-                            alt={post.title || ''}
-                            className="w-full h-full object-cover"
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div className="no-image">Nincs kép</div>
-                        )}
-                      </div>
-                      <div className="similar-post-content">
-                        <h3 className="text-sm font-semibold line-clamp-2">{post.title || 'Nincs cím'}</h3>
-                        <p className="similar-post-price font-bold text-[#0078A8]">
-                          {post.listing_type === 'elado' || post.listing_type === 'eladó'
-                            ? `${Math.round((post.price || 0))} M Ft`
-                            : `${Math.round((post.rental_price || 0))} E Ft/hó`}
-                        </p>
-                        {post.area && post.area > 0 && (
-                          <p className="similar-post-area text-xs text-gray-600">Terület: {post.area} m²</p>
-                        )}
-                        <p className="similar-post-address text-xs text-gray-500">
-                          {post.address?.city || ''}{post.address?.region ? `, ${post.address.region}` : ''}
-                        </p>
-                      </div>
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* UGYANAZ a SEO blokk, mint a főoldalon */}
-            <HomePageSEO seoQuickPosts={seoQuickPosts} />
-
-            {/* Belső linkek blokk */}
-            <RelatedLinks 
-              listingType="elado"
-              type="lakas"
-              city={null}
-            />
-
-          </div>
-        </div>
-      </div>
-      
-      {/* Footer */}
-      <footer className="app-footer">
-        <div className="footer-main">
-          <div className="footer-column logo-column">
-            <img src="/barion-logo.png" alt="Barion biztonságos online fizetési logó" className="barion-logo" />
-            <img src="/Large-nobg-light.png" alt="Barion elfogadott fizetési kártyák és módszerek logója" className="barion-logo" />
-            <p className="footer-tagline">Biztonságos fizetés a Barionnal<br />A bankkártya adatok hozzánk nem jutnak el.</p>
-          </div>
-          <div className="footer-column">
-            <h4>Oldalak</h4>
-            <ul><li><a href="/">Kezdőlap</a></li><li><a href="/about">Rólunk</a></li><li><a href="/blog">Blog</a></li><li><a href="/contact">Kapcsolat</a></li></ul>
-          </div>
-          <div className="footer-column">
-            <h4>Jogi információk</h4>
-            <ul><li><a href="/privacy-policy">Adatvédelmi nyilatkozat</a></li><li><a href="/aszf">Általános Szerződési Feltételek</a></li></ul>
-          </div>
-          <div className="footer-column">
-            <h4>Közösség</h4>
-            <ul><li><a href="https://www.facebook.com/people/Ingatlan-T%C3%A9rk%C3%A9p/61574143888873/" target="_blank" rel="noopener">Facebook</a></li></ul>
-          </div>
-        </div>
-        <div className="footer-bottom">
-          <p className="copyright">© 2026 Ingatlan-Térkép.hu – Minden jog fenntartva</p>
-        </div>
-      </footer>
     </>
   );
 }
