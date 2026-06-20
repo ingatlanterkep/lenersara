@@ -14,7 +14,7 @@ async function getHomepageData() {
     // HASZNÁLD UGYANAZT A VÉGPONTOT, MINT A GYŰJTŐOLDALAKON!
     // A gyűjtőoldalakon ez működik: /api/posts/seo-quick-list/elado/lakas/budapest
     const res = await fetch(
-      `${baseUrl}/api/posts/seo-quick-list`,
+      `${baseUrl}/api/posts/seo-quick-list/elado/lakas/budapest`,
       {
         next: { revalidate: 3600 },
         cache: 'force-cache',
