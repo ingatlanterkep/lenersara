@@ -3,7 +3,7 @@ import HomePageContentWrapper from '@/components/HomePageContentWrapper';
 import RelatedLinks from '@/components/HomePageRelatedLinks';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-export const revalidate = 3600;
+export const revalidate = 0;
 
 interface PageProps {
   params: Promise<{ 
