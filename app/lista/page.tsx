@@ -11,9 +11,8 @@ async function getListPageData() {
   console.log('[ListPage] BaseURL:', baseUrl);
   
   try {
-    // UGYANAZ A VÉGPONT, MINT A GYŰJTŐOLDALAKON!
     const res = await fetch(
-      `${baseUrl}/api/posts/seo-quick-list/elado/lakas/budapest`,
+      `${baseUrl}api/posts/seo-quick-list/elado/lakas/budapest`,
       {
         next: { revalidate: 3600 },
         cache: 'force-cache',
@@ -26,14 +25,13 @@ async function getListPageData() {
     console.log('[ListPage] Success:', json.success, 'Items:', json.data?.length);
 
     return { 
-      seoQuickPosts: json.success && json.data ? json.data.slice(0, 12) : [] 
+      seoQuickPosts: json.success && json.data ? json.data.slice(0, 10) : [] 
     };
   } catch (err: any) {
     console.error('[ListPage] Hiba:', err.message);
     return { seoQuickPosts: [] };
   }
 }
-
 
 function generateSlug(title: string): string {
   if (!title) return 'unknown';

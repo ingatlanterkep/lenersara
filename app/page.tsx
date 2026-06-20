@@ -11,10 +11,8 @@ async function getHomepageData() {
   console.log('[Homepage] BaseURL:', baseUrl);
   
   try {
-    // HASZNÁLD UGYANAZT A VÉGPONTOT, MINT A GYŰJTŐOLDALAKON!
-    // A gyűjtőoldalakon ez működik: /api/posts/seo-quick-list/elado/lakas/budapest
     const res = await fetch(
-      `${baseUrl}/api/posts/seo-quick-list/elado/lakas/budapest`,
+      `${baseUrl}/api/posts/seo-quick-list`,
       {
         next: { revalidate: 3600 },
         cache: 'force-cache',
@@ -26,7 +24,6 @@ async function getHomepageData() {
     const json = await res.json();
     console.log('[Homepage] Success:', json.success, 'Items:', json.data?.length);
 
-    // Ha sikerült, visszaadjuk az adatokat, különben üres tömb
     return { 
       seoQuickPosts: json.success && json.data ? json.data.slice(0, 10) : [] 
     };
