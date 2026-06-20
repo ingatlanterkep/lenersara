@@ -13,7 +13,7 @@ export const metadata: Metadata = {
  title: 'Ingatlan-Térkép – Térképes ingatlankereső Magyarországon',
   description: 'Eladó és kiadó lakások, házak és telkek interaktív térképen. Valós idejű keresés, ár-összehasonlítás és részletes szűrés.',
   icons: {
-    icon: '/logo2.ico',
+    icon: '/favicon.ico',
   },
 };
 
