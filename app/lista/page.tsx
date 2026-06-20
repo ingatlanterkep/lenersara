@@ -13,7 +13,7 @@ async function getListPageData() {
   try {
     // UGYANAZ A VÉGPONT, MINT A GYŰJTŐOLDALAKON!
     const res = await fetch(
-      `${baseUrl}/api/posts/seo-quick-list/elado/lakas/budapest`,
+      `${baseUrl}/api/posts/seo-quick-list/elado/lakas/`,
       {
         next: { revalidate: 3600 },
         cache: 'force-cache',
