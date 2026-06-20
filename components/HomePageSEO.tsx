@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { allArticles } from './AllArticles';
+import { Post } from '@/types/post';
 
 // Vármegye -> városok mapping
 const countyCities: Record<string, string[]> = {
@@ -69,9 +70,19 @@ function formatDistrictName(district: string): string {
     .join(' ');
 }
 
-export default function HomePageSEO() {
-  // A 3 legfrissebb cikk (az allArticles elejéről, mert dátum szerint csökkenő sorrendben vannak)
+
+
+// EGYETLEN interface definíció - CSAK EZ MARADJON!
+interface HomePageSEOProps {
+  seoQuickPosts?: Post[]; // SSR-ből jövő friss hirdetések
+}
+
+
+export default function HomePageSEO({ seoQuickPosts = [] }: HomePageSEOProps) {
   const latestArticles = allArticles.slice(0, 3);
+  
+  // Ha vannak SSR hirdetések, azokat használjuk, különben a statikusakat
+  const displayPosts = seoQuickPosts.length > 0 ? seoQuickPosts : [];
 
   return (
     <div className="seo-below-map-section">
@@ -118,7 +129,7 @@ export default function HomePageSEO() {
             <a href="/elado/haz" className="btn-tertiary">🏡 Eladó házak</a>
           </div>
 
-          {/* ===== NÉPSZERŰ VÁROSOK (BELSŐ LINKELÉS) ===== */}
+          {/* NÉPSZERŰ VÁROSOK (BELSŐ LINKELÉS) - kibővítve */}
           <div className="seo-recommended">
             <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem', color: '#0078A8' }}>
               📍 Népszerű városok – keressen ingatlant itt is
@@ -152,7 +163,7 @@ export default function HomePageSEO() {
             </div>
           </div>
 
-          {/* ===== BUDAPEST KERÜLETEK ===== */}
+          {/* BUDAPEST KERÜLETEK */}
           <div className="seo-recommended">
             <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem', color: '#0078A8' }}>
               🏙️ Budapest kerületei
@@ -171,8 +182,40 @@ export default function HomePageSEO() {
             </div>
           </div>
 
-          {/* ===== TELJES LISTA - MINDEN VÁRMEGYE ===== */}
-          <div className="seo-recommended">
+          {/* LEGNÉPSZERŰBB KERESÉSEK - ÚJ BLOKK */}
+          <div className="seo-recommended" style={{ marginTop: '1.5rem' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem', color: '#0078A8' }}>
+              🔥 Legnépszerűbb ingatlankeresések
+            </h2>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+              {[
+                { text: 'Eladó lakás Budapest', href: '/elado/lakas/budapest' },
+                { text: 'Eladó ház Budapest', href: '/elado/haz/budapest' },
+                { text: 'Kiadó lakás Budapest', href: '/kiado/lakas/budapest' },
+                { text: 'Eladó lakás Debrecen', href: '/elado/lakas/debrecen' },
+                { text: 'Eladó ház Debrecen', href: '/elado/haz/debrecen' },
+                { text: 'Eladó lakás Szeged', href: '/elado/lakas/szeged' },
+                { text: 'Eladó lakás Pécs', href: '/elado/lakas/pecs' },
+                { text: 'Eladó lakás Győr', href: '/elado/lakas/gyor' },
+                { text: 'Eladó lakás Miskolc', href: '/elado/lakas/miskolc' },
+                { text: 'Eladó lakás Nyíregyháza', href: '/elado/lakas/nyiregyhaza' },
+                { text: 'Eladó ház Székesfehérvár', href: '/elado/haz/szekesfehervar' },
+                { text: 'Eladó lakás Kecskemét', href: '/elado/lakas/kecskemet' },
+              ].map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="quick-search-btn"
+                  style={{ flex: '0 0 auto' }}
+                >
+                  <span className="btn-text">{item.text}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* MEGYÉK */}
+          <div className="seo-recommended" style={{ marginTop: '1.5rem' }}>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem', color: '#0078A8' }}>
               📌 Összes vármegye
             </h2>
@@ -190,7 +233,55 @@ export default function HomePageSEO() {
             </div>
           </div>
 
-          {/* ===== MIÉRT TÉRKÉPEN KERESS? ===== */}
+          {/* FAQ BLOKK - ÚJ */}
+          <div className="seo-recommended" style={{ marginTop: '2rem' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem', color: '#0078A8' }}>
+              ❓ Gyakori kérdések
+            </h2>
+            <div style={{ display: 'grid', gap: '1rem' }}>
+              <div style={{ padding: '1rem', background: '#f8f9fa', borderRadius: '8px' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#333' }}>
+                  Hogyan működik a térképes ingatlankereső?
+                </h3>
+                <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '0.5rem' }}>
+                  Az Ingatlan-Térkép interaktív térképen jeleníti meg az eladó és kiadó ingatlanokat. 
+                  Kattintson a térképen egy pontra a hirdetés részleteiért, vagy használja a szűrőket 
+                  a keresés pontosításához.
+                </p>
+              </div>
+              <div style={{ padding: '1rem', background: '#f8f9fa', borderRadius: '8px' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#333' }}>
+                  Melyik kerületben érdemes lakást venni Budapesten?
+                </h3>
+                <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '0.5rem' }}>
+                  A legnépszerűbb kerületek: XIII. kerület (Újlipótváros), XI. kerület (Újbuda), 
+                  II. kerület (Rózsadomb), V. kerület (Belváros). Mindegyik más-más előnyökkel 
+                  rendelkezik, érdemes a saját igények szerint választani.
+                </p>
+              </div>
+              <div style={{ padding: '1rem', background: '#f8f9fa', borderRadius: '8px' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#333' }}>
+                  Hogyan találhatok olcsóbb ingatlant?
+                </h3>
+                <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '0.5rem' }}>
+                  Érdemes a fővároson kívüli városokban (Debrecen, Szeged, Pécs, Győr) vagy 
+                  Budapest külső kerületeiben (XV., XVI., XVII., XVIII., XIX., XX., XXI., XXIII.) 
+                  keresgélni, ahol alacsonyabbak az árak.
+                </p>
+              </div>
+              <div style={{ padding: '1rem', background: '#f8f9fa', borderRadius: '8px' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#333' }}>
+                  Milyen településeken kereshetek?
+                </h3>
+                <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '0.5rem' }}>
+                  Több mint 2000 város és település érhető el a térképen, Budapest összes kerületével 
+                  és az összes megyével együtt.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* MIÉRT TÉRKÉPEN KERESS? */}
           <div className="seo-recommended" style={{ marginTop: '2rem' }}>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem', color: '#0078A8' }}>
               🗺️ Miért érdemes térképen keresni?
@@ -215,7 +306,7 @@ export default function HomePageSEO() {
             </ul>
           </div>
 
-          {/* ===== 3 LEGFRISSEBB BLOG POSZT ===== */}
+          {/* 3 LEGFRISSEBB BLOG POSZT */}
           <div className="seo-recommended" style={{ marginTop: '2rem' }}>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem', color: '#0078A8' }}>
               📰 Legfrissebb híreink és elemzéseink

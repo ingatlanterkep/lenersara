@@ -107,7 +107,16 @@ const validCounties = [
   'vas-varmegye', 'veszprem-varmegye', 'zala-varmegye',
   'jasz-nagykun-szolnok-varmegye'
 ];
-
+/**
+ * @param {Object} props
+ * @param {string} props.listingType
+ * @param {string} props.type
+ * @param {string|null} props.city
+ * @param {'map'|'list'} [props.viewModeDefault='map']
+ * @param {any} [props.serverLocationContent=null]
+ * @param {any[]} [props.serverSeoQuickPosts=[]]
+ * @param {boolean} [props.hideFooter=false]
+ */
 export default function HomePageContent({ 
   listingType: urlListingType, 
   type: urlType, 
