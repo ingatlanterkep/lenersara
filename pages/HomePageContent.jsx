@@ -24,7 +24,7 @@ import {
 } from '@/utils/favoritePosts';
 import SmartToolsPanel from '../components/SmartToolsPanel';
 import { useAnalytics } from '@/context/AnalyticsContext';
-
+import HomePageSEO from '../components/HomePageSEO'; // ← EZT ADD HOZZÁ!
 
 const MapComponentDynamic = dynamic(
   () => import('../components/MapComponent'),
@@ -974,6 +974,10 @@ if (cookiesAccepted) {
             </div>
           </div>
         )}
+
+{!hideFooter && (
+  <HomePageSEO seoQuickPosts={serverSeoQuickPosts} />
+)}
 
         {!hideFooter && (
           <footer className="app-footer">
