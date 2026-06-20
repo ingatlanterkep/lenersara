@@ -9,7 +9,7 @@ async function getListPageData() {
   
   try {
     const seoResponse = await fetch(
-      `${baseUrl}/api/posts/seo-quick-list/homepage`,
+      `${baseUrl}/api/posts/seo-quick-list`,
       { 
         next: { revalidate: 3600 },
         headers: { 'Cache-Control': 'no-cache' }
