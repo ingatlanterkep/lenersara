@@ -2,53 +2,41 @@
 import HomePageContent from '@/pages/HomePageContent';
 import { Post } from '@/types/post';
 
-export const revalidate = 3600;
+// NE használj force-dynamic-ot, ha nem muszáj!
+export const revalidate = 3600; // ISR - 1 óránként frissül
 
-// app/page.tsx
 async function getHomepageData() {
-  const baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASEURL || 'http://localhost:5000';
+  const baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASEURL?.replace(/\/$/, '') || 'http://localhost:5000';
   
-  console.log('[Homepage] Fetch URL:', `${baseUrl}/api/posts/seo-quick-list`);
+  console.log('[Homepage] BaseURL:', baseUrl);
   
   try {
-    const seoResponse = await fetch(
-      `${baseUrl}/api/posts/seo-quick-list`,
-      { 
+    // HASZNÁLD UGYANAZT A VÉGPONTOT, MINT A GYŰJTŐOLDALAKON!
+    // A gyűjtőoldalakon ez működik: /api/posts/seo-quick-list/elado/lakas/budapest
+    const res = await fetch(
+      `${baseUrl}/api/posts/seo-quick-list/elado/lakas/budapest`,
+      {
         next: { revalidate: 3600 },
-        headers: { 'Cache-Control': 'no-cache' }
+        cache: 'force-cache',
       }
     );
-    
-    console.log('[Homepage] Response status:', seoResponse.status);
-    
-    let seoData: Post[] = [];
-    try {
-      const seoJson = await seoResponse.json();
-      console.log('[Homepage] Response data:', seoJson);
-      if (seoJson.success) {
-        seoData = seoJson.data || [];
-      }
-    } catch (e) {
-      console.error('[Homepage] JSON parse error:', e);
-      // Fallback
-      console.log('[Homepage] Fallback fetch...');
-      const fallbackResponse = await fetch(
-        `${baseUrl}/api/posts/seo-quick-list/elado/lakas/budapest`,
-        { next: { revalidate: 3600 } }
-      );
-      const fallbackJson = await fallbackResponse.json();
-      seoData = fallbackJson.success ? fallbackJson.data : [];
-    }
-    
-    console.log('[Homepage] Final data count:', seoData.length);
-    return { seoQuickPosts: seoData.slice(0, 12) };
-  } catch (error) {
-    console.error('[Homepage] Hiba:', error);
+
+    console.log('[Homepage] Status:', res.status);
+
+    const json = await res.json();
+    console.log('[Homepage] Success:', json.success, 'Items:', json.data?.length);
+
+    // Ha sikerült, visszaadjuk az adatokat, különben üres tömb
+    return { 
+      seoQuickPosts: json.success && json.data ? json.data.slice(0, 12) : [] 
+    };
+  } catch (err: any) {
+    console.error('[Homepage] Hiba:', err.message);
     return { seoQuickPosts: [] };
   }
 }
 
-// Segédfüggvények
+// Segédfüggvények (ugyanazok, mint a gyűjtőoldalon)
 function generateSlug(title: string): string {
   if (!title) return 'unknown';
   return title
@@ -200,7 +188,6 @@ export default async function HomePage() {
         />
       )}
 
-      {/* HomePageContent - MOST MÁR CSAK EZ, NINCS DUPLA SEO! */}
       <HomePageContent 
         listingType="elado" 
         type="lakas" 
@@ -208,7 +195,7 @@ export default async function HomePage() {
         viewModeDefault="map" 
         serverLocationContent={null}
         serverSeoQuickPosts={seoQuickPosts}
-        hideFooter={false}  // ← A footer-t a HomePageContent kezeli
+        hideFooter={false}
       />
     </>
   );
