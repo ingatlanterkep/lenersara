@@ -1,9 +1,9 @@
 // app/page.tsx
 import HomePageContent from '@/pages/HomePageContent';
 import { Post } from '@/types/post';
+import { BreadcrumbSchema } from '@/components/BreadcrumbSchema';
 
-// NE használj force-dynamic-ot, ha nem muszáj!
-export const revalidate = 3600; // ISR - 1 óránként frissül
+export const revalidate = 3600;
 
 async function getHomepageData() {
   const baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASEURL?.replace(/\/$/, '') || 'http://localhost:5000';
@@ -11,10 +11,8 @@ async function getHomepageData() {
   console.log('[Homepage] BaseURL:', baseUrl);
   
   try {
-    // HASZNÁLD UGYANAZT A VÉGPONTOT, MINT A GYŰJTŐOLDALAKON!
-    // A gyűjtőoldalakon ez működik: /api/posts/seo-quick-list/elado/lakas/budapest
     const res = await fetch(
-      `${baseUrl}/api/posts/seo-quick-list/elado/lakas/budapest`,
+      `${baseUrl}/api/posts/seo-quick-list`,
       {
         next: { revalidate: 3600 },
         cache: 'force-cache',
@@ -26,9 +24,8 @@ async function getHomepageData() {
     const json = await res.json();
     console.log('[Homepage] Success:', json.success, 'Items:', json.data?.length);
 
-    // Ha sikerült, visszaadjuk az adatokat, különben üres tömb
     return { 
-      seoQuickPosts: json.success && json.data ? json.data.slice(0, 12) : [] 
+      seoQuickPosts: json.success && json.data ? json.data.slice(0, 10) : [] 
     };
   } catch (err: any) {
     console.error('[Homepage] Hiba:', err.message);
@@ -36,7 +33,6 @@ async function getHomepageData() {
   }
 }
 
-// Segédfüggvények (ugyanazok, mint a gyűjtőoldalon)
 function generateSlug(title: string): string {
   if (!title) return 'unknown';
   return title
@@ -179,6 +175,11 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
+      
+      {/* JSON-LD - Breadcrumb */}
+      <BreadcrumbSchema items={[
+        { name: 'Főoldal', item: 'https://ingatlan-terkep.hu/' }
+      ]} />
       
       {/* JSON-LD - ItemList (hirdetések) */}
       {itemListJsonLd && (

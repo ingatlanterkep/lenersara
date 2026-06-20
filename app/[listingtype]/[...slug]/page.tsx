@@ -3,6 +3,7 @@ import HomePageContentWrapper from '@/components/HomePageContentWrapper';
 import RelatedLinks from '@/components/HomePageRelatedLinks';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { BreadcrumbSchema } from '@/components/BreadcrumbSchema';
 export const revalidate = 0;
 
 interface PageProps {
@@ -66,6 +67,29 @@ const budapestDistricts = [
   'budapest-xix-kerulet', 'budapest-xx-kerulet', 'budapest-xxi-kerulet',
   'budapest-xxii-kerulet', 'budapest-xxiii-kerulet'
 ];
+
+// ===== ITT ADD HOZZÁ A countyToSlug DEFINÍCIÓT! =====
+const countyToSlug: Record<string, string> = {
+  'Pest vármegye': 'pest-varmegye',
+  'Hajdú-Bihar vármegye': 'hajdu-bihar-varmegye',
+  'Győr-Moson-Sopron vármegye': 'gyor-moson-sopron-varmegye',
+  'Baranya vármegye': 'baranya-varmegye',
+  'Borsod-Abaúj-Zemplén vármegye': 'borsod-abauj-zemplen-varmegye',
+  'Szabolcs-Szatmár-Bereg vármegye': 'szabolcs-szatmar-bereg-varmegye',
+  'Bács-Kiskun vármegye': 'bacs-kiskun-varmegye',
+  'Békés vármegye': 'bekes-varmegye',
+  'Csongrád-Csanád vármegye': 'csongrad-csanad-varmegye',
+  'Fejér vármegye': 'fejer-varmegye',
+  'Heves vármegye': 'heves-varmegye',
+  'Komárom-Esztergom vármegye': 'komarom-esztergom-varmegye',
+  'Nógrád vármegye': 'nograd-varmegye',
+  'Somogy vármegye': 'somogy-varmegye',
+  'Tolna vármegye': 'tolna-varmegye',
+  'Vas vármegye': 'vas-varmegye',
+  'Veszprém vármegye': 'veszprem-varmegye',
+  'Zala vármegye': 'zala-varmegye',
+  'Jász-Nagykun-Szolnok vármegye': 'jasz-nagykun-szolnok-varmegye'
+}
 
 function getAllLocations() {
   return [...POPULAR_CITIES, ...budapestDistricts, ...COUNTIES];
@@ -187,6 +211,69 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       type: 'website',
     },
   };
+}
+
+// Breadcrumb item-ek generálása
+function getBreadcrumbItems(
+  listingType: string, 
+  type: string, 
+  city: string | null, 
+  viewMode: 'map' | 'list',
+  listingtype: string // ← ez a paraméter, mert a listingType változó neve eltérhet
+) {
+  const viewModeSuffix = viewMode === 'list' ? '/lista' : '';
+  const listingText = getListingTypeText(listingtype);
+  
+  const items = [
+    { name: 'Főoldal', item: 'https://ingatlan-terkep.hu/' },
+  ];
+  
+  // Eladó/Kiadó ingatlanok szint
+  items.push({ 
+    name: listingText === 'eladó' ? 'Eladó ingatlanok' : 'Kiadó ingatlanok', 
+    item: `https://ingatlan-terkep.hu/${listingtype}` 
+  });
+  
+  // Típus szint (lakás/ház/iroda/telek)
+  if (type) {
+    const typeDisplayName = getTypeDisplayName(type);
+    items.push({ 
+      name: `${listingText} ${typeDisplayName}`, 
+      item: `https://ingatlan-terkep.hu/${listingtype}/${type}${viewModeSuffix}` 
+    });
+  }
+  
+  // Lokáció szint (ha van)
+  if (city) {
+    const isDistrict = budapestDistricts.includes(city);
+    const isCounty = Object.values(countyToSlug).includes(city);
+    const cityName = formatCityName(city);
+    
+    if (isDistrict) {
+      // Kerület esetén először Budapest, majd a kerület
+      items.push({ 
+        name: 'Budapest', 
+        item: `https://ingatlan-terkep.hu/${listingtype}/${type}/budapest${viewModeSuffix}` 
+      });
+      items.push({ 
+        name: cityName, 
+        item: `https://ingatlan-terkep.hu/${listingtype}/${type}/${city}${viewModeSuffix}` 
+      });
+    } else if (isCounty) {
+      const countyName = Object.entries(countyToSlug).find(([, slug]) => slug === city)?.[0] || cityName;
+      items.push({ 
+        name: countyName, 
+        item: `https://ingatlan-terkep.hu/${listingtype}/${type}/${city}${viewModeSuffix}` 
+      });
+    } else {
+      items.push({ 
+        name: cityName, 
+        item: `https://ingatlan-terkep.hu/${listingtype}/${type}/${city}${viewModeSuffix}` 
+      });
+    }
+  }
+  
+  return items;
 }
 
 function generateOrganizationJsonLd() {
@@ -342,6 +429,8 @@ export default async function Page({ params }: PageProps) {
   const organizationJsonLd = generateOrganizationJsonLd();
   const itemListJsonLd = generateItemListJsonLd(seoQuickPosts, listingtype, type, city);
   
+ const breadcrumbItems = getBreadcrumbItems(listingtype, type, city, viewMode, listingtype);
+  
   return (
     <>
       <script
@@ -355,6 +444,10 @@ export default async function Page({ params }: PageProps) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
         />
       )}
+      
+      {/* Breadcrumb Schema */}
+      <BreadcrumbSchema items={breadcrumbItems} />
+
       
       <HomePageContentWrapper 
         listingType={listingtype}

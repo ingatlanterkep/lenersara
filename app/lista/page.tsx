@@ -1,6 +1,7 @@
 // app/lista/page.tsx
 import HomePageContent from '@/pages/HomePageContent';
 import { Post } from '@/types/post';
+import { BreadcrumbSchema } from '@/components/BreadcrumbSchema';
 
 export const revalidate = 3600;
 
@@ -10,9 +11,8 @@ async function getListPageData() {
   console.log('[ListPage] BaseURL:', baseUrl);
   
   try {
-    // UGYANAZ A VÉGPONT, MINT A GYŰJTŐOLDALAKON!
     const res = await fetch(
-      `${baseUrl}/api/posts/seo-quick-list/elado/lakas/budapest`,
+      `${baseUrl}/api/posts/seo-quick-list`,
       {
         next: { revalidate: 3600 },
         cache: 'force-cache',
@@ -25,7 +25,7 @@ async function getListPageData() {
     console.log('[ListPage] Success:', json.success, 'Items:', json.data?.length);
 
     return { 
-      seoQuickPosts: json.success && json.data ? json.data.slice(0, 12) : [] 
+      seoQuickPosts: json.success && json.data ? json.data.slice(0, 10) : [] 
     };
   } catch (err: any) {
     console.error('[ListPage] Hiba:', err.message);
@@ -164,15 +164,25 @@ export default async function ListPage() {
 
   return (
     <>
-      {/* JSON-LD */}
+      {/* JSON-LD - Organization */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
       />
+      
+      {/* JSON-LD - WebSite + SearchAction */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
+      
+      {/* JSON-LD - Breadcrumb */}
+      <BreadcrumbSchema items={[
+        { name: 'Főoldal', item: 'https://ingatlan-terkep.hu/' },
+        { name: 'Eladó lakások listája', item: 'https://ingatlan-terkep.hu/lista' }
+      ]} />
+      
+      {/* JSON-LD - ItemList (hirdetések) */}
       {itemListJsonLd && (
         <script
           type="application/ld+json"
@@ -180,7 +190,6 @@ export default async function ListPage() {
         />
       )}
 
-      {/* HomePageContent - CSAK EZ, NINCS DUPLA SEO! */}
       <HomePageContent 
         listingType="elado"
         type="lakas"
@@ -188,7 +197,7 @@ export default async function ListPage() {
         viewModeDefault="list"
         serverLocationContent={null}
         serverSeoQuickPosts={seoQuickPosts}
-        hideFooter={false}  // ← A footer-t a HomePageContent kezeli
+        hideFooter={false}
       />
     </>
   );
