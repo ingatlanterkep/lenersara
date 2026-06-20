@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { getPostDetails } from '@/services/apiService';
-import JsonLd from '@/components/Jsonld'; // ← ÚJ KOMPONENS
+import JsonLd from '@/components/JsonLd'; // ← ÚJ KOMPONENS
 
 const PostDetailsPage = dynamic(
   () => import('@/pages/PostDetailsPage'),
