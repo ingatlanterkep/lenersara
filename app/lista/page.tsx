@@ -6,35 +6,44 @@ export const revalidate = 3600;
 
 async function getListPageData() {
   const baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASEURL || 'http://localhost:5000';
-  
+  console.log('[ListPage] Backend baseUrl:', baseUrl); // ← fontos!
+
   try {
-    const seoResponse = await fetch(
-      `${baseUrl}/api/posts/seo-quick-list`,
-      { 
-        next: { revalidate: 3600 },
-        headers: { 'Cache-Control': 'no-cache' }
-      }
-    );
-    
-    let seoData: Post[] = [];
-    try {
-      const seoJson = await seoResponse.json();
-      if (seoJson.success) {
-        seoData = seoJson.data || [];
-      }
-    } catch (e) {
-      const fallbackResponse = await fetch(
-        `${baseUrl}/api/posts/seo-quick-list/elado/lakas/budapest`,
-        { next: { revalidate: 3600 } }
-      );
-      const fallbackJson = await fallbackResponse.json();
-      seoData = fallbackJson.success ? fallbackJson.data : [];
+    const response = await fetch(`${baseUrl}/api/posts/seo-quick-list`, {
+      next: { revalidate: 3600 },
+      cache: 'force-cache',        // vagy 'no-store' ha mindig friss kell
+      headers: {
+        'Cache-Control': 'no-cache',
+      },
+    });
+
+    console.log('[ListPage] Status:', response.status, response.statusText);
+
+    if (!response.ok) {
+      console.error('[ListPage] HTTP error!', response.status);
+      throw new Error(`HTTP ${response.status}`);
     }
-    
-    return { seoQuickPosts: seoData.slice(0, 12) };
+
+    const data = await response.json();
+    console.log('[ListPage] seo-quick-list válasz:', data?.success ? 'OK' : 'NOK', 
+                'darab:', data?.data?.length || 0);
+
+    return { seoQuickPosts: (data?.success ? data.data : []).slice(0, 12) };
+
   } catch (error) {
-    console.error('[ListPage] Hiba:', error);
-    return { seoQuickPosts: [] };
+    console.error('[ListPage] Teljes hiba:', error);
+    
+    // fallback csak ha nagyon kell
+    try {
+      const fallback = await fetch(`${baseUrl}/api/posts/seo-quick-list/elado/lakas/budapest`, {
+        next: { revalidate: 3600 },
+      });
+      const fbData = await fallback.json();
+      return { seoQuickPosts: (fbData?.success ? fbData.data : []).slice(0, 12) };
+    } catch (fbError) {
+      console.error('[ListPage] Fallback is meghalt:', fbError);
+      return { seoQuickPosts: [] };
+    }
   }
 }
 

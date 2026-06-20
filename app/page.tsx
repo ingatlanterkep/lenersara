@@ -4,8 +4,11 @@ import { Post } from '@/types/post';
 
 export const revalidate = 3600;
 
+// app/page.tsx
 async function getHomepageData() {
   const baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASEURL || 'http://localhost:5000';
+  
+  console.log('[Homepage] Fetch URL:', `${baseUrl}/api/posts/seo-quick-list`);
   
   try {
     const seoResponse = await fetch(
@@ -16,13 +19,19 @@ async function getHomepageData() {
       }
     );
     
+    console.log('[Homepage] Response status:', seoResponse.status);
+    
     let seoData: Post[] = [];
     try {
       const seoJson = await seoResponse.json();
+      console.log('[Homepage] Response data:', seoJson);
       if (seoJson.success) {
         seoData = seoJson.data || [];
       }
     } catch (e) {
+      console.error('[Homepage] JSON parse error:', e);
+      // Fallback
+      console.log('[Homepage] Fallback fetch...');
       const fallbackResponse = await fetch(
         `${baseUrl}/api/posts/seo-quick-list/elado/lakas/budapest`,
         { next: { revalidate: 3600 } }
@@ -31,6 +40,7 @@ async function getHomepageData() {
       seoData = fallbackJson.success ? fallbackJson.data : [];
     }
     
+    console.log('[Homepage] Final data count:', seoData.length);
     return { seoQuickPosts: seoData.slice(0, 12) };
   } catch (error) {
     console.error('[Homepage] Hiba:', error);
