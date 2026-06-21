@@ -226,7 +226,7 @@ export default function HomePageContent({
   
   const validDistricts = budapestDistricts.map(d => d.url);
 
-
+  const listAbortControllerRef = useRef(null);
 
   
   const generateSlug = (title) => {
@@ -299,12 +299,46 @@ export default function HomePageContent({
     }
   };
   
-  const loadListData = async (page = 1, append = false) => {
+  // 🔥 ÚJ: Szűrők változásának nyomon követése
+  const filterChangeTrigger = useRef(0);
+  
+    // 🔥 LISTA BETÖLTÉS - AZONNALI FRISSÍTÉSSEL
+  const loadListData = useCallback(async (page = 1, append = false) => {
+    // Ha már tölt, ne induljon újra
     if (listLoading) return;
+    
+    // Előző kérés megszakítása
+    if (listAbortControllerRef.current) {
+      try {
+        listAbortControllerRef.current.abort();
+      } catch (e) {
+        // Ignore
+      }
+    }
+
+    listAbortControllerRef.current = new AbortController();
+    const { signal } = listAbortControllerRef.current;
+
     setListLoading(true);
+    
     try {
+      // 🔥 FRISS SZŰRŐK LEKÉRÉSE
       const filters = createFilters();
-      const response = await getFilteredPostsList(filters, page, 30);
+      
+      console.log('[ListPage] Szűrők:', filters);
+      
+      // Ha nincs szűrő és nem append, üres lista
+      const hasFilters = Object.keys(filters).length > 0;
+      if (!hasFilters && !append) {
+        setListPosts([]);
+        setListTotal(0);
+        setListHasMore(false);
+        setListLoading(false);
+        return;
+      }
+      
+      const response = await getFilteredPostsList(filters, page, 30, { signal });
+      
       if (response.success) {
         if (append) {
           setListPosts(prev => [...prev, ...response.data]);
@@ -316,11 +350,60 @@ export default function HomePageContent({
         setListPage(page);
       }
     } catch (error) {
-      console.error('Hiba a listás adatok betöltésekor:', error);
+      // Csak akkor logoljuk, ha nem AbortError
+      if (error.name !== 'AbortError' && error.code !== 'ERR_CANCELED') {
+        console.error('Hiba a listás adatok betöltésekor:', error);
+      }
     } finally {
       setListLoading(false);
     }
-  };
+  }, [listLoading, createFilters]);
+
+  // 🔥 LISTA FRISSÍTÉSE - MINDEN SZŰRŐ VÁLTOZÁSRA AZONNAL
+  useEffect(() => {
+    if (viewMode === 'list') {
+      // Azonnali betöltés debounce nélkül
+      loadListData(1, false);
+    }
+    
+    // Cleanup: megszakítjuk a függőben lévő kérést
+    return () => {
+      if (listAbortControllerRef.current) {
+        try {
+          listAbortControllerRef.current.abort();
+        } catch (e) {
+          // Ignore
+        }
+      }
+    };
+  }, [
+    viewMode,
+    listingType,
+    selectedLocations,
+    minPrice,
+    maxPrice,
+    areaMin,
+    areaMax,
+    type,
+    minRooms,
+    maxRooms,
+    onlyWithImages,
+    totalFloorsMin,
+    totalFloorsMax,
+    yearBuiltMin,
+    yearBuiltMax,
+    condition,
+    heatingType,
+    energyClass,
+    parking,
+    landAreaMin,
+    landAreaMax,
+    accuracy,
+    // 🔥 Fontos: createFilters is legyen függőség
+    createFilters,
+    loadListData
+  ]);
+
   
   const handleQueueToFacebook = async () => {
     if (!selectedQuestionType) return;
@@ -445,13 +528,6 @@ export default function HomePageContent({
     }
     return () => document.body.classList.remove('list-mode-active');
   }, [viewMode]);
-  
-  // Lista adatok betöltése
-  useEffect(() => {
-    if (viewMode === 'list') {
-      loadListData(1, false);
-    }
-  }, [listingType, selectedLocations, minPrice, maxPrice, areaMin, areaMax, type, minRooms, maxRooms, onlyWithImages, totalFloorsMin, totalFloorsMax, yearBuiltMin, yearBuiltMax, condition, heatingType, energyClass, parking, landAreaMin, landAreaMax, accuracy, viewMode]);
   
   // ViewMode szinkronizáció az URL-lel
   useEffect(() => {

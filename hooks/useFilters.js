@@ -372,14 +372,20 @@ const hasAnyFilter = useCallback(() => {
     });
   }, [selectedLocations, cookiesAccepted]);
 
+// 🔥 JAVÍTVA: fetchPosts - jobb abort kezelés
   const fetchPosts = async (filters) => {
     const startTime = Date.now();
 
+    // Előző kérés megszakítása
     if (abortControllerRef.current) {
-      console.log('[useFilters] Előző kérés megszakítása');
-      abortControllerRef.current.abort();
+      try {
+        abortControllerRef.current.abort();
+      } catch (e) {
+        // Ignore abort errors
+      }
     }
 
+    // Új AbortController
     abortControllerRef.current = new AbortController();
     const { signal } = abortControllerRef.current;
 
@@ -618,23 +624,39 @@ const hasAnyFilter = useCallback(() => {
           }
         }
       }
-    } catch (error) {
-      if (error.name === 'AbortError') {
-        console.log('[useFilters] Kérés megszakítva:', error.message);
-        return pendingPostsRef.current;
+       } catch (error) {
+      // 🔥 JAVÍTVA: Csak akkor logoljuk, ha nem AbortError
+      if (error.name !== 'AbortError') {
+        console.error('[useFilters] Hiba a streamelt hirdetések lekérésekor:', error);
+        setPosts([]);
+        pendingPostsRef.current = [];
+        setTotalRecords(0);
+        setShouldFitMap(true);
       }
-      console.error('[useFilters] Hiba a streamelt hirdetések lekérésekor:', error);
-      setPosts([]);
-      pendingPostsRef.current = [];
-      setTotalRecords(0);
-      setShouldFitMap(true);
       return pendingPostsRef.current;
     } finally {
       setIsFiltering(false);
     }
   };
 
-  const debouncedFetchPosts = useCallback(debounce(fetchPosts, 1000), []);
+    const debouncedFetchPosts = useCallback(debounce(fetchPosts, 1000), []);
+
+  // 🔥 Cleanup - csak akkor abortálunk, ha van aktív kérés
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        try {
+          abortControllerRef.current.abort();
+        } catch (e) {
+          // Ignore
+        }
+      }
+      debouncedFetchPosts.cancel();
+      logFilterApplied.cancel();
+    };
+  }, [debouncedFetchPosts, logFilterApplied]);
+
+
 
   useEffect(() => {
     const filters = createFilters();
