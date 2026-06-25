@@ -22,9 +22,10 @@ import {
   isFavoritePost, 
   clearExpiredFavorites 
 } from '@/utils/favoritePosts';
-import SmartToolsPanel from '../components/SmartToolsPanel';
+
 import { useAnalytics } from '@/context/AnalyticsContext';
-import HomePageSEO from '../components/HomePageSEO'; // ← EZT ADD HOZZÁ!
+import HomePageSEO from '../components/HomePageSEO';
+import TopSearchBar from '../components/TopSearchBar';
 
 const MapComponentDynamic = dynamic(
   () => import('../components/MapComponent'),
@@ -107,16 +108,7 @@ const validCounties = [
   'vas-varmegye', 'veszprem-varmegye', 'zala-varmegye',
   'jasz-nagykun-szolnok-varmegye'
 ];
-/**
- * @param {Object} props
- * @param {string} props.listingType
- * @param {string} props.type
- * @param {string|null} props.city
- * @param {'map'|'list'} [props.viewModeDefault='map']
- * @param {any} [props.serverLocationContent=null]
- * @param {any[]} [props.serverSeoQuickPosts=[]]
- * @param {boolean} [props.hideFooter=false]
- */
+
 export default function HomePageContent({ 
   listingType: urlListingType, 
   type: urlType, 
@@ -139,7 +131,8 @@ export default function HomePageContent({
     }
   }, [router]);
   
-    const { cookiesAccepted, sendEvent } = useAnalytics();
+  const { cookiesAccepted, sendEvent } = useAnalytics();
+  
   // State-ek
   const [isStreetViewMode, setIsStreetViewMode] = useState(false);
   const [viewMode, setViewMode] = useState(viewModeDefault);
@@ -172,7 +165,6 @@ export default function HomePageContent({
   const [listLoading, setListLoading] = useState(false);
   const [listHasMore, setListHasMore] = useState(true);
   const [showDealColors, setShowDealColors] = useState(false);
-  const [isSmartToolsVisible, setIsSmartToolsVisible] = useState(true);
   const [mobileBottomHeight, setMobileBottomHeight] = useState(30);
   const [layers, setLayers] = useState({
     transport: false, crimeHeat: false, religion: false, health: false,
@@ -190,11 +182,14 @@ export default function HomePageContent({
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [viewedPosts, setViewedPosts] = useState(new Set());
   const [filterHeightPx, setFilterHeightPx] = useState(0);
-  
+  const [isSearchBarExpanded, setIsSearchBarExpanded] = useState(false);
   const rightSidebarRef = useRef(null);
   const sidebarRef = useRef(null);
   const mapRef = useRef(null);
   const [showMap, setShowMap] = useState(false);
+  const [isMobileLayerOpen, setIsMobileLayerOpen] = useState(false);
+  const [activeLayerCount, setActiveLayerCount] = useState(0);
+  const listAbortControllerRef = useRef(null);
 
   useEffect(() => {
     setShowMap(true);
@@ -222,13 +217,10 @@ export default function HomePageContent({
     posts, setPosts,
     shouldFitMap, setShouldFitMap,
     isFiltering, shouldLogMarkers, hasSpecificFilters, createFilters,
+    isNewBuildFilter, setIsNewBuildFilter,
+    comfortLevel, setComfortLevel,
   } = useFilters(cookiesAccepted);
-  
-  const validDistricts = budapestDistricts.map(d => d.url);
 
-  const listAbortControllerRef = useRef(null);
-
-  
   const generateSlug = (title) => {
     if (!title) return 'unknown';
     return title
@@ -282,13 +274,13 @@ export default function HomePageContent({
     try {
       const postDetails = await getPostDetails(postId);
       const newPost = postDetails.data;
-  if (cookiesAccepted) {
-      sendEvent('preview_open', {
-        post_id: newPost._id,
-        listing_type: newPost.listing_type,
-        price: newPost.price || newPost.rental_price,
-      });
-    }
+      if (cookiesAccepted) {
+        sendEvent('preview_open', {
+          post_id: newPost._id,
+          listing_type: newPost.listing_type,
+          price: newPost.price || newPost.rental_price,
+        });
+      }
       setSelectedPost(newPost);
       addViewedPost(newPost._id);
       setViewedPosts(prev => new Set(prev).add(newPost._id));
@@ -298,82 +290,192 @@ export default function HomePageContent({
       throw error;
     }
   };
-  
-  // 🔥 ÚJ: Szűrők változásának nyomon követése
-  const filterChangeTrigger = useRef(0);
-  
-    // 🔥 LISTA BETÖLTÉS - AZONNALI FRISSÍTÉSSEL
-  const loadListData = useCallback(async (page = 1, append = false) => {
-    // Ha már tölt, ne induljon újra
-    if (listLoading) return;
-    
-    // Előző kérés megszakítása
-    if (listAbortControllerRef.current) {
-      try {
-        listAbortControllerRef.current.abort();
-      } catch (e) {
-        // Ignore
-      }
-    }
 
-    listAbortControllerRef.current = new AbortController();
-    const { signal } = listAbortControllerRef.current;
+// HomePageContent.tsx - loadListData javítva
 
-    setListLoading(true);
-    
+const loadListData = useCallback(async (page = 1, append = false) => {
+  // Ha már tölt és nem append, ne induljon újra
+  if (listLoading && !append) return;
+  
+  // Ha nincs több találat, ne próbálkozzunk
+  if (!listHasMore && append) return;
+
+  if (listAbortControllerRef.current) {
     try {
-      // 🔥 FRISS SZŰRŐK LEKÉRÉSE
-      const filters = createFilters();
-      
-      console.log('[ListPage] Szűrők:', filters);
-      
-      // Ha nincs szűrő és nem append, üres lista
-      const hasFilters = Object.keys(filters).length > 0;
-      if (!hasFilters && !append) {
-        setListPosts([]);
-        setListTotal(0);
-        setListHasMore(false);
-        setListLoading(false);
-        return;
-      }
-      
-      const response = await getFilteredPostsList(filters, page, 30, { signal });
-      
-      if (response.success) {
-        if (append) {
-          setListPosts(prev => [...prev, ...response.data]);
-        } else {
-          setListPosts(response.data);
-        }
-        setListTotal(response.total);
-        setListHasMore(page < response.pages);
-        setListPage(page);
-      }
-    } catch (error) {
-      // Csak akkor logoljuk, ha nem AbortError
-      if (error.name !== 'AbortError' && error.code !== 'ERR_CANCELED') {
-        console.error('Hiba a listás adatok betöltésekor:', error);
-      }
-    } finally {
-      setListLoading(false);
-    }
-  }, [listLoading, createFilters]);
+      listAbortControllerRef.current.abort();
+    } catch (e) {}
+  }
 
-  // 🔥 LISTA FRISSÍTÉSE - MINDEN SZŰRŐ VÁLTOZÁSRA AZONNAL
+  listAbortControllerRef.current = new AbortController();
+  const { signal } = listAbortControllerRef.current;
+
+  setListLoading(true);
+  
+  try {
+    const filters = createFilters();
+    
+    console.log('[ListPage] Szűrők:', filters);
+    
+    const hasFilters = Object.keys(filters).length > 0;
+    if (!hasFilters && !append) {
+      setListPosts([]);
+      setListTotal(0);
+      setListHasMore(false);
+      setListLoading(false);
+      return;
+    }
+    
+    const response = await getFilteredPostsList(filters, page, 30, { signal });
+    
+    if (response.success) {
+      if (append) {
+        setListPosts(prev => [...prev, ...response.data]);
+      } else {
+        setListPosts(response.data);
+      }
+      setListTotal(response.total);
+      const hasMore = page < response.pages;
+      setListHasMore(hasMore);
+      setListPage(page);
+    } else {
+      setListHasMore(false);
+    }
+  } catch (error) {
+    if (error.name !== 'AbortError' && error.code !== 'ERR_CANCELED') {
+      console.error('Hiba a listás adatok betöltésekor:', error);
+    }
+  } finally {
+    setListLoading(false);
+  }
+}, [listLoading, listHasMore, createFilters]);
+
+  // Aktív rétegek számlálása
+  useEffect(() => {
+    const count = Object.values(layers).filter(Boolean).length;
+    setActiveLayerCount(count);
+  }, [layers]);
+
+  // MOBIL: Alsó sáv gombok kezelése
+  const handleLayerButton = () => {
+    setIsMobileLayerOpen(true);
+  };
+
+  const handleListButton = () => {
+    setViewMode('list');
+    const isCurrentlyList = window.location.pathname.endsWith('/lista');
+    let newPath = window.location.pathname;
+    if (isCurrentlyList) {
+      newPath = newPath.replace(/\/lista$/, '') || '/';
+    } else {
+      newPath = newPath.endsWith('/') ? `${newPath}lista` : `${newPath}/lista`;
+    }
+    navigate(newPath, { replace: false });
+  };
+
+  const handleStreetViewButton = () => {
+    setIsStreetViewMode(!isStreetViewMode);
+  };
+
+  useEffect(() => {
+    const updateMapHeight = () => {
+      const navbar = document.querySelector('.navbar');
+      const searchBar = document.querySelector('.top-search-bar');
+      
+      if (navbar && searchBar) {
+        const navbarHeight = navbar.getBoundingClientRect().height;
+        const searchBarHeight = searchBar.getBoundingClientRect().height;
+        const totalTopOffset = navbarHeight + searchBarHeight;
+        
+        document.documentElement.style.setProperty('--total-top-offset', `${totalTopOffset}px`);
+        document.documentElement.style.setProperty('--navbar-height', `${navbarHeight}px`);
+        document.documentElement.style.setProperty('--searchbar-height', `${searchBarHeight}px`);
+        
+        const mapWrapper = document.querySelector('.map-wrapper');
+        if (mapWrapper) {
+          const viewportHeight = window.innerHeight;
+          const newHeight = viewportHeight - totalTopOffset;
+          mapWrapper.style.height = `${newHeight}px`;
+          mapWrapper.style.top = `${totalTopOffset}px`;
+        }
+        
+        const leftSidebar = document.querySelector('.left-sidebar-container');
+        if (leftSidebar) {
+          const viewportHeight = window.innerHeight;
+          const newHeight = viewportHeight - totalTopOffset;
+          leftSidebar.style.height = `${newHeight}px`;
+          leftSidebar.style.top = `${totalTopOffset}px`;
+        }
+      }
+    };
+    
+    setTimeout(updateMapHeight, 50);
+    window.addEventListener('resize', updateMapHeight);
+    
+    const searchBar = document.querySelector('.top-search-bar');
+    if (searchBar) {
+      const observer = new MutationObserver(() => {
+        updateMapHeight();
+      });
+      observer.observe(searchBar, {
+        attributes: true,
+        childList: true,
+        subtree: true,
+        attributeFilter: ['style', 'class']
+      });
+    }
+    
+    const observer = new MutationObserver(() => {
+      updateMapHeight();
+    });
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+    
+    return () => {
+      window.removeEventListener('resize', updateMapHeight);
+      observer.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    const mapWrapper = document.querySelector('.map-wrapper');
+    const leftSidebar = document.querySelector('.left-sidebar-container');
+    
+    if (mapWrapper && leftSidebar) {
+      leftSidebar.style.width = `${sidebarWidth}px`;
+      document.documentElement.style.setProperty('--sidebar-width', `${sidebarWidth}px`);
+      mapWrapper.style.left = `${sidebarWidth}px`;
+      mapWrapper.style.width = `calc(100% - ${sidebarWidth}px)`;
+    }
+  }, [sidebarWidth]);
+
+  // 🔥 VIEWMODE FIGYELÉS
+  useEffect(() => {
+    if (pathname?.toLowerCase().endsWith('/lista')) {
+      setViewMode('list');
+    } else if (pathname?.toLowerCase().endsWith('/terkep') || !pathname?.includes('/lista')) {
+      setViewMode('map');
+    }
+  }, [pathname]);
+
+  // 🔥 LISTA BETÖLTÉS - AMIKOR VIEWMODE VÁLTOZIK
   useEffect(() => {
     if (viewMode === 'list') {
-      // Azonnali betöltés debounce nélkül
+      loadListData(1, false);
+    }
+  }, [viewMode]);
+
+  useEffect(() => {
+    if (viewMode === 'list') {
       loadListData(1, false);
     }
     
-    // Cleanup: megszakítjuk a függőben lévő kérést
     return () => {
       if (listAbortControllerRef.current) {
         try {
           listAbortControllerRef.current.abort();
-        } catch (e) {
-          // Ignore
-        }
+        } catch (e) {}
       }
     };
   }, [
@@ -399,12 +501,10 @@ export default function HomePageContent({
     landAreaMin,
     landAreaMax,
     accuracy,
-    // 🔥 Fontos: createFilters is legyen függőség
     createFilters,
     loadListData
   ]);
 
-  
   const handleQueueToFacebook = async () => {
     if (!selectedQuestionType) return;
     setIsQueuing(true);
@@ -425,7 +525,6 @@ export default function HomePageContent({
     }
   };
   
-  // URL beolvasása
   useEffect(() => {
     if (isInitialized.current) return;
     
@@ -459,13 +558,11 @@ export default function HomePageContent({
     isInitialized.current = true;
   }, [urlListingType, urlType, urlLocation, setListingType, setType, setSelectedLocations, setShouldFitMap, setHasFitted]);
 
-  // Kedvencek betöltése
   useEffect(() => {
     setFavoritePosts(getFavoritePosts());
     clearExpiredFavorites();
   }, []);
   
-  // Megtekintett posztok betöltése
   useEffect(() => {
     setViewedPosts(getViewedPosts());
   }, []);
@@ -474,7 +571,6 @@ export default function HomePageContent({
     setCurrentImageIndex(0);
   }, [selectedPost?._id]);
   
-  // Admin státusz ellenőrzés
   useEffect(() => {
     const checkAdminStatus = async () => {
       try {
@@ -487,7 +583,6 @@ export default function HomePageContent({
     checkAdminStatus();
   }, []);
   
-  // Auth státusz ellenőrzés
   useEffect(() => {
     const checkAuthStatus = async () => {
       const token = localStorage.getItem('token');
@@ -519,7 +614,6 @@ export default function HomePageContent({
     checkAuthStatus();
   }, [pathname, navigate]);
   
-  // ViewMode CSS osztály kezelés
   useEffect(() => {
     if (viewMode === 'list') {
       document.body.classList.add('list-mode-active');
@@ -529,7 +623,6 @@ export default function HomePageContent({
     return () => document.body.classList.remove('list-mode-active');
   }, [viewMode]);
   
-  // ViewMode szinkronizáció az URL-lel
   useEffect(() => {
     let targetView = viewModeDefault;
     if (pathname?.toLowerCase().endsWith('/lista')) {
@@ -542,7 +635,6 @@ export default function HomePageContent({
     }
   }, [pathname, viewModeDefault]);
   
-  // Mobil nézet detektálás
   useEffect(() => {
     if (window.innerWidth <= 480) {
       setIsMobile(true);
@@ -554,7 +646,6 @@ export default function HomePageContent({
     }
   }, []);
   
-  // Sidebar width kezelés
   useEffect(() => {
     const updateSidebarWidth = () => {
       if (window.innerWidth <= 480) {
@@ -643,278 +734,471 @@ export default function HomePageContent({
   if (isLoading) {
     return <div className="loading">Betöltés...</div>;
   }
-  
+
+  // ==================== MOBIL NÉZET ====================
+  if (isMobile) {
+    return (
+      <>
+        <TopSearchBar
+          listingType={listingType}
+          setListingType={setListingType}
+          selectedLocations={selectedLocations}
+          setSelectedLocations={setSelectedLocations}
+          onLocationSearchOpen={() => setLocationSearchOpen(true)}
+          minPrice={minPrice}
+          setMinPrice={setMinPrice}
+          maxPrice={maxPrice}
+          setMaxPrice={setMaxPrice}
+          areaMin={areaMin}
+          setAreaMin={setAreaMin}
+          areaMax={areaMax}
+          setAreaMax={setAreaMax}
+          type={type}
+          setType={setType}
+          minRooms={minRooms}
+          setMinRooms={setMinRooms}
+          maxRooms={maxRooms}
+          setMaxRooms={setMaxRooms}
+          onlyWithImages={onlyWithImages}
+          setOnlyWithImages={setOnlyWithImages}
+          totalFloorsMin={totalFloorsMin}
+          setTotalFloorsMin={setTotalFloorsMin}
+          totalFloorsMax={totalFloorsMax}
+          setTotalFloorsMax={setTotalFloorsMax}
+          yearBuiltMin={yearBuiltMin}
+          setYearBuiltMin={setYearBuiltMin}
+          yearBuiltMax={yearBuiltMax}
+          setYearBuiltMax={setYearBuiltMax}
+          condition={condition}
+          setCondition={setCondition}
+          heatingType={heatingType}
+          setHeatingType={setHeatingType}
+          parking={parking}
+          setParking={setParking}
+          landAreaMin={landAreaMin}
+          setLandAreaMin={setLandAreaMin}
+          landAreaMax={landAreaMax}
+          setLandAreaMax={setLandAreaMax}
+          accuracy={accuracy}
+          setAccuracy={setAccuracy}
+          isNewBuildFilter={isNewBuildFilter}
+          setIsNewBuildFilter={setIsNewBuildFilter}
+          comfortLevel={comfortLevel}
+          setComfortLevel={setComfortLevel}
+          isMobile={isMobile}
+          onFilterToggle={() => {}}
+          isFilterOpen={false}
+        />
+
+        {/* Térkép - CSAK MAP NÉZETBEN */}
+        {viewMode === 'map' && (
+          <div className="map-wrapper mobile-map-wrapper">
+            <MapComponentDynamic
+              key="map-component-mobile"
+              isStreetViewMode={isStreetViewMode}
+              setIsStreetViewMode={setIsStreetViewMode}
+              ref={mapRef}
+              posts={memoizedPosts}
+              listingType={listingType}
+              fetchPostDetails={fetchPostDetails}
+              getFullImageUrl={getFullImageUrl}
+              createCustomIcon={createCustomIcon}
+              baseLayerOpacity={baseLayerOpacity}
+              setBaseLayerOpacity={setBaseLayerOpacity}
+              setOverlayLayerOpacity={setOverlayLayerOpacity}
+              shouldFitMap={shouldFitMap}
+              setShouldFitMap={setShouldFitMap}
+              layers={layers}
+              setLayers={setLayers}
+              hasSpecificFilters={hasSpecificFilters}
+              isFiltering={isFiltering}
+              shouldLogMarkers={shouldLogMarkers}
+              setSelectedPost={setSelectedPost}
+              isAdmin={isAdmin}
+              updatePost={updatePost}
+              deletePost={deletePost}
+              setPosts={setPosts}
+              cookiesAccepted={cookiesAccepted}
+              showFilterSidebar={false}
+              activeSecondaryPanel={activeSecondaryPanel}
+              setActiveSecondaryPanel={setActiveSecondaryPanel}
+              isLoggedIn={isLoggedIn}
+              onLogout={() => {
+                localStorage.removeItem('token');
+                setIsLoggedIn(false);
+                navigate('/login', { replace: true });
+              }}
+              isMobile={isMobile}
+              hasFitted={hasFitted}
+              setHasFitted={setHasFitted}
+              zoom={zoom}
+              setZoom={setZoom}
+              layerData={layerData}
+              setLayerData={setLayerData}
+              viewedPosts={viewedPosts}
+              showDealColors={showDealColors}
+              setShowDealColors={setShowDealColors}
+              sendEvent={sendEvent}
+              setViewedPosts={setViewedPosts}
+            />
+            <FacebookFollowLabel />
+          </div>
+        )}
+
+    {/* Lista nézet - CSAK LIST NÉZETBEN */}
+      {viewMode === 'list' && (
+        <div className="mobile-list-wrapper">
+          <div className="list-container-white">
+            <div className="list-container-inner">
+              <div className="list-header">
+                <h2>{listTotal} találat</h2>
+                <button 
+                  onClick={() => {
+                    setViewMode('map');
+                    const currentPath = window.location.pathname;
+                    const mapPath = currentPath.replace(/\/lista$/, '') || '/';
+                    navigate(mapPath);
+                  }} 
+                  className="back-to-map-btn"
+                >
+                  ← Vissza a térképre
+                </button>
+              </div>
+              {listLoading && listPosts.length === 0 ? (
+                <div className="loading-spinner">Betöltés...</div>
+              ) : listPosts.length === 0 ? (
+                <div className="no-results">Nincs találat a keresési feltételeknek</div>
+              ) : (
+                <>
+                  <div className="similar-posts-grid">
+                    {listPosts.map((post) => (
+  <PropertyCard
+                          key={post._id}
+                          post={post}
+                          listingType={listingType}
+                          cookiesAccepted={cookiesAccepted}
+                          onPostClick={() => {
+                            const slug = generateSlug(post.title);
+                            window.open(`/ingatlan/${post._id}/${slug}`, '_blank');
+                          }}
+                          onFavoriteToggle={(postId) => {
+                            const wasFavorite = isFavoritePost(postId);
+                            if (wasFavorite) {
+                              removeFavoritePost(postId);
+                              setFavoritePosts(prev => new Set([...prev].filter(id => id !== postId)));
+                            } else {
+                              addFavoritePost(postId);
+                              setFavoritePosts(prev => new Set([...prev, postId]));
+                            }
+                          }}
+                        />
+                    ))}
+                  </div>
+                  {listHasMore && (
+                    <div className="load-more-container">
+                      <button 
+                        onClick={() => {
+                          if (!listLoading && listHasMore) {
+                            loadListData(listPage + 1, true);
+                          }
+                        }} 
+                        disabled={listLoading || !listHasMore} 
+                        className="load-more-btn"
+                      >
+                        {listLoading ? 'Betöltés...' : 'Továbbiak betöltése'}
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+                        {/* 🔥 SEO szekció - mobilon is */}
+      {!hideFooter && (
+        <div style={{ marginTop: '20px', padding: '0 10px 20px' }}>
+          <HomePageSEO seoQuickPosts={serverSeoQuickPosts} />
+        </div>
+      )}
+        </div>
+        
+      )}
+
+        {/* MOBIL ALSÓ SÁV - 3 GOMB */}
+        <div className="mobile-bottom-bar">
+          <button 
+            className={`mobile-bottom-btn ${isMobileLayerOpen ? 'active' : ''}`}
+            onClick={handleLayerButton}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="2" y="2" width="20" height="20" rx="2" />
+              <line x1="2" y1="8" x2="22" y2="8" />
+              <line x1="2" y1="14" x2="22" y2="14" />
+            </svg>
+            <span className="btn-label">Rétegek</span>
+            {activeLayerCount > 0 && (
+              <span className="layer-badge">{activeLayerCount}</span>
+            )}
+          </button>
+
+          <button 
+            className="mobile-bottom-btn"
+            onClick={handleListButton}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="3" y="4" width="18" height="4" rx="1"/>
+              <rect x="3" y="10" width="18" height="4" rx="1"/>
+              <rect x="3" y="16" width="18" height="4" rx="1"/>
+            </svg>
+            <span className="btn-label">Lista</span>
+          </button>
+
+          <button 
+            className={`mobile-bottom-btn ${isStreetViewMode ? 'active' : ''}`}
+            onClick={handleStreetViewButton}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19 9l-4 4-4-4-4 4-4-4" />
+              <path d="M5 15l4-4 4 4 4-4 4 4" />
+              <path d="M12 3v3" />
+              <path d="M12 18v3" />
+              <path d="M3 12h3" />
+              <path d="M18 12h3" />
+            </svg>
+            <span className="btn-label">Street View</span>
+          </button>
+        </div>
+
+        {/* MOBIL RÉTEGPANEL OVERLAY */}
+        {isMobileLayerOpen && (
+          <>
+            <div 
+              className="mobile-layer-overlay"
+              onClick={() => setIsMobileLayerOpen(false)}
+            />
+            <div className="mobile-layer-panel">
+              <div className="mobile-layer-header">
+                <h3>Rétegek</h3>
+                <button 
+                  className="mobile-layer-close"
+                  onClick={() => setIsMobileLayerOpen(false)}
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="mobile-layer-grid">
+                <div className="street-view-section">
+                  <label 
+                    className={`street-view-label ${isStreetViewMode ? 'active' : ''}`}
+                    onClick={() => {
+                      setIsStreetViewMode(!isStreetViewMode);
+                    }}
+                  >
+                    <span className="layer-icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="3" />
+                        <path d="M19 9l-4 4-4-4-4 4-4-4" />
+                        <path d="M5 15l4-4 4 4 4-4 4 4" />
+                        <path d="M12 3v3" />
+                        <path d="M12 18v3" />
+                        <path d="M3 12h3" />
+                        <path d="M18 12h3" />
+                      </svg>
+                    </span>
+                    <span className="layer-name">Street View</span>
+                  </label>
+                </div>
+
+                {[
+                  { key: 'satellite', name: 'Műhold' },
+                  { key: 'crimeHeat', name: 'Biztonság' },
+                  { key: 'transport', name: 'Közlek.' },
+                  { key: 'education', name: 'Oktatás' },
+                  { key: 'shop', name: 'Boltok' },
+                  { key: 'health', name: 'Eü.' },
+                  { key: 'bank', name: 'Bankok' },
+                  { key: 'outdoor', name: 'Szabad' },
+                  { key: 'sport', name: 'Sport' },
+                  { key: 'religion', name: 'Vallás' },
+                ].map(({ key, name }) => (
+                  <label
+                    key={key}
+                    className={`layer-control-label ${layers[key] ? 'checked' : ''}`}
+                    onClick={() => {
+                      const newLayers = {
+                        ...layers,
+                        [key]: !layers[key]
+                      };
+                      setLayers(newLayers);
+                    }}
+                  >
+                    <span className="layer-icon">
+                      {/* Ikonok */}
+                      {key === 'satellite' && (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M4 4v16h16" />
+                          <path d="M8 12l4-4 4 4" />
+                          <path d="M8 16l4-4 4 4" />
+                        </svg>
+                      )}
+                      {key === 'crimeHeat' && (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                        </svg>
+                      )}
+                      {key === 'transport' && (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <rect x="1" y="4" width="22" height="12" rx="2" ry="2" />
+                          <circle cx="6" cy="16" r="2" />
+                          <circle cx="18" cy="16" r="2" />
+                          <path d="M6 8h12" />
+                        </svg>
+                      )}
+                      {key === 'education' && (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M4 10v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10" />
+                          <path d="M2 10l10-5 10 5" />
+                          <path d="M12 5v14" />
+                        </svg>
+                      )}
+                      {key === 'shop' && (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                          <line x1="3" y1="6" x2="21" y2="6" />
+                          <path d="M16 10a4 4 0 0 1-8 0" />
+                        </svg>
+                      )}
+                      {key === 'health' && (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M22 12h-4l-3 9-4-18-3 9H2" />
+                        </svg>
+                      )}
+                      {key === 'bank' && (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <rect x="2" y="10" width="20" height="12" rx="2" ry="2" />
+                          <line x1="6" y1="10" x2="6" y2="18" />
+                          <line x1="10" y1="10" x2="10" y2="18" />
+                          <line x1="14" y1="10" x2="14" y2="18" />
+                          <line x1="18" y1="10" x2="18" y2="18" />
+                          <polyline points="2 10 12 4 22 10" />
+                        </svg>
+                      )}
+                      {key === 'outdoor' && (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                          <path d="M2 17l10 5 10-5" />
+                          <path d="M2 12l10 5 10-5" />
+                        </svg>
+                      )}
+                      {key === 'sport' && (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <circle cx="12" cy="12" r="10" />
+                          <path d="M12 2v20" />
+                          <path d="M2 12h20" />
+                          <path d="M4.93 4.93l14.14 14.14" />
+                          <path d="M19.07 4.93L4.93 19.07" />
+                        </svg>
+                      )}
+                      {key === 'religion' && (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                          <path d="M2 17l10 5 10-5" />
+                          <path d="M2 12l10 5 10-5" />
+                          <circle cx="12" cy="12" r="3" />
+                        </svg>
+                      )}
+                    </span>
+                    <span className="layer-name">{name}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+
+        <LocationSearchModal
+          isOpen={locationSearchOpen}
+          onClose={() => setLocationSearchOpen(false)}
+          selectedLocations={selectedLocations}
+          onLocationChange={setSelectedLocations}
+          onApply={setSelectedLocations}
+        />
+
+      </>
+    );
+  }
+
+  // ==================== ASZTALI NÉZET ====================
   return (
     <div className="homepage-container">
       <div className="homepage-background">
         <div className="homepage-background-overlay"></div>
+        <TopSearchBar
+          listingType={listingType}
+          setListingType={setListingType}
+          selectedLocations={selectedLocations}
+          setSelectedLocations={setSelectedLocations}
+          onLocationSearchOpen={() => setLocationSearchOpen(true)}
+          minPrice={minPrice}
+          setMinPrice={setMinPrice}
+          maxPrice={maxPrice}
+          setMaxPrice={setMaxPrice}
+          areaMin={areaMin}
+          setAreaMin={setAreaMin}
+          areaMax={areaMax}
+          setAreaMax={setAreaMax}
+          type={type}
+          setType={setType}
+          minRooms={minRooms}
+          setMinRooms={setMinRooms}
+          maxRooms={maxRooms}
+          setMaxRooms={setMaxRooms}
+          onlyWithImages={onlyWithImages}
+          setOnlyWithImages={setOnlyWithImages}
+          totalFloorsMin={totalFloorsMin}
+          setTotalFloorsMin={setTotalFloorsMin}
+          totalFloorsMax={totalFloorsMax}
+          setTotalFloorsMax={setTotalFloorsMax}
+          yearBuiltMin={yearBuiltMin}
+          setYearBuiltMin={setYearBuiltMin}
+          yearBuiltMax={yearBuiltMax}
+          setYearBuiltMax={setYearBuiltMax}
+          condition={condition}
+          setCondition={setCondition}
+          heatingType={heatingType}
+          setHeatingType={setHeatingType}
+          parking={parking}
+          setParking={setParking}
+          landAreaMin={landAreaMin}
+          setLandAreaMin={setLandAreaMin}
+          landAreaMax={landAreaMax}
+          setLandAreaMax={setLandAreaMax}
+          accuracy={accuracy}
+          setAccuracy={setAccuracy}
+          isNewBuildFilter={isNewBuildFilter}
+          setIsNewBuildFilter={setIsNewBuildFilter}
+          comfortLevel={comfortLevel}
+          setComfortLevel={setComfortLevel}
+          isMobile={isMobile}
+          onFilterToggle={() => setShowFilterSidebar(!showFilterSidebar)}
+          isFilterOpen={showFilterSidebar}
+        />
       </div>
       
       {(showFilterSidebar || showLayerSidebar) && (
-        <>
-          <div className="left-sidebar-container" ref={sidebarRef} style={{ width: `${sidebarWidth}px` }}>
-            {showFilterSidebar && (
-              <div className="sidebar-section filter-card" style={{ flex: `${filterHeight} 0 0` }}>
-                <button className="close-button" onClick={() => setShowFilterSidebar(false)}>×</button>
-                <FilterForm
-                  listingType={listingType}
-                  setListingType={setListingType}
-                  selectedLocations={selectedLocations}
-                  setSelectedLocations={setSelectedLocations}
-                  minPrice={minPrice}
-                  setMinPrice={setMinPrice}
-                  maxPrice={maxPrice}
-                  setMaxPrice={setMaxPrice}
-                  areaMin={areaMin}
-                  setAreaMin={setAreaMin}
-                  areaMax={areaMax}
-                  setAreaMax={setAreaMax}
-                  type={type}
-                  setType={setType}
-                  minRooms={minRooms}
-                  setMinRooms={setMinRooms}
-                  maxRooms={maxRooms}
-                  setMaxRooms={setMaxRooms}
-                  onlyWithImages={onlyWithImages}
-                  setOnlyWithImages={setOnlyWithImages}
-                  totalFloorsMin={totalFloorsMin}
-                  totalFloorsMax={totalFloorsMax}
-                  setTotalFloorsMax={setTotalFloorsMax}
-                  setTotalFloorsMin={setTotalFloorsMin}
-                  yearBuiltMin={yearBuiltMin}
-                  setYearBuiltMin={setYearBuiltMin}
-                  yearBuiltMax={yearBuiltMax}
-                  setYearBuiltMax={setYearBuiltMax}
-                  condition={condition}
-                  setCondition={setCondition}
-                  heatingType={heatingType}
-                  setHeatingType={setHeatingType}
-                  energyClass={energyClass}
-                  setEnergyClass={setEnergyClass}
-                  utilityCostMin={utilityCostMin}
-                  setUtilityCostMin={setUtilityCostMin}
-                  utilityCostMax={utilityCostMax}
-                  setUtilityCostMax={setUtilityCostMax}
-                  view={view}
-                  setView={setView}
-                  parking={parking}
-                  setParking={setParking}
-                  orientation={orientation}
-                  setOrientation={setOrientation}
-                  comfort={comfort}
-                  setComfort={setComfort}
-                  ceilingHeightMin={ceilingHeightMin}
-                  setCeilingHeightMin={setCeilingHeightMin}
-                  ceilingHeightMax={ceilingHeightMax}
-                  setCeilingHeightMax={setCeilingHeightMax}
-                  landAreaMin={landAreaMin}
-                  setLandAreaMin={setLandAreaMin}
-                  landAreaMax={landAreaMax}
-                  setLandAreaMax={setLandAreaMax}
-                  accuracy={accuracy}
-                  setAccuracy={setAccuracy}
-                  locationSearchOpen={locationSearchOpen}
-                  setLocationSearchOpen={setLocationSearchOpen}
-                />
-              </div>
-            )}
-            
-            {showFilterSidebar && showLayerSidebar && (
-              <div className="resize-handle vertical-resize" onMouseDown={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                const rect = sidebarRef.current?.getBoundingClientRect();
-                const startY = e.clientY;
-                const startHeight = filterHeight;
-                const sidebarHeight = rect?.height || 0;
-                const onMove = (ev) => {
-                  const dy = ev.clientY - startY;
-                  const delta = (dy / sidebarHeight) * 100;
-                  const newHeight = Math.max(20, Math.min(80, startHeight + delta));
-                  setFilterHeight(newHeight);
-                };
-                const onUp = () => {
-                  document.removeEventListener('mousemove', onMove);
-                  document.removeEventListener('mouseup', onUp);
-                  document.body.style.cursor = 'default';
-                  document.body.style.userSelect = 'auto';
-                };
-                document.addEventListener('mousemove', onMove);
-                document.addEventListener('mouseup', onUp);
-                document.body.style.cursor = 'ns-resize';
-                document.body.style.userSelect = 'none';
-              }}>
-                <div className="handle-grip"></div>
-              </div>
-            )}
-            
-            {showLayerSidebar && !isMobile && (
-              <div className="sidebar-section layer-card" style={{ flex: `${100 - filterHeight} 0 0` }}>
-                <LayerPanel 
-                  zoom={zoom}
-                  layers={layers}
-                  setLayers={setLayers}
-                  onClose={() => setShowLayerSidebar(false)}
-                />  
-              </div>
-            )}
-            
-            <div className="resize-handle horizontal-resize" onMouseDown={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              const startX = e.clientX;
-              const startWidth = sidebarWidth;
-              const onMove = (ev) => {
-                const dx = ev.clientX - startX;
-                const newWidth = Math.max(280, Math.min(window.innerWidth * 0.7, startWidth + dx));
-                setSidebarWidth(newWidth);
-              };
-              const onUp = () => {
-                document.removeEventListener('mousemove', onMove);
-                document.removeEventListener('mouseup', onUp);
-                document.body.style.cursor = 'default';
-                document.body.style.userSelect = 'auto';
-              };
-              document.addEventListener('mousemove', onMove);
-              document.addEventListener('mouseup', onUp);
-              document.body.style.cursor = 'ew-resize';
-              document.body.style.userSelect = 'none';
-            }}>
-              <div className="handle-grip"></div>
-            </div>
-          </div>
-        </>
-      )}
-      
-      {selectedPost ? (
-        <div className="right-sidebar-container" ref={rightSidebarRef} style={isMobile ? {} : { width: `${rightSidebarWidth}px` }}>
-          <div className="resize-handle horizontal-resize left-side" onMouseDown={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            const startX = e.clientX;
-            const startWidth = rightSidebarWidth;
-            const onMove = (ev) => {
-              const dx = startX - ev.clientX;
-              const newWidth = Math.max(300, Math.min(window.innerWidth * 0.7, startWidth + dx));
-              setRightSidebarWidth(newWidth);
-            };
-            const onUp = () => {
-              document.removeEventListener('mousemove', onMove);
-              document.removeEventListener('mouseup', onUp);
-              document.body.style.cursor = 'default';
-              document.body.style.userSelect = 'auto';
-            };
-            document.addEventListener('mousemove', onMove);
-            document.addEventListener('mouseup', onUp);
-            document.body.style.cursor = 'ew-resize';
-            document.body.style.userSelect = 'none';
-          }}>
-            <div className="handle-grip"></div>
-          </div>
-          <div className="sidebar-section detail-card" style={isMobile && filterHeightPx > 0 ? { height: `${filterHeightPx}px`, minHeight: `${filterHeightPx}px`, maxHeight: `${filterHeightPx}px` } : {}}>
-            <button className="close-button" onClick={() => setSelectedPost(null)}>×</button>
-            <div className="detail-card-content">
-              <div className="popup-header">
-                <div className="title-bar">
-                  <h3 className="popup-title">{selectedPost.title}</h3>
-                  <p className="popup-address">
-                    {selectedPost.address?.city && `${selectedPost.address.city}, `}
-                    {selectedPost.address?.region && `${selectedPost.address.region}, `}
-                    {selectedPost.address?.street}
-                  </p>
-                </div>
-                <div className="price-area-container">
-                  <span>Ár: {listingType === 'eladó' 
-                    ? `${parseFloat(selectedPost.price).toFixed(1).replace(/\.0$/, '')} M Ft`
-                    : `${parseFloat(selectedPost.rental_price).toFixed(1).replace(/\.0$/, '')} E Ft/hó`}
-                  </span>
-                  {selectedPost.area > 0 && <span>Terület: {selectedPost.area} m²</span>}
-                </div>
-              </div>
-              <div className="detail-card-main-content">
-                {Array.isArray(selectedPost.images) && selectedPost.images.length > 0 && (
-                  <ImageGallery images={selectedPost.images.filter(img => img?.url).map(img => getFullImageUrl(img.url))} />
-                )}
-                <div className="description-column">
-                  <p className="popup-description">{selectedPost.description || 'Nincs leírás.'}</p>
-                  <div className="popup-actions">
-                    <button onClick={() => {
-if (cookiesAccepted) {
-    sendEvent('ad_view', {
-      post_id: selectedPost._id,
-      listing_type: selectedPost.listing_type,
-      price: selectedPost.price || selectedPost.rental_price,
-      value: 50,
-    });
-  }
-                      const slug = generateSlug(selectedPost.title);
-                      window.open(`/ingatlan/${selectedPost._id}/${slug}`, '_blank');
-                    }} className="action-button view-button">Megtekintem</button>
-                    <button onClick={(e) => {
-                      e.stopPropagation();
-                      const postId = selectedPost._id;
-                      const wasFavorite = isFavoritePost(postId);
-                      if (wasFavorite) {
-                        removeFavoritePost(postId);
-                        setFavoritePosts(prev => new Set([...prev].filter(id => id !== postId)));
-                      } else {
-                        addFavoritePost(postId);
-                        setFavoritePosts(prev => new Set([...prev, postId]));
-                      }
-  // 🔥 Erre cseréld:
-  if (cookiesAccepted) {
-    const eventName = wasFavorite ? 'remove_from_favorites' : 'add_to_favorites';
-    sendEvent(eventName, {
-      post_id: postId,
-      listing_type: selectedPost.listing_type || listingType,
-      price: selectedPost.price || selectedPost.rental_price || null,
-      type: selectedPost.type || null,
-    });
-  }
-  window.dispatchEvent(new Event('favoritesUpdated'));
-
-                    }} className={`action-button favorite-button ${isFavoritePost(selectedPost._id) ? 'active' : ''}`}>
-                      <img src={isFavoritePost(selectedPost._id) ? '/heart-filled.png' : '/heart-empty.png'} alt="Kedvenc" className="heart-icon" width={18} height={18} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-              {isAdmin && selectedPost && (
-                <div className="admin-fb-queue-section">
-                  <div>
-                    <select value={selectedQuestionType} onChange={(e) => setSelectedQuestionType(e.target.value)}>
-                      <option value="" disabled>Válassz...</option>
-                      <option value="hiányzik">Hiányzik?</option>
-                      <option value="laknál">Laknál itt?</option>
-                      <option value="kedvenc">Kedvenc?</option>
-                      <option value="megvennéd">Megvennéd?</option>
-                    </select>
-                    <button onClick={handleQueueToFacebook} disabled={!selectedQuestionType || isQueuing}>
-                      {isQueuing ? '...' : 'Queue'}
-                    </button>
-                    {queueMessage && <p className={`text-${queueSuccess ? 'green' : 'red'}-600 visible`}>{queueMessage}</p>}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      ) : (
-        !isMobile && isSmartToolsVisible && (
-          <div className="right-sidebar-container" ref={rightSidebarRef} style={{ width: `${rightSidebarWidth}px` }}>
-            <SmartToolsPanel 
-              showDealColors={showDealColors}
-              setShowDealColors={setShowDealColors}
+        <div className="left-sidebar-container" ref={sidebarRef}>
+          <div className="sidebar-section layer-card">
+            <LayerPanel 
+              zoom={zoom}
+              layers={layers}
+              setLayers={setLayers}
+              onClose={() => {}}
+              compact={true}
               isStreetViewMode={isStreetViewMode}
               setIsStreetViewMode={setIsStreetViewMode}
-              onClose={() => setIsSmartToolsVisible(false)}
-              viewMode={viewMode}
-              setViewMode={setViewMode}
-              isMobile={isMobile}
-              cookiesAccepted={cookiesAccepted}
             />
           </div>
-        )
+        </div>
       )}
       
       <div className={`content-area ${selectedPost ? 'has-sidebar' : ''}`}>
@@ -927,7 +1211,6 @@ if (cookiesAccepted) {
               ref={mapRef}
               posts={memoizedPosts}
               listingType={listingType}
-              selectedPost={selectedPost}
               fetchPostDetails={fetchPostDetails}
               getFullImageUrl={getFullImageUrl}
               createCustomIcon={createCustomIcon}
@@ -966,6 +1249,8 @@ if (cookiesAccepted) {
               viewedPosts={viewedPosts}
               showDealColors={showDealColors}
               setShowDealColors={setShowDealColors}
+              sendEvent={sendEvent}
+              setViewedPosts={setViewedPosts}
             />
             <FacebookFollowLabel />
           </div>
@@ -979,6 +1264,8 @@ if (cookiesAccepted) {
                 </div>
                 {listLoading && listPosts.length === 0 ? (
                   <div className="loading-spinner">Betöltés...</div>
+                ) : listPosts.length === 0 ? (
+                  <div className="no-results">Nincs találat a keresési feltételeknek</div>
                 ) : (
                   <>
                     <div className="similar-posts-grid">
@@ -1026,34 +1313,12 @@ if (cookiesAccepted) {
           onLocationChange={setSelectedLocations}
           onApply={setSelectedLocations}
         />
-        
-        {isMobile && viewMode === 'map' && (showLayerSidebar || isSmartToolsVisible) && (
-          <div className="mobile-bottom-container" style={{ height: `${mobileBottomHeight}%`, minHeight: '15%', maxHeight: '60%' }}>
-            <div className="mobile-resize-handle" onMouseDown={handleMobileResizeStart} onTouchStart={handleMobileResizeStart}>
-              <div className="handle-grip"></div>
-            </div>
-            <div className={`mobile-layer-panel ${!showLayerSidebar ? 'closed' : ''}`}>
-              <LayerPanel zoom={zoom} layers={layers} setLayers={setLayers} onClose={() => setShowLayerSidebar(false)}/>
-            </div>
-            <div className={`mobile-smart-panel ${!isSmartToolsVisible ? 'closed' : ''}`}>
-              <SmartToolsPanel 
-                showDealColors={showDealColors}
-                setShowDealColors={setShowDealColors}
-                isStreetViewMode={isStreetViewMode}
-                setIsStreetViewMode={setIsStreetViewMode}
-                onClose={() => setIsSmartToolsVisible(false)}
-                viewMode={viewMode}
-                setViewMode={setViewMode}
-                isMobile={isMobile}
-                cookiesAccepted={cookiesAccepted}
-              />
-            </div>
+
+        {!hideFooter && (
+          <div style={{ marginTop: 'calc(100vh - var(--total-top-offset))' }}>
+            <HomePageSEO seoQuickPosts={serverSeoQuickPosts} />
           </div>
         )}
-
-{!hideFooter && (
-  <HomePageSEO seoQuickPosts={serverSeoQuickPosts} />
-)}
 
         {!hideFooter && (
           <footer className="app-footer">

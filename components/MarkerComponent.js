@@ -6,16 +6,14 @@ import L from 'leaflet';
 import dynamic from 'next/dynamic';
 import Modal from 'react-modal';
 
-// Dinamikus import a PostEditForm-hoz (client only)
 const PostEditForm = dynamic(() => import('../forms/PostEditForm'), { ssr: false });
 
 import '../styles/PopupStyles.css';
 import '../styles/Markers.css';
 import { isFavoritePost } from '../utils/favoritePosts';
 
-// CSS selector a modal-hoz (Next.js-hez igazítva)
 if (typeof window !== 'undefined') {
-  Modal.setAppElement('body'); // vagy '#__next'
+  Modal.setAppElement('body');
 }
 
 const generateSlug = (title) => {
@@ -64,7 +62,6 @@ const createCustomIcon = (
   if (priorityLevel === 3) priorityClass = 'priority-3';
   else if (priorityLevel === 4) priorityClass = 'priority-4';
 
-  // ====================== RÉGI DEAL SZÍN LOGIKA ======================
   let dealClass = '';
   if (showDealColors) {
     if (overpriceCategory === 0) dealClass = 'deal-good';
@@ -109,29 +106,25 @@ const MarkerComponent = ({
   showDealColors,
   onMouseOver = () => {},
   onMouseOut = () => {},
+  onMarkerClick = () => {},
 }) => {
   const [isEditingModalOpen, setIsEditingModalOpen] = useState(false);
 
-  // ────────────────────────────────────────────────
-  //  ITT KELL DEFINIÁLNI ezeket a változókat!
-  // ────────────────────────────────────────────────
   const isActive = post._id === selectedPost?._id;
   const isViewed = viewedPosts?.has(post._id) ?? false;
 
-  const handleMarkerClick = useCallback(async () => {
-    if (selectedPost?._id === post._id) {
-      setSelectedPost(null);
-    } else {
-      const postDetailsResponse = await fetchPostDetails(post._id);
-      const postDetails = postDetailsResponse?.data || postDetailsResponse;
-      if (postDetails && postDetails._id) {
-        setSelectedPost(postDetails);
-      }
-    }
-  }, [post, selectedPost, fetchPostDetails, setSelectedPost]);
+  // 🔥 JAVÍTOTT: CSAK A POPUPOT NYITJUK, A SIDEBAR LOGIKA KÜLÖN VAN!
+  // NEM hívjuk meg a fetchPostDetails-t, mert az kinyitja a sidebart!
+const handleMarkerClick = useCallback((e) => {
+  // CSAK A POPUPOT NYITJUK MEG, A SIDEBART NEM!
+  onMarkerClick(post, e);
+  
+  // 🔥 NE ÁLLÍTSD BE A selectedPost-ot! CSAK A POPUP JELENJEN MEG!
+  // setSelectedPost({ _id: post._id }); ← EZT TÁVOLÍTSD EL!
+}, [post, onMarkerClick]);
 
   const handleEditClick = (e) => {
-    e.stopPropagation(); // Megakadályozza, hogy a marker click is triggerelődjön
+    e.stopPropagation();
     setIsEditingModalOpen(true);
   };
 

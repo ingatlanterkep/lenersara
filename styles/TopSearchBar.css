@@ -1,0 +1,1500 @@
+
+
+.search-bar-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  z-index: 1000;
+}
+
+/* Típus választó */
+.search-type-toggle {
+  display: flex;
+  gap: 4px;
+  background: #f0f7ff;
+  border-radius: 24px;
+  padding: 3px;
+  flex-shrink: 0;
+}
+
+.type-btn {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: transparent;
+  color: #6b8ba0;
+  white-space: nowrap;
+}
+
+.type-btn.active {
+  background: #5099ce;
+  color: white;
+  box-shadow: 0 2px 8px rgba(80, 153, 206, 0.3);
+}
+
+.type-btn:hover:not(.active) {
+  background: rgba(80, 153, 206, 0.1);
+}
+
+/* Helyszín */
+.search-location {
+  flex: 1;
+  min-width: 140px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: #f5f9ff;
+  border: 1.5px solid #d4e8ff;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.search-location:hover {
+  border-color: #5099ce;
+  background: #edf4ff;
+}
+
+.search-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: #6b8ba0;
+}
+
+.location-text {
+  font-size: 13px;
+  color: #2c3e50;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.clear-location {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #999;
+  cursor: pointer;
+  padding: 0 4px;
+  transition: color 0.3s ease;
+}
+
+.clear-location:hover {
+  color: #e74c3c;
+}
+
+/* Ingatlantípus select */
+.search-type-select {
+  flex-shrink: 0;
+}
+
+.type-select {
+  padding: 6px 12px;
+  border: 1.5px solid #d4e8ff;
+  border-radius: 20px;
+  background: #f5f9ff;
+  font-size: 13px;
+  color: #2c3e50;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.type-select:hover,
+.type-select:focus {
+  border-color: #5099ce;
+  background: #edf4ff;
+}
+
+/* Ár és alapterület tartományok */
+.search-range {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #f5f9ff;
+  border: 1.5px solid #d4e8ff;
+  border-radius: 20px;
+  padding: 2px 8px 2px 12px;
+  transition: all 0.3s ease;
+}
+
+.search-range:hover,
+.search-range:focus-within {
+  border-color: #5099ce;
+  background: #edf4ff;
+}
+
+.range-input {
+  width: 55px;
+  border: none;
+  background: transparent;
+  padding: 5px 0;
+  font-size: 13px;
+  color: #2c3e50;
+  outline: none;
+}
+
+.range-input::placeholder {
+  color: #a0b8cc;
+  font-size: 11px;
+}
+
+.range-separator {
+  color: #a0b8cc;
+  font-size: 12px;
+}
+
+.range-unit {
+  font-size: 11px;
+  color: #6b8ba0;
+  font-weight: 500;
+  margin-left: 2px;
+  white-space: nowrap;
+}
+
+.price-range {
+  min-width: 160px;
+}
+
+.area-range {
+  min-width: 140px;
+}
+
+/* Részletes keresés gomb */
+.detailed-toggle-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1.5px solid #d4e8ff;
+  border-radius: 50%;
+  background: #f5f9ff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.detailed-toggle-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke: #6b8ba0;
+  transition: stroke 0.3s ease;
+}
+
+.detailed-toggle-btn:hover {
+  border-color: #5099ce;
+  background: #edf4ff;
+}
+
+.detailed-toggle-btn.active {
+  border-color: #5099ce;
+  background: #5099ce;
+}
+
+.detailed-toggle-btn.active svg {
+  stroke: white;
+}
+
+.filter-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #ff3b30;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Mobil szűrő gomb */
+.filter-toggle-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1.5px solid #d4e8ff;
+  border-radius: 50%;
+  background: #f5f9ff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.filter-toggle-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke: #6b8ba0;
+  transition: stroke 0.3s ease;
+}
+
+.filter-toggle-btn.active {
+  border-color: #5099ce;
+  background: #5099ce;
+}
+
+.filter-toggle-btn.active svg {
+  stroke: white;
+}
+
+/* Részletes keresés panel */
+.detailed-search-panel {
+  margin-top: 10px;
+  padding-top: 12px;
+  border-top: 1.5px solid #e8f0fe;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.detailed-search-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.detail-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b8ba0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.range-input-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f5f9ff;
+  border: 1.5px solid #d4e8ff;
+  border-radius: 20px;
+  padding: 2px 10px;
+  transition: all 0.3s ease;
+}
+
+.range-input-group:hover,
+.range-input-group:focus-within {
+  border-color: #5099ce;
+  background: #edf4ff;
+}
+
+.range-input-group input {
+  width: 50px;
+  border: none;
+  background: transparent;
+  padding: 5px 0;
+  font-size: 13px;
+  color: #2c3e50;
+  outline: none;
+}
+
+.range-input-group input::placeholder {
+  color: #a0b8cc;
+  font-size: 11px;
+}
+
+.range-input-group span {
+  color: #a0b8cc;
+  font-size: 12px;
+}
+
+.detail-select {
+  padding: 6px 12px;
+  border: 1.5px solid #d4e8ff;
+  border-radius: 20px;
+  background: #f5f9ff;
+  font-size: 13px;
+  color: #2c3e50;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
+  width: 100%;
+}
+
+.detail-select:hover,
+.detail-select:focus {
+  border-color: #5099ce;
+  background: #edf4ff;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  padding-top: 4px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #2c3e50;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #5099ce;
+  cursor: pointer;
+}
+
+/* MOBIL NÉZET */
+@media (max-width: 1024px) {
+  .top-search-bar {
+    top: 40px;
+    padding: 6px 12px;
+  }
+
+  .search-bar-container {
+    gap: 6px;
+  }
+
+  .search-range {
+    padding: 2px 6px 2px 8px;
+  }
+
+  .range-input {
+    width: 45px;
+    font-size: 12px;
+  }
+
+  .price-range {
+    min-width: 130px;
+  }
+
+  .area-range {
+    min-width: 110px;
+  }
+
+  .type-btn {
+    font-size: 12px;
+    padding: 4px 12px;
+  }
+
+  .type-select {
+    font-size: 12px;
+    padding: 4px 10px;
+  }
+
+  .search-location {
+    min-width: 100px;
+    padding: 4px 10px;
+  }
+
+  .location-text {
+    font-size: 12px;
+  }
+
+  .detailed-search-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .top-search-bar {
+    top: 44px;
+    padding: 4px 8px;
+  }
+
+  .search-bar-container {
+    gap: 4px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  .search-bar-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  .type-btn {
+    font-size: 10px;
+    padding: 3px 10px;
+  }
+
+  .search-type-toggle {
+    padding: 2px;
+  }
+
+  .search-location {
+    min-width: 80px;
+    padding: 3px 8px;
+  }
+
+  .location-text {
+    font-size: 11px;
+  }
+
+  .search-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .type-select {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+
+  .search-range {
+    padding: 1px 4px 1px 6px;
+  }
+
+  .range-input {
+    width: 35px;
+    font-size: 11px;
+    padding: 3px 0;
+  }
+
+  .range-input::placeholder {
+    font-size: 9px;
+  }
+
+  .range-separator {
+    font-size: 10px;
+  }
+
+  .range-unit {
+    font-size: 9px;
+  }
+
+  .price-range {
+    min-width: 100px;
+  }
+
+  .area-range {
+    min-width: 90px;
+  }
+
+  .detailed-toggle-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .detailed-toggle-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .filter-toggle-btn {
+    display: flex;
+    width: 32px;
+    height: 32px;
+  }
+
+  .filter-toggle-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .filter-badge {
+    width: 14px;
+    height: 14px;
+    font-size: 8px;
+    top: -3px;
+    right: -3px;
+  }
+
+  .detailed-search-panel {
+    margin-top: 6px;
+    padding-top: 8px;
+  }
+
+  .detailed-search-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 6px;
+  }
+
+  .detail-group label {
+    font-size: 10px;
+  }
+
+  .range-input-group {
+    padding: 1px 6px;
+  }
+
+  .range-input-group input {
+    width: 35px;
+    font-size: 11px;
+    padding: 3px 0;
+  }
+
+  .detail-select {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+
+  .checkbox-label {
+    font-size: 11px;
+  }
+
+  .checkbox-label input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .top-search-bar {
+    top: 40px;
+    padding: 3px 6px;
+  }
+
+  .search-bar-container {
+    gap: 3px;
+  }
+
+  .type-btn {
+    font-size: 9px;
+    padding: 2px 8px;
+  }
+
+  .search-type-toggle {
+    gap: 2px;
+    padding: 2px;
+  }
+
+  .search-location {
+    min-width: 60px;
+    padding: 2px 6px;
+  }
+
+  .location-text {
+    font-size: 10px;
+  }
+
+  .search-icon {
+    width: 12px;
+    height: 12px;
+  }
+
+  .type-select {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+
+  .search-range {
+    padding: 1px 3px 1px 4px;
+  }
+
+  .range-input {
+    width: 28px;
+    font-size: 10px;
+    padding: 2px 0;
+  }
+
+  .range-input::placeholder {
+    font-size: 8px;
+  }
+
+  .price-range {
+    min-width: 80px;
+  }
+
+  .area-range {
+    min-width: 70px;
+  }
+
+  .detailed-toggle-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .detailed-toggle-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .filter-toggle-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .filter-toggle-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .detailed-search-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+  }
+
+  .range-input-group input {
+    width: 28px;
+    font-size: 10px;
+  }
+
+  .detail-select {
+    font-size: 10px;
+    padding: 3px 6px;
+  }
+
+  .checkbox-label {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 380px) {
+  .top-search-bar {
+    top: 38px;
+    padding: 2px 4px;
+  }
+
+  .type-btn {
+    font-size: 8px;
+    padding: 2px 6px;
+  }
+
+  .search-location {
+    min-width: 40px;
+    padding: 2px 4px;
+  }
+
+  .location-text {
+    font-size: 9px;
+  }
+
+  .range-input {
+    width: 22px;
+    font-size: 9px;
+  }
+
+  .price-range {
+    min-width: 60px;
+  }
+
+  .area-range {
+    min-width: 55px;
+  }
+
+  .detailed-search-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Túlcsordulás kezelése */
+.search-bar-container {
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .search-bar-container {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  
+  .search-bar-container::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* components/styles/TopSearchBar.css */
+
+.top-search-bar {
+  position: fixed;
+  top: 40px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(12px);
+  border-bottom: 2px solid #97d4ff;
+  z-index: 999;
+  padding: 8px 16px;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  pointer-events: auto !important; /* ← FONTOS! */
+}
+
+/* Minden gyermek elem is fogadjon eseményeket */
+.top-search-bar * {
+  pointer-events: auto !important;
+}
+
+.search-bar-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  pointer-events: auto !important;
+}
+
+/* ... a többi stílus marad ... */
+
+/* Részletes keresés panel - biztosítjuk, hogy fogadjon eseményeket */
+.detailed-search-panel,
+.detailed-search-panel * {
+  pointer-events: auto !important;
+}
+
+.detailed-toggle-btn {
+  pointer-events: auto !important;
+  cursor: pointer;
+}
+
+/* styles/TopSearchBar.css - LISTÁS NÉZET GOMB */
+
+/* Listás nézet gomb a keresősávban */
+.list-view-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1.5px solid #d4e8ff;
+  border-radius: 50%;
+  background: #f5f9ff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.list-view-toggle-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke: #6b8ba0;
+  transition: stroke 0.3s ease;
+}
+
+.list-view-toggle-btn:hover {
+  border-color: #5099ce;
+  background: #edf4ff;
+}
+
+.list-view-toggle-btn:hover svg {
+  stroke: #5099ce;
+}
+
+.list-view-toggle-btn.active {
+  border-color: #5099ce;
+  background: #5099ce;
+}
+
+.list-view-toggle-btn.active svg {
+  stroke: white;
+}
+
+/* Mobil méret */
+@media (max-width: 768px) {
+  .list-view-toggle-btn {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .list-view-toggle-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .list-view-toggle-btn {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .list-view-toggle-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* A szám beviteli mezők nyílainak eltüntetése */
+.range-input,
+.range-input-group input,
+.detail-group input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.range-input::-webkit-outer-spin-button,
+.range-input::-webkit-inner-spin-button,
+.range-input-group input::-webkit-outer-spin-button,
+.range-input-group input::-webkit-inner-spin-button,
+.detail-group input[type="number"]::-webkit-outer-spin-button,
+.detail-group input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* styles/TopSearchBar.css - kiegészítés */
+
+.top-search-bar {
+  position: fixed;
+  top: 40px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(12px);
+  border-bottom: 2px solid #97d4ff;
+  z-index: 999;
+  padding: 6px 16px;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  pointer-events: auto !important;
+  min-height: 40px; /* Minimum magasság a stabil detektáláshoz */
+  max-height: 80px; /* Maximum magasság a túlzott növekedés elkerülésére */
+}
+
+/* A részletes keresés panel megnyitásakor a searchbar magassága megnő */
+.top-search-bar.expanded {
+  max-height: 400px; /* Elég magas a részletes keresés panelnek */
+}
+
+.detailed-search-panel {
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1.5px solid #e8f0fe;
+  animation: slideDown 0.3s ease;
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 0 0 12px 12px;
+  padding: 10px 16px 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  position: relative;
+  z-index: 1000;
+  pointer-events: auto !important;
+}
+
+/* styles/globals.css - frissítsd a top-search-bar stílusát: */
+
+.top-search-bar {
+  position: fixed;
+  top: var(--navbar-height);
+  left: 0;
+  right: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(12px);
+  border-bottom: 2px solid #97d4ff;
+  z-index: 999;
+  padding: 6px 16px;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  pointer-events: auto !important;
+  min-height: 44px; /* Alap magasság */
+  max-height: 80px; /* Maximum magasság a részletes keresés nélkül */
+}
+
+/* Amikor a részletes keresés megjelenik, növeljük a max-height-t */
+.top-search-bar.expanded {
+  max-height: 500px; /* Elég magas a részletes keresés panelnek */
+}
+
+/* components/styles/TopSearchBar.css - MOBIL RÉSZ HOZZÁADÁSA */
+
+/* ============================================
+   ASZTALI NÉZET (MEGLÉVŐ)
+   ============================================ */
+.top-search-bar {
+  position: fixed;
+  top: 40px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(12px);
+  border-bottom: 2px solid #97d4ff;
+  z-index: 999;
+  padding: 6px 16px;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  pointer-events: auto !important;
+  min-height: 44px;
+  max-height: 80px;
+}
+
+.top-search-bar.expanded {
+  max-height: 500px;
+}
+
+.search-bar-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  pointer-events: auto !important;
+}
+
+/* ... a többi asztali stílus marad ... */
+
+/* ============================================
+   MOBIL NÉZET - VÉKONY CSÍK
+   ============================================ */
+.top-search-bar.mobile-search-bar {
+  position: fixed;
+  top: 44px;
+  left: 0;
+  right: 0;
+  padding: 4px 12px;
+  min-height: 36px;
+  max-height: 36px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1.5px solid #97d4ff;
+  cursor: pointer;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.mobile-search-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 2px 0;
+}
+
+.search-icon-mobile {
+  width: 16px;
+  height: 16px;
+  stroke: #94a3b8;
+  flex-shrink: 0;
+}
+
+.mobile-search-placeholder {
+  font-size: 12px;
+  color: #6b8ba0;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 400;
+}
+
+.mobile-filter-badge {
+  background: #5099ce;
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ============================================
+   MOBIL KERESŐ OVERLAY
+   ============================================ */
+.mobile-search-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.mobile-search-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #ffffff;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.mobile-search-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1.5px solid #e8f0fe;
+  flex-shrink: 0;
+  background: #ffffff;
+}
+
+.mobile-search-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.mobile-search-close {
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: #6b8ba0;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.mobile-search-close:hover {
+  background: #f1f5f9;
+}
+
+.mobile-search-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mobil elemek */
+.mobile-toggle {
+  padding: 4px;
+}
+
+.mobile-location {
+  padding: 8px 12px;
+}
+
+.mobile-type-select {
+  width: 100%;
+}
+
+.mobile-type-select .type-select {
+  width: 100%;
+  padding: 8px 12px;
+}
+
+.mobile-range {
+  padding: 4px 10px;
+}
+
+.mobile-range .range-input {
+  width: 50px;
+  font-size: 13px;
+}
+
+.mobile-detailed-btn {
+  width: 100%;
+  border-radius: 24px;
+  padding: 10px;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #2c3e50;
+  background: #f5f9ff;
+  border: 1.5px solid #d4e8ff;
+}
+
+.mobile-detailed-btn.active {
+  background: #5099ce;
+  border-color: #5099ce;
+  color: white;
+}
+
+.mobile-detailed-btn.active svg {
+  stroke: white;
+}
+
+.mobile-detailed-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke: #6b8ba0;
+}
+
+.mobile-detailed-panel {
+  margin-top: 0;
+  padding: 12px 0;
+  border-top: 1.5px solid #e8f0fe;
+}
+
+.mobile-apply-btn {
+  padding: 12px 24px;
+  background: #5099ce;
+  color: white;
+  border: none;
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 4px;
+  width: 100%;
+}
+
+.mobile-apply-btn:hover {
+  background: #3a7bb8;
+  transform: translateY(-1px);
+}
+
+/* ============================================
+   MOBIL ALUL SÁV - 3 GOMB
+   ============================================ */
+.mobile-bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border-top: 1.5px solid #97d4ff;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 1000;
+  padding: 0 8px;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.mobile-bottom-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  background: none;
+  border: none;
+  padding: 4px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #94a3b8;
+  font-size: 8px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  flex: 1;
+  max-width: 80px;
+  border-radius: 8px;
+  position: relative;
+}
+
+.mobile-bottom-btn:hover {
+  color: #5099ce;
+  background: rgba(80, 153, 206, 0.06);
+}
+
+.mobile-bottom-btn.active {
+  color: #5099ce;
+}
+
+.mobile-bottom-btn.active svg {
+  stroke: #5099ce;
+}
+
+.mobile-bottom-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  fill: none;
+  transition: stroke 0.2s ease;
+}
+
+.mobile-bottom-btn .btn-label {
+  font-size: 7px;
+  font-weight: 500;
+  color: #94a3b8;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.mobile-bottom-btn.active .btn-label {
+  color: #5099ce;
+}
+
+/* Rétegek számláló jelvény */
+.mobile-bottom-btn .layer-badge {
+  position: absolute;
+  top: 0;
+  right: 4px;
+  background: #5099ce;
+  color: white;
+  font-size: 7px;
+  font-weight: 700;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================
+   MOBIL LAYER OVERLAY
+   ============================================ */
+.mobile-layer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9998;
+  animation: fadeIn 0.2s ease;
+}
+
+.mobile-layer-panel {
+  position: fixed;
+  bottom: 48px;
+  left: 0;
+  right: 0;
+  max-height: 60vh;
+  background: #ffffff;
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.12);
+  z-index: 9999;
+  padding: 16px 16px 24px;
+  animation: slideUpLayer 0.3s ease;
+  overflow-y: auto;
+}
+
+@keyframes slideUpLayer {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.mobile-layer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+  border-bottom: 1.5px solid #e8f0fe;
+  margin-bottom: 12px;
+}
+
+.mobile-layer-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.mobile-layer-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #6b8ba0;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.mobile-layer-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.mobile-layer-grid .layer-control-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 8px 4px;
+  border-radius: 10px;
+  border: 1.5px solid transparent;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 40px;
+}
+
+.mobile-layer-grid .layer-control-label.checked {
+  background: rgba(80, 153, 206, 0.1);
+  border-color: #5099ce;
+}
+
+.mobile-layer-grid .layer-control-label .layer-icon svg {
+  width: 18px;
+  height: 18px;
+  stroke: #94a3b8;
+}
+
+.mobile-layer-grid .layer-control-label.checked .layer-icon svg {
+  stroke: #5099ce;
+}
+
+.mobile-layer-grid .layer-control-label .layer-name {
+  font-size: 7px;
+  font-weight: 500;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.mobile-layer-grid .layer-control-label.checked .layer-name {
+  color: #5099ce;
+}
+
+/* Street View külön */
+.mobile-layer-grid .street-view-section {
+  grid-column: span 3;
+  display: flex;
+  justify-content: center;
+  padding: 4px 0 8px;
+  border-bottom: 1.5px solid #e8f0fe;
+  margin-bottom: 4px;
+}
+
+.mobile-layer-grid .street-view-label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  background: #f0f7ff;
+  border: 1.5px solid #d4e8ff;
+}
+
+.mobile-layer-grid .street-view-label.active {
+  background: rgba(80, 153, 206, 0.15);
+  border-color: #5099ce;
+}
+
+.mobile-layer-grid .street-view-label .layer-icon svg {
+  stroke: #5099ce;
+}
+
+.mobile-layer-grid .street-view-label .layer-name {
+  color: #5099ce;
+  font-weight: 600;
+  font-size: 10px;
+}
+
+/* ============================================
+   RESPONZÍV
+   ============================================ */
+@media (max-width: 768px) {
+  .top-search-bar {
+    top: 44px;
+    padding: 4px 10px;
+    min-height: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .top-search-bar.mobile-search-bar {
+    top: 40px;
+    min-height: 32px;
+    max-height: 32px;
+    padding: 2px 10px;
+  }
+  
+  .mobile-search-placeholder {
+    font-size: 11px;
+  }
+  
+  .mobile-search-header h2 {
+    font-size: 16px;
+  }
+  
+  .mobile-search-content {
+    padding: 12px;
+    gap: 10px;
+  }
+  
+  .mobile-range .range-input {
+    width: 40px;
+    font-size: 12px;
+  }
+  
+  .mobile-apply-btn {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+  
+  .mobile-bottom-bar {
+    height: 44px;
+  }
+  
+  .mobile-bottom-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .mobile-bottom-btn .btn-label {
+    font-size: 6px;
+  }
+  
+  .mobile-layer-panel {
+    padding: 12px 12px 20px;
+    max-height: 55vh;
+  }
+  
+  .mobile-layer-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+  }
+  
+  .mobile-layer-grid .layer-control-label {
+    min-height: 48px;
+    padding: 6px 2px;
+  }
+  
+  .mobile-layer-grid .layer-control-label .layer-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+

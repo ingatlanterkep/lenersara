@@ -129,16 +129,19 @@ const FavoritesPage = () => {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [isClient]);
 
-  const handleRemoveFavorite = (postId) => {
-    if (!isClient) return;
-    if (window.confirm("Biztosan eltávolítod a kedvencekből?")) {
-      removeFavoritePost(postId);
-      setFavorites(prev => prev.filter(p => p._id !== postId));
-      if (selectedPost?._id === postId) {
-        setSelectedPost(null);
-      }
+// FavoritesPage.js - handleRemoveFavorite függvény
+const handleRemoveFavorite = (postId) => {
+  if (!isClient) return;
+  if (window.confirm("Biztosan eltávolítod a kedvencekből?")) {
+    removeFavoritePost(postId);
+    setFavorites(prev => prev.filter(p => p._id !== postId));
+    if (selectedPost?._id === postId) {
+      setSelectedPost(null);
     }
-  };
+    // 🔥 IDE ADD EZT A SORT:
+    window.dispatchEvent(new Event('favoritesUpdated'));
+  }
+};
 
   const handleCardClick = (post) => {
     if (!isClient) return;

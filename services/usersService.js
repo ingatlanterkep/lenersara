@@ -21,13 +21,15 @@ export const getUsers = async () => {
   }
 };
 
+// 🔥 JAVÍTVA - CSAK EZ A FÜGGVÉNY VÁLTOZOTT
 export const getCurrentUser = async () => {
   try {
     const response = await apiClient.get('/users/current-user');
     return response.data;
   } catch (error) {
-    console.error('Error fetching current user:', error);
-    throw error.response?.data || error;
+    // 🔥 NE DOBJUK TOVÁBB A HIBÁT, HANEM LOGOLJUK ÉS TÉRJÜNK VISSZA NULL-LAL
+    console.warn('[usersService] Felhasználó lekérdezése sikertelen:', error.response?.status || error.message);
+    return null; // ← VISSZATÉRÉS NULL-LAL
   }
 };
 

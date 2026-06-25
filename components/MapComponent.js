@@ -20,8 +20,12 @@ import '../styles/MapComponent.css';
 import { renderBasicLayer } from './layers/basicLayer';
 import LayerPanel from './LayerPanel';
 import pegmanIconUrl from 'leaflet/dist/images/marker-icon.png';
-
+import MapPopup from './MapPopup';
+import '../styles/MapPopup.css';
+// MapComponent.js - az importokhoz add hozzá:
+import { getPostDetails, updatePost, deletePost, getFilteredPostsList } from '@/services/apiService';
 import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from 'react-leaflet';
+import { getViewedPosts, addViewedPost } from '@/utils/viewedPosts';
 
 
 
@@ -63,6 +67,7 @@ const loadGeometry = async (postId) => {
   }
 };
 
+// MapComponent.js - props rész
 const MapComponent = React.forwardRef(
   ({
     posts,
@@ -79,8 +84,8 @@ const MapComponent = React.forwardRef(
     setShouldFitMap,
     layers,
     setLayers,
-    zoom,        // ← ezt átveszed a HomePage-ből
-    setZoom,     // ← ezt is    hasSpecificFilters,
+    zoom,
+    setZoom,
     hasSpecificFilters,
     isFiltering,
     shouldLogMarkers,
@@ -96,12 +101,16 @@ const MapComponent = React.forwardRef(
     isLoggedIn,
     onLogout,
     sidebarWidth,
-    viewedPosts,  // ← ezt add hozzá!
+
     isMobile,
     isStreetViewMode,
-  setIsStreetViewMode,
-  showDealColors,
+    setIsStreetViewMode,
+    showDealColors,
+    sendEvent,  // ← EZT ADD HOZZÁ!
+       viewedPosts,
+    setViewedPosts, // 🔥 EZT ADD HOZZÁ!
   }, ref) => {
+    // ... a többi kód
 console.log('[MapComponent] Komponens renderelése elkezdődött', {
   posts: posts.map(p => ({
     id: p._id,
@@ -143,6 +152,8 @@ console.log('[MapComponent] Komponens renderelése elkezdődött', {
         L.latLng(49.685, 24.097)
       )
     );
+    const [popupPost, setPopupPost] = useState(null);
+const [popupPosition, setPopupPosition] = useState(null);
     const geometryLayerRef = useRef(null);
     const isMounted = useRef(true);
     const lastLoggedHash = useRef(null);
@@ -166,7 +177,15 @@ const realHoverActiveRef = useRef(false);
       győr: { center: [47.6875, 17.6504], zoom: 12 },
     };
 
-
+const generateSlug = useCallback((title) => {
+  if (!title) return 'unknown';
+  return title
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+}, []);
 
 // 🔥 GA4: Map interakció (zoom vagy pan után, debounce-oltan)
 const handleMapInteraction = useCallback(
@@ -391,15 +410,13 @@ useEffect(() => {
 
 
 
-        // MapComponent belül, a props után
-useEffect(() => {
+  useEffect(() => {
   if (selectedPost?._id) {
-    // Amikor van kiválasztott hirdetés a sidebarban → aktiváljuk a markert
+    // Csak a markert aktiváljuk, de NEM nyitjuk meg a jobb oldali sidebart!
     setActiveMarkerId(selectedPost._id);
-    setHoveredMarkerId(null); // hover ne írja felül
+    setHoveredMarkerId(null);
     setHoveredGeometryData(null);
 
-    // Geometria betöltése és megjelenítése
     loadGeometry(selectedPost._id).then((geometry) => {
       if (geometry && mapRef.current) {
         setGeometryData(geometry);
@@ -410,7 +427,6 @@ useEffect(() => {
       }
     });
   } else {
-    // Sidebar bezárva → mindent törlünk
     setActiveMarkerId(null);
     setGeometryData(null);
     clearGeometryLayer();
@@ -455,6 +471,96 @@ useEffect(() => {
         debouncedRenderGeometry.cancel();
       };
     }, [activeMarkerId, geometryData, hoveredMarkerId, hoveredGeometryData, posts, renderGeometryLayer]);
+
+// MapComponent.js - új függvény a props-ok között
+const fetchFullPostData = useCallback(async (postId) => {
+  try {
+    // Közvetlen API hívás, hogy ne módosítsa a selectedPost-ot
+    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASEURL || 'http://localhost:5000';
+    const token = localStorage.getItem('token');
+    
+    const response = await fetch(
+      `${baseUrl}/api/posts/single-post?_id=${postId}`,
+      {
+        headers: {
+          'Accept': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      }
+    );
+    
+    if (!response.ok) {
+      throw new Error(`HTTP hiba: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return data.data || data;
+  } catch (error) {
+    console.error('[MapComponent] Hiba a post adatok lekérésekor:', error);
+    return null;
+  }
+}, []);
+
+const handleMarkerClick = useCallback(async (postFromMarker, event) => {
+  // HA UGYANAZ A POST, ZÁRJUK BE
+  if (popupPost && popupPost._id === postFromMarker._id) {
+    setPopupPost(null);
+    setPopupPosition(null);
+    return;
+  }
+
+  try {
+    const response = await getPostDetails(postFromMarker._id);
+    const fullPost = response?.data || response;
+    
+    if (!fullPost || !fullPost._id) {
+      console.warn('[MapComponent] Nem sikerült lekérni a teljes post adatokat');
+      return;
+    }
+
+    // HOZZÁADJUK A MEGTEKINTETT POSZTOKHOZ!
+    addViewedPost(fullPost._id);
+    
+    if (setViewedPosts) {
+      setViewedPosts(prev => new Set(prev).add(fullPost._id));
+    }
+
+    let newPosition = null;
+    
+    if (event?.target?._icon) {
+      const rect = event.target._icon.getBoundingClientRect();
+      newPosition = {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2,
+      };
+    } else if (fullPost.geolocation && mapRef.current) {
+      const point = mapRef.current.latLngToContainerPoint([
+        fullPost.geolocation.lat,
+        fullPost.geolocation.lon
+      ]);
+      newPosition = {
+        x: point.x,
+        y: point.y,
+      };
+    }
+    
+    if (newPosition) {
+      setPopupPost(fullPost);
+      setPopupPosition(newPosition);
+    }
+    
+    // 🔥 NE ÁLLÍTSD BE A selectedPost-ot! CSAK A POPUPOT NYISD MEG!
+    // setSelectedPost(null); // ← EZT NE HÍVD MEG!
+    
+  } catch (error) {
+    console.error('[MapComponent] Hiba a post adatok lekérésekor:', error);
+  }
+}, [popupPost, setViewedPosts]);
+
+const handlePopupClose = useCallback(() => {
+  setPopupPost(null);
+  setPopupPosition(null);
+}, []);
 
 const handleMouseOver = useCallback(async (postId) => {
   if (selectedPost?._id) return; // tiltva, ha van kiválasztott
@@ -605,6 +711,39 @@ container.style.cursor = 'url(https://maps.google.com/mapfiles/ms/micons/man.png
     container.style.cursor = 'grab';
   };
 }, [map, isStreetViewMode]);
+
+// MapComponent.js - AZONNALI DRAG ZÁRÁS
+// Az updateVisiblePosts előtt vagy után, de a MapController-ben vagy a komponensben:
+
+// 🔥 AZONNALI DRAG ZÁRÁS - használjunk dragstart eseményt
+useEffect(() => {
+  const map = mapRef.current;
+  if (!map) return;
+
+  const handleDragStart = () => {
+    // Azonnal bezárjuk a popupot, amikor elkezdődik a dragelés
+    if (popupPost) {
+      setPopupPost(null);
+      setPopupPosition(null);
+    }
+  };
+
+  const handleZoomStart = () => {
+    // Zoomoláskor is azonnal bezárjuk
+    if (popupPost) {
+      setPopupPost(null);
+      setPopupPosition(null);
+    }
+  };
+
+  map.on('dragstart', handleDragStart);
+  map.on('zoomstart', handleZoomStart);
+
+  return () => {
+    map.off('dragstart', handleDragStart);
+    map.off('zoomstart', handleZoomStart);
+  };
+}, [mapRef.current, popupPost]);
       
 
       const updateVisiblePosts = useCallback(
@@ -672,55 +811,130 @@ useMapEvents({
 });
 
 
-// A MapController-en belül vagy a MapComponent-ben, ahol a useMapEvents van:
+// MapComponent.js - a useMapEvents rész
 useMapEvents({
   click: () => {
-    // Mobilon és desktopon is zárja be a kiválasztott hirdetést
+    if (popupPost) {
+      setPopupPost(null);
+      setPopupPosition(null);
+    }
     if (selectedPost) {
       setSelectedPost(null);
     }
   },
+  // 🔥 moveend marad, de a dragstart már külön kezeli az azonnali bezárást
+  moveend: () => {
+    // Ha esetleg nem zárt volna be a dragstart (pl. touch esetén)
+    if (popupPost) {
+      setPopupPost(null);
+      setPopupPosition(null);
+    }
+  },
+  zoomend: () => {
+    if (popupPost) {
+      setPopupPost(null);
+      setPopupPosition(null);
+    }
+  },
 });
+// MapComponent.js - fitMapToMarkers javítva
+
+// MapComponent.js - fitMapToMarkers TELJESEN ÚJRAÍRVA
+
 const fitMapToMarkers = useCallback(() => {
+  const map = mapRef.current;
+  
+  // 🔥 Ellenőrizzük, hogy létezik-e a map
+  if (!map) {
+    console.warn('[fitMapToMarkers] Map nem létezik');
+    setShouldFitMap(false);
+    return;
+  }
+  
   console.log('[fitMapToMarkers] Hívva – posts hossza:', posts?.length || 0);
 
+  // 🔥 HA NINCSENEK POSZTOK → alap nézet
   if (!posts || posts.length === 0) {
     console.warn('[fitMapToMarkers] Nincsenek hirdetések → alap Magyarország nézet');
-    map.flyTo([47.161, 19.505], 7, { animate: true, duration: 1.5 });
+    try {
+      map.flyTo([47.161, 19.505], 7, { animate: true, duration: 1.5 });
+    } catch (e) {
+      console.warn('[fitMapToMarkers] flyTo hiba:', e);
+    }
     setShouldFitMap(false);
     return;
   }
 
-  // Csak érvényes koordinátákkal rendelkező posztok
+  // 🔥 ÉRVÉNYES KOORDINÁTÁK SZŰRÉSE - NAGYON SZIGORÚ!
   const validPosts = posts.filter(
     (post) =>
-      post?.geolocation?.lat != null &&
-      post?.geolocation?.lon != null &&
-      !isNaN(post.geolocation.lat) &&
-      !isNaN(post.geolocation.lon)
+      post &&
+      post.geolocation &&
+      typeof post.geolocation === 'object' &&
+      post.geolocation.lat != null &&
+      post.geolocation.lon != null &&
+      !isNaN(Number(post.geolocation.lat)) &&
+      !isNaN(Number(post.geolocation.lon)) &&
+      Number(post.geolocation.lat) >= -90 &&
+      Number(post.geolocation.lat) <= 90 &&
+      Number(post.geolocation.lon) >= -180 &&
+      Number(post.geolocation.lon) <= 180
   );
 
+  console.log('[fitMapToMarkers] Érvényes posztok:', validPosts.length);
+
+  // 🔥 HA NINCS ÉRVÉNYES KOORDINÁTA → alap nézet
   if (validPosts.length === 0) {
-    console.warn('[fitMapToMarkers] Nincs egyetlen érvényes koordináta sem → alap nézet');
-    map.flyTo([47.161, 19.505], 7, { animate: true, duration: 1.5 });
+    console.warn('[fitMapToMarkers] Nincs érvényes koordináta → alap nézet');
+    try {
+      map.flyTo([47.161, 19.505], 7, { animate: true, duration: 1.5 });
+    } catch (e) {
+      console.warn('[fitMapToMarkers] flyTo hiba:', e);
+    }
     setShouldFitMap(false);
     return;
   }
 
-  // Határok számítása
-  const bounds = L.latLngBounds(
-    validPosts.map((post) => [post.geolocation.lat, post.geolocation.lon])
-  );
+  // 🔥 BOUNDS SZÁMÍTÁS - CSAK HA VAN ÉRVÉNYES PONT
+  try {
+    const latLngs = validPosts.map((post) => [
+      Number(post.geolocation.lat),
+      Number(post.geolocation.lon)
+    ]);
+    
+    console.log('[fitMapToMarkers] LatLngs minta:', latLngs.slice(0, 3));
 
-  console.log(`[fitMapToMarkers] ${validPosts.length} érvényes ponttal – flyToBounds`);
-  map.flyToBounds(bounds, {
-    padding: [60, 60],
-    animate: true,
-    duration: 1.8,
-  });
+    const bounds = L.latLngBounds(latLngs);
+    
+    // 🔥 ELLENŐRIZZÜK, HOGY A BOUNDS ÉRVÉNYES-E
+    if (!bounds.isValid()) {
+      console.warn('[fitMapToMarkers] Érvénytelen bounds → alap nézet');
+      map.flyTo([47.161, 19.505], 7, { animate: true, duration: 1.5 });
+      setShouldFitMap(false);
+      return;
+    }
 
-  setShouldFitMap(false);   // Fontos: mindig állítsd vissza!
-}, [posts, map, setShouldFitMap]);
+    console.log(`[fitMapToMarkers] ${validPosts.length} érvényes ponttal – flyToBounds`);
+    map.flyToBounds(bounds, {
+      padding: [60, 60],
+      animate: true,
+      duration: 1.8,
+      maxZoom: 14,
+    });
+  } catch (error) {
+    console.error('[fitMapToMarkers] Hiba a bounds számítás során:', error);
+    try {
+      map.flyTo([47.161, 19.505], 7, { animate: true, duration: 1.5 });
+    } catch (e) {
+      // Ha még a flyTo is hibás, akkor csak logoljuk
+      console.error('[fitMapToMarkers] Még a fallback is hibás:', e);
+    }
+  }
+
+  setShouldFitMap(false);
+}, [posts, setShouldFitMap]); // ← NE legyen map a függőségben!
+
+
       useEffect(() => {
         if (isInitialLoad && map) {
           map.fitBounds(mapBounds, { padding: [50, 50], animate: false });
@@ -757,17 +971,34 @@ map.on('moveend', moveHandler);
         };
       }, [map, isInitialLoad, posts, selectedPost, updateVisiblePosts,setZoom]);
 
+// MapComponent.js - shouldFitMap useEffect javítva
+
+// MapComponent.js - shouldFitMap useEffect
+
 useEffect(() => {
-  console.log('[MapController] shouldFitMap trigger:', { shouldFitMap, postsLength: posts.length });
+  console.log('[MapController] shouldFitMap trigger:', { 
+    shouldFitMap, 
+    postsLength: posts?.length || 0,
+    hasMap: !!mapRef.current 
+  });
 
-  if (shouldFitMap && posts.length > 0) {
-    console.log('[MapController] Végrehajtjuk a fitMapToMarkers-t');
-    fitMapToMarkers();
-
-    // 🔥 Kulcs: mi állítjuk vissza false-ra, miután meghívtuk!
-    setShouldFitMap(false);
+  // 🔥 HA NINCS MAP VAGY NINCSENEK POSZTOK → NE FUTTASSUK!
+  if (!mapRef.current) {
+    console.log('[MapController] Map még nem elérhető, várakozás...');
+    const timer = setTimeout(() => {
+      if (mapRef.current && posts?.length > 0 && shouldFitMap) {
+        fitMapToMarkers();
+      }
+    }, 500);
+    return () => clearTimeout(timer);
   }
-}, [shouldFitMap, fitMapToMarkers]); // ← csak shouldFitMap változáskor fusson! NE legyen posts a függőségben!
+
+  // 🔥 CSAK AKKOR FUT, HA KELL ÉS VAN MIT MUTATNI
+  if (shouldFitMap) {
+    // Ha nincsenek posztok, akkor is hívjuk meg, hogy az alap nézetet állítsa
+    fitMapToMarkers();
+  }
+}, [shouldFitMap, fitMapToMarkers]); // ← NE legyen posts a függőségben!
 
       // 🔥 JAVÍTOTT logging - NINCS filters!
       useEffect(() => {
@@ -797,46 +1028,48 @@ useEffect(() => {
 
 
     
-    // 🔥 JAVÍTOTT markers - NINCS filters!
-    const markers = useMemo(() => {
-      return memoizedVisiblePosts.map((post) => (
-        <MarkerComponent
-          key={post._id}
-          post={post}
-          listingType={listingType}
-          selectedPost={selectedPost}
-          fetchPostDetails={fetchPostDetails}
-          getFullImageUrl={getFullImageUrl}
-          createCustomIcon={createCustomIcon}
-          // 🔥 ELTÁVOLÍTVA: filters={filters}
-          setSelectedPost={setSelectedPost}
-          isAdmin={isAdmin}
-          updatePost={updatePost}
-          deletePost={deletePost}
-          setPosts={setPosts}
-          onMouseOver={handleMouseOver}
-          onMouseOut={handleMouseOut}
-          cookiesAccepted={cookiesAccepted}
-      viewedPosts={viewedPosts}  // ← átadjuk tovább!
-        showDealColors={showDealColors}   // ← átadjuk
-        />
-      ));
-    }, [
-      memoizedVisiblePosts,
-      listingType,
-      selectedPost?._id,
-      fetchPostDetails,
-      getFullImageUrl,
-      createCustomIcon,
-      // 🔥 ELTÁVOLÍTVA: filters,
-      isAdmin,
-      handleMouseOver,
-      handleMouseOut,
-      cookiesAccepted,
-        viewedPosts,  // ← hozzáadva a függőségekhez
-          showDealColors,           // ← hozzáadva
-    ]);
-
+const markers = useMemo(() => {
+  return memoizedVisiblePosts.map((post) => (
+    <MarkerComponent
+      key={post._id}
+      post={post}
+      listingType={listingType}
+      selectedPost={selectedPost}
+      fetchPostDetails={fetchPostDetails}
+      getFullImageUrl={getFullImageUrl}
+      createCustomIcon={createCustomIcon}
+      setSelectedPost={setSelectedPost}
+      isAdmin={isAdmin}
+      updatePost={updatePost}
+      deletePost={deletePost}
+      setPosts={setPosts}
+      onMouseOver={handleMouseOver}
+      onMouseOut={handleMouseOut}
+      onMarkerClick={handleMarkerClick} // ← EZT ADD HOZZÁ!
+      cookiesAccepted={cookiesAccepted}
+      viewedPosts={viewedPosts}
+      showDealColors={showDealColors}
+    />
+  ));
+}, [
+  memoizedVisiblePosts,
+  listingType,
+  selectedPost?._id,
+  fetchPostDetails,
+  getFullImageUrl,
+  createCustomIcon,
+  isAdmin,
+  handleMouseOver,
+  handleMouseOut,
+  handleMarkerClick, // ← EZT IS ADD HOZZÁ!
+  cookiesAccepted,
+  viewedPosts,
+  showDealColors,
+  setSelectedPost,
+  updatePost,
+  deletePost,
+  setPosts,
+]);
     useEffect(() => {
       isMounted.current = true;
       return () => {
@@ -871,6 +1104,10 @@ useEffect(() => {
             attributionControl={false}   // ← KI kapcsoljuk az alapértelmezetettet!
 
         >
+
+
+
+          
 {/* 1. Alapréteg: OSM mindig lent van (OSM fallback) */}
 <TileLayer
   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -985,7 +1222,23 @@ useEffect(() => {
 
 
         </MapContainer>
-      </div>
+{/* 🔥 EGYEDI POPUP - a térkép fölé renderelve */}
+{popupPost && popupPosition && (
+  <MapPopup
+    key={popupPost._id} // 🔥 CSAK AZ ID! NEM KELL Date.now()!
+    post={popupPost}
+    position={popupPosition}
+    onClose={handlePopupClose}
+    getFullImageUrl={getFullImageUrl}
+    generateSlug={generateSlug}
+    listingType={listingType}
+    cookiesAccepted={cookiesAccepted}
+    sendEvent={sendEvent}
+  />
+)}
+
+  </div>
+
     );
   }
 );
