@@ -55,7 +55,6 @@ const Navbar = ({
     return () => window.removeEventListener('favoritesUpdated', updateCount);
   }, []);
 
-  // 🔴 JAVÍTÁS: Használj null-coalescing operátort, hogy mindig string legyen
   const currentPath = pathname ?? '/';
   
   const isHomePage = 
@@ -66,39 +65,6 @@ const Navbar = ({
   const toggleMenu = () => setNavbarMenuOpen(!isNavbarMenuOpen);
   const handleLinkClick = () => setNavbarMenuOpen(false);
   const toggleFilter = () => setShowFilterSidebar(!showFilterSidebar);
-  const toggleLayers = () => setShowLayerSidebar(!showLayerSidebar);
-  
-  const toggleStreetView = () => {
-    const newValue = !isStreetViewMode;
-    if (cookiesAccepted && window.gtag) {
-      window.gtag('event', 'toggle_street_view', {
-        enabled: newValue,
-        page_type: 'homepage'
-      });
-    }
-    setIsStreetViewMode(newValue);
-  };
-
-  const handleViewModeToggle = () => {
-    const isCurrentlyList = currentPath.endsWith('/lista');
-    let newPath = currentPath;
-    
-    if (isCurrentlyList) {
-      newPath = newPath.replace(/\/lista$/, '') || '/';
-    } else {
-      newPath = newPath.endsWith('/') ? `${newPath}lista` : `${newPath}/lista`;
-    }
-    
-    if (cookiesAccepted && window.gtag) {
-      window.gtag('event', isCurrentlyList ? 'switch_to_map_view' : 'switch_to_list_view', {
-        from_view: isCurrentlyList ? 'list' : 'map',
-        to_view: isCurrentlyList ? 'map' : 'list',
-        source: 'navbar'
-      });
-    }
-    
-    router.push(newPath);
-  };
 
   return (
     <nav className={`navbar ${isNavbarCollapsed ? 'collapsed' : ''}`}>
@@ -110,36 +76,6 @@ const Navbar = ({
 
         <div className="navbar-right-actions">
           <div className="navbar-controls">
-            {isHomePage && (
-              <button className="navbar-icon-button view-mode-toggle" onClick={handleViewModeToggle}>
-                {currentPath.endsWith('/lista') ? (
-                  <img src="/terkepnezet.png" alt="Térkép nézet" style={{ width: 24, height: 24 }} />
-                ) : (
-                  <img src="/listanezet.png" alt="Lista nézet" style={{ width: 24, height: 24 }} />
-                )}
-              </button>
-            )}
-
-            {isHomePage && (
-              <button className="navbar-icon-button" onClick={toggleFilter} title="Szűrők">
-                <img src="/search-icon.webp" alt="Szűrők" className="navbar-button-icon" />
-              </button>
-            )}
-
-            {isHomePage && viewMode === 'map' && (
-              <>
-                <button className="navbar-icon-button" onClick={toggleLayers} title="Rétegek">
-                  <img src="/layers-icon.webp" alt="Rétegek" className="navbar-button-icon" />
-                </button>
-                <button 
-                  className={`navbar-icon-button streetview-button ${isStreetViewMode ? 'active' : ''}`}
-                  onClick={toggleStreetView}
-                  title="Street View mód"
-                >
-                  <img src="/pegman.png" alt="Street View" className="navbar-button-icon" />
-                </button>
-              </>
-            )}
 
             <Link href="/kedvencek" className="navbar-icon-button favorites-button mobile-only" onClick={handleLinkClick}>
               <img src="/heart-filled.png" alt="Kedvenceim" className="navbar-button-icon" />
