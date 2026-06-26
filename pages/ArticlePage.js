@@ -22,14 +22,14 @@ const ArticlePage = () => {
             "publisher": {
               "@type": "Organization",
               "name": "Ingatlan-Térkép",
-              "logo": { "@type": "ImageObject", "url": "https://www.ingatlan-terkep.hu/logo.png" }
+              "logo": { "@type": "ImageObject", "url": "https://ingatlan-terkep.hu/logo.png" }
             },
             "datePublished": "2025-12-27",
             "dateModified": "2025-12-27",
-            "image": "https://www.ingatlan-terkep.hu/regios-kulcsmutatok-median-ar-negyzetmeterar-kompozicios-hatas-videk-budapest-otthon-start-2025.png",
+            "image": "https://ingatlan-terkep.hu/regios-kulcsmutatok-median-ar-negyzetmeterar-kompozicios-hatas-videk-budapest-otthon-start-2025.png",
             "mainEntityOfPage": {
               "@type": "WebPage",
-              "@id": "https://www.ingatlan-terkep.hu/blog/otthon-start-program-hatasa-ingatlanpiac-2025"
+              "@id": "https://ingatlan-terkep.hu/blog/otthon-start-program-hatasa-ingatlanpiac-2025"
             }
           })
         }}

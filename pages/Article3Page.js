@@ -21,14 +21,14 @@ const Article3Page = () => {
           "publisher": {
             "@type": "Organization",
             "name": "Ingatlan-Térkép",
-            "logo": { "@type": "ImageObject", "url": "https://www.ingatlan-terkep.hu/logo.png" }
+            "logo": { "@type": "ImageObject", "url": "https://ingatlan-terkep.hu/logo.png" }
           },
           "datePublished": "2026-01-06",
           "dateModified": "2026-01-06",
           "image": "https://ingatlan-terkep.hu/otthon-start-program-hatas-budapest-videk-lakas-haz-2026.png",
           "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": "https://www.ingatlan-terkep.hu/blog/otthon-start-program-hatasai-magyar-ingatlanpiac-2026"
+            "@id": "https://ingatlan-terkep.hu/blog/otthon-start-program-hatasai-magyar-ingatlanpiac-2026"
           }
         })}
       </script>

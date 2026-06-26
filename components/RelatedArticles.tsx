@@ -47,7 +47,7 @@ const RelatedArticles = () => {
             "@context": "https://schema.org",
             "@type": "Blog",
             "name": "Ingatlan-Térkép Blog – Ingatlanpiaci hírek és elemzések",
-            "url": "https://www.ingatlan-terkep.hu/blog",
+            "url": "https://ingatlan-terkep.hu/blog",
             "description": "Friss ingatlanpiaci trendek, árindexek, Otthon Start hatásai, közbiztonság réteg és kreditrendszer hírek.",
             "blogPost": allArticles.map((art) => {
               const dateParts = art.date.match(/(\d{4})\.\s*(\w+)\s*(\d{1,2})\./);
@@ -68,12 +68,12 @@ const RelatedArticles = () => {
               return {
                 "@type": "BlogPosting",
                 "headline": art.title,
-                "url": `https://www.ingatlan-terkep.hu/blog/${art.slug}`,
+                "url": `https://ingatlan-terkep.hu/blog/${art.slug}`,
                 "datePublished": isoDate,
                 "author": {
                   "@type": "Person",
                   "name": art.author,
-                  "url": "https://www.ingatlan-terkep.hu/about"
+                  "url": "https://ingatlan-terkep.hu/about"
                 },
                 "image": art.image,
                 "description": art.excerpt

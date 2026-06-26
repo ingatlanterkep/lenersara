@@ -31,14 +31,14 @@ const Article5Page = () => {
           "publisher": {
             "@type": "Organization",
             "name": "Ingatlan-Térkép",
-            "logo": { "@type": "ImageObject", "url": "https://www.ingatlan-terkep.hu/logo.png" }
+            "logo": { "@type": "ImageObject", "url": "https://ingatlan-terkep.hu/logo.png" }
           },
           "datePublished": "2026-02-23",
           "dateModified": "2026-02-24",
           "image": "https://ingatlan-terkep.hu/kiemeles.png",
           "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": "https://www.ingatlan-terkep.hu/blog/kreditrendszer-tajekoztato"
+            "@id": "https://ingatlan-terkep.hu/blog/kreditrendszer-tajekoztato"
           }
         })}
       </script>

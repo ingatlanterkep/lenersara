@@ -21,17 +21,17 @@ const Article7Page = () => {
           "publisher": {
             "@type": "Organization",
             "name": "Ingatlan-Térkép",
-            "logo": { "@type": "ImageObject", "url": "https://www.ingatlan-terkep.hu/logo.png" }
+            "logo": { "@type": "ImageObject", "url": "https://ingatlan-terkep.hu/logo.png" }
           },
           "datePublished": "2026-03-07",
           "dateModified": "2026-03-07",
           "image": [
-            "https://www.ingatlan-terkep.hu/kozbiztonsag-hoterkep-pelda.png",
-            "https://www.ingatlan-terkep.hu/kozbiztonsag-reteg-bekapcsolas.png"
+            "https://ingatlan-terkep.hu/kozbiztonsag-hoterkep-pelda.png",
+            "https://ingatlan-terkep.hu/kozbiztonsag-reteg-bekapcsolas.png"
           ],
           "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": "https://www.ingatlan-terkep.hu/blog/kozbiztonsag-reteg-ujdonsag"
+            "@id": "https://ingatlan-terkep.hu/blog/kozbiztonsag-reteg-ujdonsag"
           }
         })}
       </script>
@@ -72,7 +72,7 @@ const Article7Page = () => {
 
             <figure className="article-figure">
               <img 
-                src="https://www.ingatlan-terkep.hu/kozbiztonsag-hoterkep-pelda.png" 
+                src="https://ingatlan-terkep.hu/kozbiztonsag-hoterkep-pelda.png" 
                 alt="Közbiztonság hőtérkép példa – zöld = biztonságos, piros = magasabb kockázat" 
                 loading="lazy"
               />
@@ -104,7 +104,7 @@ const Article7Page = () => {
 
             <figure className="article-figure">
               <img 
-                src="https://www.ingatlan-terkep.hu/kozbiztonsag-reteg-bekapcsolas.png" 
+                src="https://ingatlan-terkep.hu/kozbiztonsag-reteg-bekapcsolas.png" 
                 alt="Közbiztonság réteg bekapcsoló panel az Ingatlan-Térképen" 
                 loading="lazy"
               />

@@ -23,7 +23,7 @@ export const allArticles = [
     excerpt: 'Megjelent az AI elemzés funkció! Mostantól bármely hirdetésnél egy kattintással megkérdezheted a mesterséges intelligenciát az ingatlan árazásáról, befektetési potenciáljáról és rejtett előnyeiről.',
     date: '2026. március 28.',
     author: 'Morán Raul',
-    image: 'https://www.ingatlan-terkep.hu/ai-elemzes-pelda.webp',
+    image: 'https://ingatlan-terkep.hu/ai-elemzes-pelda.webp',
   },
   {
     slug: 'ingatlan-terkep-index-2026-februar',
@@ -39,7 +39,7 @@ export const allArticles = [
     excerpt: 'Mostantól hőtérképen láthatod a környék közbiztonsági helyzetét 2024-es rendőrségi adatok alapján. Segít tudatosabb otthonválasztásban – próbáld ki az új réteget!',
     date: '2026. március 1.',
     author: 'Morán Raul',
-    image: 'https://www.ingatlan-terkep.hu/kozbiztonsag-hoterkep-pelda.png',
+    image: 'https://ingatlan-terkep.hu/kozbiztonsag-hoterkep-pelda.png',
   },
   {
     slug: 'kreditrendszer-tajekoztato',
@@ -117,7 +117,7 @@ export const blogSchemaData = {
     "author": {
       "@type": "Person",
       "name": art.author,
-      "url": "https://www.ingatlan-terkep.hu/about"
+      "url": "https://ingatlan-terkep.hu/about"
     },
     "image": art.image,
     "description": art.excerpt

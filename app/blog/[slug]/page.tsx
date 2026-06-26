@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       openGraph: {
         title: 'Ingatlan-Térkép Index 2026. április: Kerületi és vármegyei négyzetméterárak és ártrendek',
         description: 'Havi ingatlanpiaci index 2026 április: medián négyzetméterárak Budapest kerületeiben és a magyarországi vármegyékben, valamint márciusi–áprilisi változások. Adatalapú hőtérképes elemzés.',
-        images: ['https://www.ingatlan-terkep.hu/ingatlan-terkep-index-2026-aprilis-budapest-keruletek-nmar-hoterkep.png'],
+        images: ['https://ingatlan-terkep.hu/ingatlan-terkep-index-2026-aprilis-budapest-keruletek-nmar-hoterkep.png'],
         type: 'article',
       },
     },
@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       openGraph: {
         title: 'Ingatlan-Térkép Index 2026. március: Kerületi és vármegyei négyzetméterárak és ártrendek',
         description: 'Havi ingatlanpiaci index 2026 március: medián négyzetméterárak Budapest kerületeiben és a magyarországi vármegyékben, valamint februári–márciusi változások. Adatalapú hőtérképes elemzés.',
-        images: ['https://www.ingatlan-terkep.hu/ingatlan-terkep-index-2026-marcius-budapest-keruletek-nmar-hoterkep.png'],
+        images: ['https://ingatlan-terkep.hu/ingatlan-terkep-index-2026-marcius-budapest-keruletek-nmar-hoterkep.png'],
         type: 'article',
       },
     },
@@ -55,7 +55,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       openGraph: {
         title: 'ÚJ FUNKCIÓ: AI Elemzés az Ingatlan-Térképen – Kérdezd meg a MI-t!',
         description: 'Mostantól minden hirdetésnél elérhető az AI elemzés. Egy pillanat alatt megtudhatod, alul- vagy túl van-e árazva az ingatlan, kinek éri meg, megéri-e befektetni és milyen rejtett előnyökkel/hátrányokkal bír.',
-        images: ['https://www.ingatlan-terkep.hu/ai-elemzes-pelda.webp'],
+        images: ['https://ingatlan-terkep.hu/ai-elemzes-pelda.webp'],
         type: 'article',
       },
     },
@@ -66,7 +66,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       openGraph: {
         title: 'ÚJ FUNKCIÓ: Közbiztonság réteg az Ingatlan-Térképen – 2024-es adatok alapján',
         description: 'Mostantól a térképen láthatod a környék közbiztonsági helyzetét hőtérképes overlay-jel. Segít tudatosabb otthonválasztásban – próbáld ki most!',
-        images: ['https://www.ingatlan-terkep.hu/kozbiztonsag-hoterkep-pelda.png'],
+        images: ['https://ingatlan-terkep.hu/kozbiztonsag-hoterkep-pelda.png'],
         type: 'article',
       },
     },
@@ -77,7 +77,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       openGraph: {
         title: 'Ingatlan-Térkép Index 2026. február: Kerületi és vármegyei négyzetméterárak és ártrendek',
         description: 'Havi ingatlanpiaci index 2026 február: medián négyzetméterárak Budapest kerületeiben és a magyarországi vármegyékben, valamint januári–februári változások. Adatalapú hőtérképes elemzés.',
-        images: ['https://www.ingatlan-terkep.hu/ingatlan-terkep-index-2026-februar-budapest-keruletek-nmar-hoterkep.png'],
+        images: ['https://ingatlan-terkep.hu/ingatlan-terkep-index-2026-februar-budapest-keruletek-nmar-hoterkep.png'],
         type: 'article',
       },
     },
@@ -99,7 +99,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       openGraph: {
         title: 'Ingatlan-Térkép Index 2026. január: Kerületi és vármegyei négyzetméterárak és ártrendek',
         description: 'Havi ingatlanpiaci index: medián négyzetméterárak Budapest kerületeiben és a magyarországi vármegyékben, valamint a januári eleje-vége változások. Adatalapú hőtérképes elemzés.',
-        images: ['https://www.ingatlan-terkep.hu/ingatlan-terkep-index-2026-januar-budapest-keruletek-nmar-hoterkep.png'],
+        images: ['https://ingatlan-terkep.hu/ingatlan-terkep-index-2026-januar-budapest-keruletek-nmar-hoterkep.png'],
         type: 'article',
       },
     },
@@ -121,7 +121,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       openGraph: {
         title: 'Ingatlan-Térkép Index 2025. december: Kerületi és vármegyei négyzetméterárak és ártrendek',
         description: 'Havi ingatlanpiaci index: medián négyzetméterárak Budapest kerületeiben és a magyarországi vármegyékben, valamint a szeptember-decemberi változások. Adatalapú hőtérképes elemzés.',
-        images: ['https://www.ingatlan-terkep.hu/ingatlan-terkep-index-2025-december-budapest-keruletek-nmar-hoterkep.png'],
+        images: ['https://ingatlan-terkep.hu/ingatlan-terkep-index-2025-december-budapest-keruletek-nmar-hoterkep.png'],
         type: 'article',
       },
     },
@@ -132,7 +132,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       openGraph: {
         title: 'Otthon Start program hatása az ingatlanpiacra 2025: Kompozíciós hatások és árváltozások',
         description: 'Részletes elemzés az Otthon Start program első hónapjainak hatásairól Budapesten és vidéken.',
-        images: ['https://www.ingatlan-terkep.hu/regios-kulcsmutatok-median-ar-negyzetmeterar-kompozicios-hatas-videk-budapest-otthon-start-2025.png'],
+        images: ['https://ingatlan-terkep.hu/regios-kulcsmutatok-median-ar-negyzetmeterar-kompozicios-hatas-videk-budapest-otthon-start-2025.png'],
         type: 'article',
       },
     },
@@ -149,14 +149,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     description: metadata.description,
     keywords: metadata.keywords,
     alternates: {
-      canonical: `https://www.ingatlan-terkep.hu/blog/${slug}`,
+      canonical: `https://ingatlan-terkep.hu/blog/${slug}`,
     },
     openGraph: {
       title: metadata.openGraph.title,
       description: metadata.openGraph.description,
       images: metadata.openGraph.images,
       type: metadata.openGraph.type,
-      url: `https://www.ingatlan-terkep.hu/blog/${slug}`,
+      url: `https://ingatlan-terkep.hu/blog/${slug}`,
     },
     robots: {
       index: true,

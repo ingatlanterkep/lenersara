@@ -21,16 +21,16 @@ const Article8Page = () => {
           "publisher": {
             "@type": "Organization",
             "name": "Ingatlan-Térkép",
-            "logo": { "@type": "ImageObject", "url": "https://www.ingatlan-terkep.hu/logo.png" }
+            "logo": { "@type": "ImageObject", "url": "https://ingatlan-terkep.hu/logo.png" }
           },
           "datePublished": "2026-03-28",
           "dateModified": "2026-03-28",
           "image": [
-            "https://www.ingatlan-terkep.hu/ai-elemzes-pelda.webp",
+            "https://ingatlan-terkep.hu/ai-elemzes-pelda.webp",
           ],
           "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": "https://www.ingatlan-terkep.hu/blog/ai-elemzes-ujdonsag"
+            "@id": "https://ingatlan-terkep.hu/blog/ai-elemzes-ujdonsag"
           }
         })}
       </script>
@@ -66,7 +66,7 @@ const Article8Page = () => {
             <figure className="article-figure">
 <img 
   className="article-image"
-  src="https://www.ingatlan-terkep.hu/ai-elemzes-pelda.webp" 
+  src="https://ingatlan-terkep.hu/ai-elemzes-pelda.webp" 
   alt="AI elemzés példa az Ingatlan-Térképen" 
   loading="lazy"
 />

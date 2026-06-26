@@ -21,17 +21,17 @@ const Article2Page = () => {
           "publisher": {
             "@type": "Organization",
             "name": "Ingatlan-Térkép",
-            "logo": { "@type": "ImageObject", "url": "https://www.ingatlan-terkep.hu/logo.png" }
+            "logo": { "@type": "ImageObject", "url": "https://ingatlan-terkep.hu/logo.png" }
           },
           "datePublished": "2025-12-29",
           "dateModified": "2025-12-29",
           "image": [
-            "https://www.ingatlan-terkep.hu/ingatlan-terkep-index-2025-december-budapest-keruletek-nmar-hoterkep.png",
-            "https://www.ingatlan-terkep.hu/ingatlan-terkep-index-2025-december-varmegyei-nmar-hoterkep.png"
+            "https://ingatlan-terkep.hu/ingatlan-terkep-index-2025-december-budapest-keruletek-nmar-hoterkep.png",
+            "https://ingatlan-terkep.hu/ingatlan-terkep-index-2025-december-varmegyei-nmar-hoterkep.png"
           ],
           "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": "https://www.ingatlan-terkep.hu/blog/ingatlan-terkep-index-2025-december"
+            "@id": "https://ingatlan-terkep.hu/blog/ingatlan-terkep-index-2025-december"
           }
         })}
       </script>
