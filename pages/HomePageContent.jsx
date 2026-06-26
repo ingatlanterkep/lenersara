@@ -347,7 +347,7 @@ const loadListData = useCallback(async (page = 1, append = false) => {
   } finally {
     setListLoading(false);
   }
-}, [listLoading, listHasMore, createFilters]);
+}, [listLoading, listHasMore, createFilters]); // 🔥 Függőségek
 
   // Aktív rétegek számlálása
   useEffect(() => {
@@ -459,52 +459,49 @@ const loadListData = useCallback(async (page = 1, append = false) => {
     }
   }, [pathname]);
 
-  // 🔥 LISTA BETÖLTÉS - AMIKOR VIEWMODE VÁLTOZIK
-  useEffect(() => {
-    if (viewMode === 'list') {
-      loadListData(1, false);
-    }
-  }, [viewMode]);
 
-  useEffect(() => {
-    if (viewMode === 'list') {
-      loadListData(1, false);
+useEffect(() => {
+  // Csak akkor fusson, ha list nézetben vagyunk
+  if (viewMode !== 'list') return;
+  
+  // Töltsük be az adatokat
+  loadListData(1, false);
+  
+  // Cleanup: megszakítjuk a függőben lévő kéréseket
+  return () => {
+    if (listAbortControllerRef.current) {
+      try {
+        listAbortControllerRef.current.abort();
+      } catch (e) {}
     }
-    
-    return () => {
-      if (listAbortControllerRef.current) {
-        try {
-          listAbortControllerRef.current.abort();
-        } catch (e) {}
-      }
-    };
-  }, [
-    viewMode,
-    listingType,
-    selectedLocations,
-    minPrice,
-    maxPrice,
-    areaMin,
-    areaMax,
-    type,
-    minRooms,
-    maxRooms,
-    onlyWithImages,
-    totalFloorsMin,
-    totalFloorsMax,
-    yearBuiltMin,
-    yearBuiltMax,
-    condition,
-    heatingType,
-    energyClass,
-    parking,
-    landAreaMin,
-    landAreaMax,
-    accuracy,
-    createFilters,
-    loadListData
-  ]);
-
+  };
+  
+  // 🔥 FIGYELJ: itt NEM szerepel a loadListData!
+}, [
+  viewMode,
+  listingType,
+  selectedLocations,
+  minPrice,
+  maxPrice,
+  areaMin,
+  areaMax,
+  type,
+  minRooms,
+  maxRooms,
+  onlyWithImages,
+  totalFloorsMin,
+  totalFloorsMax,
+  yearBuiltMin,
+  yearBuiltMax,
+  condition,
+  heatingType,
+  energyClass,
+  parking,
+  landAreaMin,
+  landAreaMax,
+  accuracy,
+  // createFilters-t sem kell ide tenni, mert a loadListData már használja
+]);
   const handleQueueToFacebook = async () => {
     if (!selectedQuestionType) return;
     setIsQueuing(true);
