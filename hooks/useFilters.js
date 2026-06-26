@@ -54,8 +54,7 @@ const countyNameMap = {
   'jasz-nagykun-szolnok-varmegye': 'Jász-Nagykun-Szolnok',
 };
 
-const useFilters = (cookiesAccepted = false) => {
-  // Állapotok
+const useFilters = (cookiesAccepted = false, enableMapData = true) => {  // Állapotok
   
   const [listingType, setListingType] = useState('eladó');
   const [selectedLocations, setSelectedLocations] = useState([]);
@@ -658,7 +657,17 @@ const hasAnyFilter = useCallback(() => {
 
 
 
+  // 🔥 CSAK akkor töltsük be a térkép adatokat, ha enableMapData true
   useEffect(() => {
+    // Ha nincs engedélyezve a térkép adat, ne töltsünk semmit
+    if (!enableMapData) {
+      setPosts([]);
+      pendingPostsRef.current = [];
+      setShouldLogMarkers(false);
+      cacheRef.current.clear();
+      return;
+    }
+    
     const filters = createFilters();
     logFilterApplied();
 
@@ -680,6 +689,7 @@ const hasAnyFilter = useCallback(() => {
       }
     };
   }, [
+    enableMapData,  // 🔥 ÚJ függőség
     listingType,
     selectedLocations,
     minPrice,
@@ -715,7 +725,6 @@ const hasAnyFilter = useCallback(() => {
     logFilterApplied,
     debouncedFetchPosts,
   ]);
-
   return {
     listingType,
     setListingType,

@@ -123,6 +123,11 @@ export default function HomePageContent({
   
   const isInitialized = useRef(false);
   
+  // 🔥 ÚJ: egy ref a térkép adatok betöltésének vezérlésére
+  const shouldLoadMapDataRef = useRef(viewModeDefault === 'map');
+
+
+  
   const navigate = useCallback((url, options) => {
     if (options?.replace) {
       router.replace(url);
@@ -190,6 +195,14 @@ export default function HomePageContent({
   const [isMobileLayerOpen, setIsMobileLayerOpen] = useState(false);
   const [activeLayerCount, setActiveLayerCount] = useState(0);
   const listAbortControllerRef = useRef(null);
+  
+  // 🔥 HIÁNYZÓ REF-EK
+  const listLoadingRef = useRef(false);
+  const listHasMoreRef = useRef(true);
+  const isListDataLoadedRef = useRef(false);
+
+   // 🔥 Csak akkor engedélyezzük a térkép adatokat, ha map nézetben vagyunk
+  const enableMapData = viewMode === 'map';
 
   useEffect(() => {
     setShowMap(true);
@@ -219,8 +232,8 @@ export default function HomePageContent({
     isFiltering, shouldLogMarkers, hasSpecificFilters, createFilters,
     isNewBuildFilter, setIsNewBuildFilter,
     comfortLevel, setComfortLevel,
-  } = useFilters(cookiesAccepted);
-
+  } = useFilters(cookiesAccepted, enableMapData);  // ← Átadjuk a flag-et
+  
   const generateSlug = (title) => {
     if (!title) return 'unknown';
     return title
@@ -251,6 +264,22 @@ export default function HomePageContent({
     
     return { scope: 'city', value: cityName, locationKey: `city:${cityName}` };
   };
+
+   
+  
+  // 🔥 Frissítsük a ref-et, amikor a viewMode változik
+  useEffect(() => {
+    shouldLoadMapDataRef.current = viewMode === 'map';
+  }, [viewMode]);
+  
+  
+  // 🔥 FIGYELJÜK A VIEWMODE-OT ÉS TÖRÖLJÜK A TÉRKÉP ADATOKAT LIST NÉZETBEN
+  useEffect(() => {
+    if (viewMode === 'list' && posts.length > 0) {
+      console.log('[HomePageContent] List nézet, térkép adatok törlése');
+      setPosts([]);
+    }
+  }, [viewMode, posts.length, setPosts]);
 
   const getFullImageUrl = (imagePath) => {
     if (!imagePath || typeof imagePath !== 'string') return '/placeholder.jpg';
@@ -291,63 +320,187 @@ export default function HomePageContent({
     }
   };
 
-// HomePageContent.tsx - loadListData javítva
-
-const loadListData = useCallback(async (page = 1, append = false) => {
-  // Ha már tölt és nem append, ne induljon újra
-  if (listLoading && !append) return;
-  
-  // Ha nincs több találat, ne próbálkozzunk
-  if (!listHasMore && append) return;
-
-  if (listAbortControllerRef.current) {
-    try {
-      listAbortControllerRef.current.abort();
-    } catch (e) {}
-  }
-
-  listAbortControllerRef.current = new AbortController();
-  const { signal } = listAbortControllerRef.current;
-
-  setListLoading(true);
-  
-  try {
-    const filters = createFilters();
-    
-    console.log('[ListPage] Szűrők:', filters);
-    
-    const hasFilters = Object.keys(filters).length > 0;
-    if (!hasFilters && !append) {
-      setListPosts([]);
-      setListTotal(0);
-      setListHasMore(false);
-      setListLoading(false);
+  // 🔥 JAVÍTOTT loadListData - CSAK a listának
+  const loadListData = useCallback(async (page = 1, append = false) => {
+    // Ha már tölt és nem append, ne induljon újra
+    if (listLoadingRef.current && !append) {
+      console.log('[loadListData] Már folyamatban van egy betöltés, skip');
       return;
     }
     
-    const response = await getFilteredPostsList(filters, page, 30, { signal });
+    // Ha nincs több találat, ne próbálkozzunk
+    if (!listHasMoreRef.current && append) {
+      console.log('[loadListData] Nincs több találat, skip');
+      return;
+    }
+
+    // Ha már betöltöttük az első oldalt és nem append, skip
+    if (!append && isListDataLoadedRef.current) {
+      console.log('[loadListData] Már betöltve, skip');
+      return;
+    }
+
+    if (listAbortControllerRef.current) {
+      try {
+        listAbortControllerRef.current.abort();
+      } catch (e) {}
+    }
+
+    listAbortControllerRef.current = new AbortController();
+    const { signal } = listAbortControllerRef.current;
+
+    setListLoading(true);
+    listLoadingRef.current = true;
     
-    if (response.success) {
-      if (append) {
-        setListPosts(prev => [...prev, ...response.data]);
-      } else {
-        setListPosts(response.data);
+    try {
+      const filters = createFilters();
+      
+      console.log('[loadListData] Szűrők:', filters, 'Page:', page, 'Append:', append);
+      
+      const hasFilters = Object.keys(filters).length > 0;
+      if (!hasFilters && !append) {
+        setListPosts([]);
+        setListTotal(0);
+        setListHasMore(false);
+        listHasMoreRef.current = false;
+        setListLoading(false);
+        listLoadingRef.current = false;
+        isListDataLoadedRef.current = true;
+        return;
       }
-      setListTotal(response.total);
-      const hasMore = page < response.pages;
-      setListHasMore(hasMore);
-      setListPage(page);
-    } else {
-      setListHasMore(false);
+      
+      const response = await getFilteredPostsList(filters, page, 30, { signal });
+      
+      console.log('[loadListData] Válasz:', response.success, 'Találatok:', response.data?.length);
+      
+      if (response.success) {
+        if (append) {
+          setListPosts(prev => [...prev, ...response.data]);
+        } else {
+          setListPosts(response.data);
+        }
+        setListTotal(response.total);
+        const hasMore = page < response.pages;
+        setListHasMore(hasMore);
+        listHasMoreRef.current = hasMore;
+        setListPage(page);
+        if (!append) {
+          isListDataLoadedRef.current = true;
+        }
+      } else {
+        setListHasMore(false);
+        listHasMoreRef.current = false;
+      }
+    } catch (error) {
+      if (error.name !== 'AbortError' && error.code !== 'ERR_CANCELED') {
+        console.error('[loadListData] Hiba:', error);
+      }
+    } finally {
+      setListLoading(false);
+      listLoadingRef.current = false;
     }
-  } catch (error) {
-    if (error.name !== 'AbortError' && error.code !== 'ERR_CANCELED') {
-      console.error('Hiba a listás adatok betöltésekor:', error);
+  }, [createFilters]);
+
+  // 🔥 Csak a lista adatok betöltése - NEM a térképé!
+  useEffect(() => {
+    // Csak akkor fusson, ha list nézetben vagyunk
+    if (viewMode !== 'list') {
+      isListDataLoadedRef.current = false;
+      return;
     }
-  } finally {
-    setListLoading(false);
-  }
-}, [listLoading, listHasMore, createFilters]); // 🔥 Függőségek
+    
+    if (!isListDataLoadedRef.current) {
+      console.log('[useEffect] Lista betöltés indítása');
+      loadListData(1, false);
+    }
+    
+    return () => {
+      if (listAbortControllerRef.current) {
+        try {
+          listAbortControllerRef.current.abort();
+        } catch (e) {}
+      }
+    };
+  }, [
+    viewMode,
+    listingType,
+    selectedLocations,
+    minPrice,
+    maxPrice,
+    areaMin,
+    areaMax,
+    type,
+    minRooms,
+    maxRooms,
+    onlyWithImages,
+    totalFloorsMin,
+    totalFloorsMax,
+    yearBuiltMin,
+    yearBuiltMax,
+    condition,
+    heatingType,
+    energyClass,
+    parking,
+    landAreaMin,
+    landAreaMax,
+    accuracy,
+  ]);
+
+  // 🔥 Reseteljük a loaded flag-et, ha a szűrők változnak
+  useEffect(() => {
+    if (viewMode === 'list') {
+      isListDataLoadedRef.current = false;
+    }
+  }, [
+    listingType,
+    selectedLocations,
+    minPrice,
+    maxPrice,
+    areaMin,
+    areaMax,
+    type,
+    minRooms,
+    maxRooms,
+    onlyWithImages,
+    totalFloorsMin,
+    totalFloorsMax,
+    yearBuiltMin,
+    yearBuiltMax,
+    condition,
+    heatingType,
+    energyClass,
+    parking,
+    landAreaMin,
+    landAreaMax,
+    accuracy,
+  ]);
+
+  // 🔥 Frissítsük a ref-eket
+  useEffect(() => {
+    listLoadingRef.current = listLoading;
+  }, [listLoading]);
+
+  useEffect(() => {
+    listHasMoreRef.current = listHasMore;
+  }, [listHasMore]);
+
+  // 🔥 CSAK akkor töltsük be a térkép adatokat, ha map nézetben vagyunk
+  // Ez a useFilters hook-ból jön, de itt kontrolláljuk
+  useEffect(() => {
+    // Ha list nézetben vagyunk, ne töltsük be a térkép adatokat
+    if (viewMode === 'list') {
+      // Optional: clear map posts to free memory
+      if (posts.length > 0) {
+        setPosts([]);
+      }
+      return;
+    }
+    
+    // Map nézetben töltsük be a térkép adatokat
+    // A useFilters hook már tartalmazza a betöltést, de itt is ellenőrizzük
+    console.log('[Map] Térkép nézet aktív, adatok betöltése');
+    
+  }, [viewMode, listingType, selectedLocations, minPrice, maxPrice, areaMin, areaMax, type]);
 
   // Aktív rétegek számlálása
   useEffect(() => {
@@ -362,6 +515,7 @@ const loadListData = useCallback(async (page = 1, append = false) => {
 
   const handleListButton = () => {
     setViewMode('list');
+    isListDataLoadedRef.current = false;
     const isCurrentlyList = window.location.pathname.endsWith('/lista');
     let newPath = window.location.pathname;
     if (isCurrentlyList) {
@@ -459,49 +613,6 @@ const loadListData = useCallback(async (page = 1, append = false) => {
     }
   }, [pathname]);
 
-
-useEffect(() => {
-  // Csak akkor fusson, ha list nézetben vagyunk
-  if (viewMode !== 'list') return;
-  
-  // Töltsük be az adatokat
-  loadListData(1, false);
-  
-  // Cleanup: megszakítjuk a függőben lévő kéréseket
-  return () => {
-    if (listAbortControllerRef.current) {
-      try {
-        listAbortControllerRef.current.abort();
-      } catch (e) {}
-    }
-  };
-  
-  // 🔥 FIGYELJ: itt NEM szerepel a loadListData!
-}, [
-  viewMode,
-  listingType,
-  selectedLocations,
-  minPrice,
-  maxPrice,
-  areaMin,
-  areaMax,
-  type,
-  minRooms,
-  maxRooms,
-  onlyWithImages,
-  totalFloorsMin,
-  totalFloorsMax,
-  yearBuiltMin,
-  yearBuiltMax,
-  condition,
-  heatingType,
-  energyClass,
-  parking,
-  landAreaMin,
-  landAreaMax,
-  accuracy,
-  // createFilters-t sem kell ide tenni, mert a loadListData már használja
-]);
   const handleQueueToFacebook = async () => {
     if (!selectedQuestionType) return;
     setIsQueuing(true);
@@ -718,7 +829,13 @@ useEffect(() => {
     return () => document.body.classList.remove('has-selected-post');
   }, [isMobile, selectedPost]);
   
-  const memoizedPosts = useMemo(() => posts, [posts.map(p => p._id).join(',')]);
+  // 🔥 Csak map nézetben legyenek a posts-ok
+  const mapPosts = useMemo(() => {
+    if (viewMode === 'map') {
+      return posts;
+    }
+    return [];
+  }, [posts, viewMode]);
   
   const handleBackToMap = useCallback(() => {
     const basePath = pathname?.replace(/\/lista$/, '');
@@ -787,7 +904,7 @@ useEffect(() => {
           isFilterOpen={false}
         />
 
-        {/* Térkép - CSAK MAP NÉZETBEN */}
+        {/* 🔥 Térkép - CSAK MAP NÉZETBEN */}
         {viewMode === 'map' && (
           <div className="map-wrapper mobile-map-wrapper">
             <MapComponentDynamic
@@ -795,7 +912,7 @@ useEffect(() => {
               isStreetViewMode={isStreetViewMode}
               setIsStreetViewMode={setIsStreetViewMode}
               ref={mapRef}
-              posts={memoizedPosts}
+              posts={mapPosts}
               listingType={listingType}
               fetchPostDetails={fetchPostDetails}
               getFullImageUrl={getFullImageUrl}
@@ -842,34 +959,34 @@ useEffect(() => {
           </div>
         )}
 
-    {/* Lista nézet - CSAK LIST NÉZETBEN */}
-      {viewMode === 'list' && (
-        <div className="mobile-list-wrapper">
-          <div className="list-container-white">
-            <div className="list-container-inner">
-              <div className="list-header">
-                <h2>{listTotal} találat</h2>
-                <button 
-                  onClick={() => {
-                    setViewMode('map');
-                    const currentPath = window.location.pathname;
-                    const mapPath = currentPath.replace(/\/lista$/, '') || '/';
-                    navigate(mapPath);
-                  }} 
-                  className="back-to-map-btn"
-                >
-                  ← Vissza a térképre
-                </button>
-              </div>
-              {listLoading && listPosts.length === 0 ? (
-                <div className="loading-spinner">Betöltés...</div>
-              ) : listPosts.length === 0 ? (
-                <div className="no-results">Nincs találat a keresési feltételeknek</div>
-              ) : (
-                <>
-                  <div className="similar-posts-grid">
-                    {listPosts.map((post) => (
-  <PropertyCard
+        {/* 🔥 Lista nézet - CSAK LIST NÉZETBEN */}
+        {viewMode === 'list' && (
+          <div className="mobile-list-wrapper">
+            <div className="list-container-white">
+              <div className="list-container-inner">
+                <div className="list-header">
+                  <h2>{listTotal} találat</h2>
+                  <button 
+                    onClick={() => {
+                      setViewMode('map');
+                      const currentPath = window.location.pathname;
+                      const mapPath = currentPath.replace(/\/lista$/, '') || '/';
+                      navigate(mapPath);
+                    }} 
+                    className="back-to-map-btn"
+                  >
+                    ← Vissza a térképre
+                  </button>
+                </div>
+                {listLoading && listPosts.length === 0 ? (
+                  <div className="loading-spinner">Betöltés...</div>
+                ) : listPosts.length === 0 ? (
+                  <div className="no-results">Nincs találat a keresési feltételeknek</div>
+                ) : (
+                  <>
+                    <div className="similar-posts-grid">
+                      {listPosts.map((post) => (
+                        <PropertyCard
                           key={post._id}
                           post={post}
                           listingType={listingType}
@@ -889,36 +1006,34 @@ useEffect(() => {
                             }
                           }}
                         />
-                    ))}
-                  </div>
-                  {listHasMore && (
-                    <div className="load-more-container">
-                      <button 
-                        onClick={() => {
-                          if (!listLoading && listHasMore) {
-                            loadListData(listPage + 1, true);
-                          }
-                        }} 
-                        disabled={listLoading || !listHasMore} 
-                        className="load-more-btn"
-                      >
-                        {listLoading ? 'Betöltés...' : 'Továbbiak betöltése'}
-                      </button>
+                      ))}
                     </div>
-                  )}
-                </>
-              )}
+                    {listHasMore && (
+                      <div className="load-more-container">
+                        <button 
+                          onClick={() => {
+                            if (!listLoading && listHasMore) {
+                              loadListData(listPage + 1, true);
+                            }
+                          }} 
+                          disabled={listLoading || !listHasMore} 
+                          className="load-more-btn"
+                        >
+                          {listLoading ? 'Betöltés...' : 'Továbbiak betöltése'}
+                        </button>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
             </div>
+            {!hideFooter && (
+              <div style={{ marginTop: '20px', padding: '0 10px 20px' }}>
+                <HomePageSEO seoQuickPosts={serverSeoQuickPosts} />
+              </div>
+            )}
           </div>
-                        {/* 🔥 SEO szekció - mobilon is */}
-      {!hideFooter && (
-        <div style={{ marginTop: '20px', padding: '0 10px 20px' }}>
-          <HomePageSEO seoQuickPosts={serverSeoQuickPosts} />
-        </div>
-      )}
-        </div>
-        
-      )}
+        )}
 
         {/* MOBIL ALSÓ SÁV - 3 GOMB */}
         <div className="mobile-bottom-bar">
@@ -1120,7 +1235,6 @@ useEffect(() => {
           onLocationChange={setSelectedLocations}
           onApply={setSelectedLocations}
         />
-
       </>
     );
   }
@@ -1199,14 +1313,15 @@ useEffect(() => {
       )}
       
       <div className={`content-area ${selectedPost ? 'has-sidebar' : ''}`}>
-        {viewMode === 'map' && showMap ? (
+        {/* 🔥 TÉRKÉP - CSAK MAP NÉZETBEN */}
+        {viewMode === 'map' && showMap && (
           <div className={`map-wrapper ${selectedPost ? 'has-active-marker' : ''}`}>
             <MapComponentDynamic
               key="map-component-static-key"
               isStreetViewMode={isStreetViewMode}
               setIsStreetViewMode={setIsStreetViewMode}
               ref={mapRef}
-              posts={memoizedPosts}
+              posts={mapPosts}
               listingType={listingType}
               fetchPostDetails={fetchPostDetails}
               getFullImageUrl={getFullImageUrl}
@@ -1251,7 +1366,10 @@ useEffect(() => {
             />
             <FacebookFollowLabel />
           </div>
-        ) : (
+        )}
+
+        {/* 🔥 LISTA - CSAK LIST NÉZETBEN */}
+        {viewMode === 'list' && (
           <div className="list-view-wrapper" style={{ marginLeft: showFilterSidebar ? `${sidebarWidth}px` : '0' }}>
             <div className="list-container-white">
               <div className="list-container-inner">
