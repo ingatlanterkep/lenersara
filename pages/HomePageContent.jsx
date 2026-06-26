@@ -233,7 +233,7 @@ export default function HomePageContent({
     isNewBuildFilter, setIsNewBuildFilter,
     comfortLevel, setComfortLevel,
   } = useFilters(cookiesAccepted, enableMapData);  // ← Átadjuk a flag-et
-  
+
   const generateSlug = (title) => {
     if (!title) return 'unknown';
     return title
@@ -1081,152 +1081,103 @@ export default function HomePageContent({
           </button>
         </div>
 
-        {/* MOBIL RÉTEGPANEL OVERLAY */}
-        {isMobileLayerOpen && (
-          <>
-            <div 
-              className="mobile-layer-overlay"
-              onClick={() => setIsMobileLayerOpen(false)}
-            />
-            <div className="mobile-layer-panel">
-              <div className="mobile-layer-header">
-                <h3>Rétegek</h3>
-                <button 
-                  className="mobile-layer-close"
-                  onClick={() => setIsMobileLayerOpen(false)}
-                >
-                  ✕
-                </button>
-              </div>
-              <div className="mobile-layer-grid">
-                <div className="street-view-section">
-                  <label 
-                    className={`street-view-label ${isStreetViewMode ? 'active' : ''}`}
-                    onClick={() => {
-                      setIsStreetViewMode(!isStreetViewMode);
-                    }}
-                  >
-                    <span className="layer-icon">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <circle cx="12" cy="12" r="3" />
-                        <path d="M19 9l-4 4-4-4-4 4-4-4" />
-                        <path d="M5 15l4-4 4 4 4-4 4 4" />
-                        <path d="M12 3v3" />
-                        <path d="M12 18v3" />
-                        <path d="M3 12h3" />
-                        <path d="M18 12h3" />
-                      </svg>
-                    </span>
-                    <span className="layer-name">Street View</span>
-                  </label>
-                </div>
+{isMobileLayerOpen && (
+  <>
+    <div 
+      className="mobile-layer-overlay"
+      onClick={() => setIsMobileLayerOpen(false)}
+    />
+    <div className="mobile-layer-panel">
+      <div className="mobile-layer-header">
+        <h3>Rétegek</h3>
+        <button 
+          className="mobile-layer-close"
+          onClick={() => setIsMobileLayerOpen(false)}
+        >
+          ✕
+        </button>
+      </div>
+      <div className="mobile-layer-grid">
+        {/* STREET VIEW - PEGMAN PNG IKONNAL */}
+        <div className="street-view-section">
+          <label 
+            className={`street-view-label ${isStreetViewMode ? 'active' : ''}`}
+            onClick={() => {
+              setIsStreetViewMode(!isStreetViewMode);
+            }}
+          >
+            <span className="layer-icon">
+              <img 
+                src="/icons/pegman.png" 
+                alt="Street View"
+                className="layer-icon-img street-view-icon"
+                width={24}
+                height={24}
+              />
+            </span>
+            <span className="layer-name">Street View</span>
+          </label>
+        </div>
 
-                {[
-                  { key: 'satellite', name: 'Műhold' },
-                  { key: 'crimeHeat', name: 'Biztonság' },
-                  { key: 'transport', name: 'Közlek.' },
-                  { key: 'education', name: 'Oktatás' },
-                  { key: 'shop', name: 'Boltok' },
-                  { key: 'health', name: 'Eü.' },
-                  { key: 'bank', name: 'Bankok' },
-                  { key: 'outdoor', name: 'Szabad' },
-                  { key: 'sport', name: 'Sport' },
-                  { key: 'religion', name: 'Vallás' },
-                ].map(({ key, name }) => (
-                  <label
-                    key={key}
-                    className={`layer-control-label ${layers[key] ? 'checked' : ''}`}
-                    onClick={() => {
-                      const newLayers = {
-                        ...layers,
-                        [key]: !layers[key]
-                      };
-                      setLayers(newLayers);
-                    }}
-                  >
-                    <span className="layer-icon">
-                      {/* Ikonok */}
-                      {key === 'satellite' && (
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M4 4v16h16" />
-                          <path d="M8 12l4-4 4 4" />
-                          <path d="M8 16l4-4 4 4" />
-                        </svg>
-                      )}
-                      {key === 'crimeHeat' && (
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                        </svg>
-                      )}
-                      {key === 'transport' && (
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <rect x="1" y="4" width="22" height="12" rx="2" ry="2" />
-                          <circle cx="6" cy="16" r="2" />
-                          <circle cx="18" cy="16" r="2" />
-                          <path d="M6 8h12" />
-                        </svg>
-                      )}
-                      {key === 'education' && (
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M4 10v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10" />
-                          <path d="M2 10l10-5 10 5" />
-                          <path d="M12 5v14" />
-                        </svg>
-                      )}
-                      {key === 'shop' && (
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                          <line x1="3" y1="6" x2="21" y2="6" />
-                          <path d="M16 10a4 4 0 0 1-8 0" />
-                        </svg>
-                      )}
-                      {key === 'health' && (
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M22 12h-4l-3 9-4-18-3 9H2" />
-                        </svg>
-                      )}
-                      {key === 'bank' && (
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <rect x="2" y="10" width="20" height="12" rx="2" ry="2" />
-                          <line x1="6" y1="10" x2="6" y2="18" />
-                          <line x1="10" y1="10" x2="10" y2="18" />
-                          <line x1="14" y1="10" x2="14" y2="18" />
-                          <line x1="18" y1="10" x2="18" y2="18" />
-                          <polyline points="2 10 12 4 22 10" />
-                        </svg>
-                      )}
-                      {key === 'outdoor' && (
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M12 2L2 7l10 5 10-5-10-5z" />
-                          <path d="M2 17l10 5 10-5" />
-                          <path d="M2 12l10 5 10-5" />
-                        </svg>
-                      )}
-                      {key === 'sport' && (
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <circle cx="12" cy="12" r="10" />
-                          <path d="M12 2v20" />
-                          <path d="M2 12h20" />
-                          <path d="M4.93 4.93l14.14 14.14" />
-                          <path d="M19.07 4.93L4.93 19.07" />
-                        </svg>
-                      )}
-                      {key === 'religion' && (
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M12 2L2 7l10 5 10-5-10-5z" />
-                          <path d="M2 17l10 5 10-5" />
-                          <path d="M2 12l10 5 10-5" />
-                          <circle cx="12" cy="12" r="3" />
-                        </svg>
-                      )}
-                    </span>
-                    <span className="layer-name">{name}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-          </>
-        )}
+        {/* RÉTEGEK - PNG IKONOKKAL */}
+        {[
+          { key: 'satellite', name: 'Műhold' },
+          { key: 'crimeHeat', name: 'Biztonság' },
+          { key: 'transport', name: 'Közlek.' },
+          { key: 'education', name: 'Oktatás' },
+          { key: 'shop', name: 'Boltok' },
+          { key: 'health', name: 'Eü.' },
+          { key: 'bank', name: 'Bankok' },
+          { key: 'outdoor', name: 'Szabad' },
+          { key: 'sport', name: 'Sport' },
+          { key: 'religion', name: 'Vallás' },
+        ].map(({ key, name }) => {
+          // Ikonok elérési útjai - ugyanazok, mint a LayerPanel-ben
+          const iconMap = {
+            satellite: '/icons/alap-muhold.png',
+            crimeHeat: '/icons/alap-kozbiztonsag.png',
+            transport: '/icons/alap-kozlek.png',
+            education: '/icons/alap-oktatas.png',
+            shop: '/icons/alap-bolt.png',
+            health: '/icons/alap-egeszseg.png',
+            bank: '/icons/alap-bank.png',
+            outdoor: '/icons/alap-szabad.png',
+            sport: '/icons/alap-sport.png',
+            religion: '/icons/alap-vallas.png',
+          };
+          
+          // 🔥 JAVÍTÁS: Egyszerű objektum elérés, type assertion nélkül
+          const iconPath = iconMap[key];
+          
+          return (
+            <label
+              key={key}
+              className={`layer-control-label ${layers[key] ? 'checked' : ''}`}
+              onClick={() => {
+                const newLayers = {
+                  ...layers,
+                  [key]: !layers[key]
+                };
+                setLayers(newLayers);
+              }}
+            >
+              <span className="layer-icon">
+                <img 
+                  src={iconPath}
+                  alt={name}
+                  className="layer-icon-img"
+                  width={24}
+                  height={24}
+                />
+              </span>
+              <span className="layer-name">{name}</span>
+            </label>
+          );
+        })}
+      </div>
+    </div>
+  </>
+)}
 
         <LocationSearchModal
           isOpen={locationSearchOpen}

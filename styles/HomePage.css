@@ -3707,3 +3707,207 @@ body.list-mode-active .list-view-wrapper {
     grid-template-columns: 1fr 1fr !important;
   }
 }
+
+/* styles/HomePage.css - add hozzá */
+
+/* PNG ikonok a layer panelben */
+.layer-panel-compact .layer-icon-img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  display: block;
+  filter: grayscale(0.6) opacity(0.7);
+  transition: all 0.2s ease;
+}
+
+.layer-panel-compact .layer-control-label.checked .layer-icon-img {
+  filter: grayscale(0) opacity(1);
+}
+
+/* Street View ikon marad SVG */
+.layer-panel-compact .street-view-label .layer-icon svg {
+  stroke: #5099ce;
+  width: 18px;
+  height: 18px;
+}
+
+/* Mobil nézetben kisebb ikonok */
+@media (max-width: 480px) {
+  .layer-panel-compact .layer-icon-img {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* ============================================
+   LAYER PANEL - KOMPAKT - TOOLTIP STÍLUS
+   ============================================ */
+
+/* A layer panel fejléc - "Rétegek" felirat */
+.layer-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 0 6px 0;
+  margin-bottom: 4px;
+  border-bottom: 1.5px solid rgba(151, 212, 255, 0.3);
+  width: 100%;
+}
+
+.layer-panel-header .layer-panel-title {
+  font-size: 8px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+.layer-panel-compact .layer-control-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: #6b8ba0;
+  font-size: 9px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 3px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  user-select: none;
+  background: transparent;
+  border: 1px solid transparent;
+  min-height: 32px;
+  flex-direction: column;
+  text-align: center;
+  position: relative; /* Tooltip pozicionáláshoz */
+}
+
+/* 🔥 LAYER NAME - ALAPBÓL ELREJTVE, HOVERRE MEGJELENIK */
+.layer-panel-compact .layer-name {
+  font-size: 7px;
+  font-weight: 500;
+  color: #94a3b8;
+  line-height: 1.1;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  transform: translateY(-4px);
+}
+
+/* 🔥 HOVER - MEGJELENIK A NÉV */
+.layer-panel-compact .layer-control-label:hover .layer-name,
+.layer-panel-compact .layer-control-label.checked:hover .layer-name {
+  opacity: 1;
+  max-height: 20px;
+  transform: translateY(0);
+}
+
+/* CHECKED ÁLLAPOTBAN IS LÁTHATÓ LEGYEN A NÉV HOVER NÉLKÜL? 
+   Ha szeretnéd, hogy aktív állapotban is látszódjon a név: */
+.layer-panel-compact .layer-control-label.checked .layer-name {
+  opacity: 1;
+  max-height: 20px;
+  transform: translateY(0);
+  color: #5099ce;
+}
+
+/* VAGY ha azt szeretnéd, hogy aktív állapotban SE látszódjon (csak hoverre): */
+/* .layer-panel-compact .layer-control-label.checked .layer-name {
+  opacity: 0;
+  max-height: 0;
+  transform: translateY(-4px);
+} */
+
+.layer-panel-compact .layer-control-label.checked .layer-name {
+  color: #5099ce;
+}
+
+/* Tooltip szerű megjelenés - ha hoverre nagyobb betűméret kell */
+.layer-panel-compact .layer-control-label:hover .layer-name {
+  font-size: 8px;
+  color: #5099ce;
+}
+
+/* IKONOK - hoverre nagyobbak */
+.layer-panel-compact .layer-control-label:hover .layer-icon-img {
+  transform: scale(1.1);
+}
+
+.layer-panel-compact .layer-icon-img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  display: block;
+  filter: grayscale(0.6) opacity(0.7);
+  transition: all 0.2s ease;
+}
+
+.layer-panel-compact .layer-control-label.checked .layer-icon-img {
+  filter: grayscale(0) opacity(1);
+}
+
+/* Street View */
+.layer-panel-compact .street-view-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 4px;
+  margin-bottom: 4px;
+  border-bottom: 1.5px solid rgba(151, 212, 255, 0.3);
+}
+
+.layer-panel-compact .street-view-label {
+  min-height: 36px;
+}
+
+.layer-panel-compact .street-view-label .layer-icon svg {
+  stroke: #5099ce;
+  width: 18px;
+  height: 18px;
+}
+
+.layer-panel-compact .street-view-label .layer-name {
+  opacity: 1;
+  max-height: 20px;
+  transform: translateY(0);
+  color: #5099ce;
+  font-weight: 600;
+}
+
+.layer-panel-compact .street-view-label.active {
+  background: rgba(80, 153, 206, 0.2);
+  border-color: #5099ce;
+}
+
+.layer-panel-compact .street-view-label.active .layer-icon svg {
+  stroke: #2c6b9e;
+}
+
+.layer-panel-compact .street-view-label.active .layer-name {
+  color: #2c6b9e;
+}
+
+/* Mobil nézetben a nevek látszódjanak (kis képernyőn nincs hover) */
+@media (max-width: 480px) {
+  .layer-panel-compact .layer-name {
+    opacity: 1 !important;
+    max-height: 20px !important;
+    transform: translateY(0) !important;
+    font-size: 7px !important;
+  }
+  
+  .layer-panel-compact .layer-icon-img {
+    width: 14px;
+    height: 14px;
+  }
+  
+  /* Mobil layer panel header */
+  .layer-panel-header .layer-panel-title {
+    font-size: 7px;
+  }
+}
