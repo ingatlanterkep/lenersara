@@ -187,24 +187,95 @@ const generateSlug = useCallback((title) => {
     .replace(/(^-|-$)/g, '');
 }, []);
 
+// MapComponent.js - handleMapInteraction JAVÍTOTT VERZIÓ
+
 // 🔥 GA4: Map interakció (zoom vagy pan után, debounce-oltan)
 const handleMapInteraction = useCallback(
   debounce(() => {
-    if (!cookiesAccepted || !window.gtag || !mapRef.current) return;
+    console.log('[MapComponent] 🔍 handleMapInteraction hívva', {
+      cookiesAccepted,
+      hasSendEvent: !!sendEvent,
+      visiblePostsLength: visiblePosts.length
+    });
 
-    const zoomLevel = mapRef.current.getZoom();
+    if (!cookiesAccepted) {
+      console.log('[MapComponent] ⛔ map_interaction skip: nincs cookie elfogadás');
+      return;
+    }
+
+    const zoomLevel = mapRef.current?.getZoom() || 0;
     const visibleMarkers = visiblePosts.length;
     const activeLayers = Object.keys(layers)
       .filter((key) => layers[key])
       .join(',');
 
-    window.gtag('event', 'map_interaction', {
+    const eventParams = {
       zoom_level: Math.round(zoomLevel),
       visible_markers_count: visibleMarkers,
       active_layers: activeLayers || 'none',
-    });
+      // 🔥 GA4-nek jobban tetsző extra paraméterek
+      engagement_time_msec: 100,
+      session_engaged: 1,
+    };
+
+    // 🔥 1. próba: sendEvent (az AnalyticsProvider-en keresztül)
+    let sent = false;
+    
+    if (sendEvent && typeof sendEvent === 'function') {
+      try {
+        sendEvent('map_interaction', eventParams);
+        sent = true;
+        console.log('[MapComponent] ✅ map_interaction elküldve (sendEvent)', eventParams);
+      } catch (e) {
+        console.warn('[MapComponent] ⚠️ sendEvent hiba:', e);
+      }
+    }
+
+    // 🔥 2. próba: közvetlen gtag
+    if (!sent && typeof window !== 'undefined' && window.gtag) {
+      try {
+        window.gtag('event', 'map_interaction', eventParams);
+        sent = true;
+        console.log('[MapComponent] ✅ map_interaction elküldve (gtag)', eventParams);
+      } catch (e) {
+        console.warn('[MapComponent] ⚠️ gtag hiba:', e);
+      }
+    }
+
+    // 🔥 3. próba: dataLayer
+    if (!sent && window.dataLayer) {
+      try {
+        window.dataLayer.push({
+          event: 'map_interaction',
+          ...eventParams
+        });
+        sent = true;
+        console.log('[MapComponent] ✅ map_interaction elküldve (dataLayer)', eventParams);
+      } catch (e) {
+        console.warn('[MapComponent] ⚠️ dataLayer hiba:', e);
+      }
+    }
+
+    // 🔥 4. próba: közvetlen fetch a directAnalytics-ból
+    if (!sent) {
+      try {
+        // Közvetlenül hívjuk a sendDirectAnalyticsEvent-et
+        const { sendDirectAnalyticsEvent } = require('@/utils/directAnalytics');
+        const result = sendDirectAnalyticsEvent('map_interaction', eventParams);
+        if (result) {
+          sent = true;
+          console.log('[MapComponent] ✅ map_interaction elküldve (directAnalytics)', eventParams);
+        }
+      } catch (e) {
+        console.warn('[MapComponent] ⚠️ directAnalytics hiba:', e);
+      }
+    }
+
+    if (!sent) {
+      console.error('[MapComponent] ❌ map_interaction NEM sikerült elküldeni!');
+    }
   }, 1500),
-  [cookiesAccepted, visiblePosts.length, layers]
+  [cookiesAccepted, sendEvent, visiblePosts.length, layers]
 );
 
 // MapComponent.js - EZT CSERÉLD KI!
