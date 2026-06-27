@@ -1,33 +1,65 @@
+/* ============================================
+   TOP SEARCH BAR - EGYSÉGES STÍLUS
+   ============================================ */
 
+/* --- ALAP KONTAINER --- */
+.top-search-bar {
+  position: fixed;
+  top: 40px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(12px);
+  border-bottom: 1.5px solid #97d4ff;
+  z-index: 999;
+  padding: 4px 12px;
+  box-sizing: border-box;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  pointer-events: auto !important;
+  min-height: 40px;
+}
 
+.top-search-bar * {
+  pointer-events: auto !important;
+}
+
+/* --- KERESŐSÁV KONTAINER --- */
 .search-bar-container {
   max-width: 1400px;
   margin: 0 auto;
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  z-index: 1000;
+  gap: 8px;
+  flex-wrap: nowrap;
+  pointer-events: auto !important;
 }
 
-/* Típus választó */
+/* --- TÍPUS VÁLASZTÓ --- */
 .search-type-toggle {
   display: flex;
-  gap: 4px;
-  background: #f0f7ff;
-  border-radius: 24px;
-  padding: 3px;
+  gap: 3px;
+  background: #f5f9ff;
+  border-radius: 20px;
+  padding: 2px;
   flex-shrink: 0;
+  border: 1.5px solid transparent;
+  transition: border-color 0.15s ease;
+}
+
+.search-type-toggle:hover {
+  border-color: rgba(151, 212, 255, 0.3);
 }
 
 .type-btn {
-  padding: 6px 16px;
+  padding: 5px 14px;
   border: none;
-  border-radius: 20px;
-  font-size: 13px;
+  border-radius: 18px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   background: transparent;
   color: #6b8ba0;
   white-space: nowrap;
@@ -36,27 +68,29 @@
 .type-btn.active {
   background: #5099ce;
   color: white;
-  box-shadow: 0 2px 8px rgba(80, 153, 206, 0.3);
+  box-shadow: 0 2px 6px rgba(80, 153, 206, 0.25);
 }
 
 .type-btn:hover:not(.active) {
-  background: rgba(80, 153, 206, 0.1);
+  background: rgba(80, 153, 206, 0.06);
+  color: #5099ce;
 }
 
-/* Helyszín */
+/* --- HELYSZÍN --- */
 .search-location {
   flex: 1;
-  min-width: 140px;
+  min-width: 120px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
+  gap: 6px;
+  padding: 4px 10px;
   background: #f5f9ff;
-  border: 1.5px solid #d4e8ff;
-  border-radius: 24px;
+  border: 1.5px solid rgba(151, 212, 255, 0.3);
+  border-radius: 20px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  height: 32px;
 }
 
 .search-location:hover {
@@ -65,14 +99,14 @@
 }
 
 .search-icon {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   flex-shrink: 0;
   color: #6b8ba0;
 }
 
 .location-text {
-  font-size: 13px;
+  font-size: 12px;
   color: #2c3e50;
   flex: 1;
   white-space: nowrap;
@@ -83,32 +117,33 @@
 .clear-location {
   background: none;
   border: none;
-  font-size: 18px;
+  font-size: 16px;
   color: #999;
   cursor: pointer;
   padding: 0 4px;
-  transition: color 0.3s ease;
+  transition: color 0.15s ease;
 }
 
 .clear-location:hover {
   color: #e74c3c;
 }
 
-/* Ingatlantípus select */
+/* --- INGATLANTÍPUS SELECT --- */
 .search-type-select {
   flex-shrink: 0;
 }
 
 .type-select {
-  padding: 6px 12px;
-  border: 1.5px solid #d4e8ff;
+  padding: 4px 12px;
+  border: 1.5px solid rgba(151, 212, 255, 0.3);
   border-radius: 20px;
   background: #f5f9ff;
-  font-size: 13px;
+  font-size: 12px;
   color: #2c3e50;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   outline: none;
+  height: 32px;
 }
 
 .type-select:hover,
@@ -117,16 +152,17 @@
   background: #edf4ff;
 }
 
-/* Ár és alapterület tartományok */
+/* --- TARTOMÁNYOK (ÁR, ALAPTERÜLET) --- */
 .search-range {
   display: flex;
   align-items: center;
   gap: 4px;
   background: #f5f9ff;
-  border: 1.5px solid #d4e8ff;
+  border: 1.5px solid rgba(151, 212, 255, 0.3);
   border-radius: 20px;
-  padding: 2px 8px 2px 12px;
-  transition: all 0.3s ease;
+  padding: 2px 6px 2px 10px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  height: 32px;
 }
 
 .search-range:hover,
@@ -136,27 +172,35 @@
 }
 
 .range-input {
-  width: 55px;
+  width: 48px;
   border: none;
   background: transparent;
-  padding: 5px 0;
-  font-size: 13px;
+  padding: 4px 0;
+  font-size: 12px;
   color: #2c3e50;
   outline: none;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.range-input::-webkit-outer-spin-button,
+.range-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .range-input::placeholder {
   color: #a0b8cc;
-  font-size: 11px;
+  font-size: 10px;
 }
 
 .range-separator {
   color: #a0b8cc;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .range-unit {
-  font-size: 11px;
+  font-size: 10px;
   color: #6b8ba0;
   font-weight: 500;
   margin-left: 2px;
@@ -164,110 +208,101 @@
 }
 
 .price-range {
-  min-width: 160px;
-}
-
-.area-range {
   min-width: 140px;
 }
 
-/* Részletes keresés gomb */
-.detailed-toggle-btn {
-  position: relative;
+.area-range {
+  min-width: 120px;
+}
+
+/* --- GOMBOK (Részletes keresés, Lista) --- */
+.action-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
-  border: 1.5px solid #d4e8ff;
-  border-radius: 50%;
+  gap: 6px;
+  padding: 4px 14px;
+  border: 1.5px solid rgba(151, 212, 255, 0.3);
+  border-radius: 20px;
   background: #f5f9ff;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
+  height: 32px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #6b8ba0;
+  white-space: nowrap;
 }
 
-.detailed-toggle-btn svg {
-  width: 20px;
-  height: 20px;
-  stroke: #6b8ba0;
-  transition: stroke 0.3s ease;
-}
-
-.detailed-toggle-btn:hover {
+.action-btn:hover {
   border-color: #5099ce;
   background: #edf4ff;
+  color: #5099ce;
 }
 
-.detailed-toggle-btn.active {
+.action-btn.active {
   border-color: #5099ce;
   background: #5099ce;
+  color: white;
 }
 
-.detailed-toggle-btn.active svg {
+.action-btn.active svg {
   stroke: white;
 }
 
-.filter-badge {
+.action-btn svg {
+  width: 16px;
+  height: 16px;
+  stroke: #6b8ba0;
+  transition: stroke 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.action-btn:hover svg {
+  stroke: #5099ce;
+}
+
+.action-btn .btn-label {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.action-btn .filter-badge {
   position: absolute;
   top: -4px;
   right: -4px;
   background: #ff3b30;
   color: white;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-/* Mobil szűrő gomb */
-.filter-toggle-btn {
-  display: none;
-  align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  border: 1.5px solid #d4e8ff;
-  border-radius: 50%;
-  background: #f5f9ff;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  flex-shrink: 0;
-}
-
-.filter-toggle-btn svg {
-  width: 20px;
-  height: 20px;
-  stroke: #6b8ba0;
-  transition: stroke 0.3s ease;
-}
-
-.filter-toggle-btn.active {
-  border-color: #5099ce;
-  background: #5099ce;
-}
-
-.filter-toggle-btn.active svg {
-  stroke: white;
-}
-
-/* Részletes keresés panel */
+/* --- RÉSZLETES KERESÉS PANEL --- */
 .detailed-search-panel {
-  margin-top: 10px;
-  padding-top: 12px;
-  border-top: 1.5px solid #e8f0fe;
-  animation: slideDown 0.3s ease;
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1.5px solid rgba(151, 212, 255, 0.3);
+  animation: slideDown 0.25s ease;
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 0 0 12px 12px;
+  padding: 10px 14px 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  position: relative;
+  z-index: 1000;
+  pointer-events: auto !important;
 }
 
 @keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-8px);
   }
   to {
     opacity: 1;
@@ -277,18 +312,18 @@
 
 .detailed-search-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
 }
 
 .detail-group {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 
 .detail-group label {
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 600;
   color: #6b8ba0;
   text-transform: uppercase;
@@ -298,12 +333,13 @@
 .range-input-group {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   background: #f5f9ff;
-  border: 1.5px solid #d4e8ff;
+  border: 1.5px solid rgba(151, 212, 255, 0.3);
   border-radius: 20px;
-  padding: 2px 10px;
-  transition: all 0.3s ease;
+  padding: 2px 8px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  height: 30px;
 }
 
 .range-input-group:hover,
@@ -313,36 +349,45 @@
 }
 
 .range-input-group input {
-  width: 50px;
+  width: 44px;
   border: none;
   background: transparent;
-  padding: 5px 0;
-  font-size: 13px;
+  padding: 4px 0;
+  font-size: 12px;
   color: #2c3e50;
   outline: none;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.range-input-group input::-webkit-outer-spin-button,
+.range-input-group input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .range-input-group input::placeholder {
   color: #a0b8cc;
-  font-size: 11px;
+  font-size: 10px;
 }
 
 .range-input-group span {
   color: #a0b8cc;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .detail-select {
-  padding: 6px 12px;
-  border: 1.5px solid #d4e8ff;
+  padding: 4px 10px;
+  border: 1.5px solid rgba(151, 212, 255, 0.3);
   border-radius: 20px;
   background: #f5f9ff;
-  font-size: 13px;
+  font-size: 12px;
   color: #2c3e50;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   outline: none;
   width: 100%;
+  height: 30px;
 }
 
 .detail-select:hover,
@@ -351,95 +396,50 @@
   background: #edf4ff;
 }
 
+/* --- CHECKBOXOK --- */
 .checkbox-group {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
-  padding-top: 4px;
+  padding-top: 2px;
 }
 
 .checkbox-label {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 13px;
+  gap: 4px;
+  font-size: 12px;
   color: #2c3e50;
   cursor: pointer;
   user-select: none;
 }
 
 .checkbox-label input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   accent-color: #5099ce;
   cursor: pointer;
 }
 
-/* MOBIL NÉZET */
-@media (max-width: 1024px) {
-  .top-search-bar {
-    top: 40px;
-    padding: 6px 12px;
-  }
-
-  .search-bar-container {
-    gap: 6px;
-  }
-
-  .search-range {
-    padding: 2px 6px 2px 8px;
-  }
-
-  .range-input {
-    width: 45px;
-    font-size: 12px;
-  }
-
-  .price-range {
-    min-width: 130px;
-  }
-
-  .area-range {
-    min-width: 110px;
-  }
-
-  .type-btn {
-    font-size: 12px;
-    padding: 4px 12px;
-  }
-
-  .type-select {
-    font-size: 12px;
-    padding: 4px 10px;
-  }
-
-  .search-location {
-    min-width: 100px;
-    padding: 4px 10px;
-  }
-
-  .location-text {
-    font-size: 12px;
-  }
-
-  .detailed-search-grid {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 8px;
-  }
-}
+/* ============================================
+   MOBIL NÉZET
+   ============================================ */
 
 @media (max-width: 768px) {
   .top-search-bar {
-    top: 44px;
-    padding: 4px 8px;
+    top: 40px;
+    padding: 3px 8px;
+    min-height: 32px;
   }
 
   .search-bar-container {
     gap: 4px;
     flex-wrap: nowrap;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
 
   .search-bar-container::-webkit-scrollbar {
@@ -458,6 +458,7 @@
   .search-location {
     min-width: 80px;
     padding: 3px 8px;
+    height: 28px;
   }
 
   .location-text {
@@ -472,14 +473,16 @@
   .type-select {
     font-size: 11px;
     padding: 3px 8px;
+    height: 28px;
   }
 
   .search-range {
-    padding: 1px 4px 1px 6px;
+    height: 28px;
+    padding: 2px 4px 2px 8px;
   }
 
   .range-input {
-    width: 35px;
+    width: 40px;
     font-size: 11px;
     padding: 3px 0;
   }
@@ -488,44 +491,34 @@
     font-size: 9px;
   }
 
-  .range-separator {
-    font-size: 10px;
-  }
-
-  .range-unit {
-    font-size: 9px;
-  }
-
   .price-range {
-    min-width: 100px;
+    min-width: 110px;
   }
 
   .area-range {
     min-width: 90px;
   }
 
-  .detailed-toggle-btn {
-    width: 32px;
-    height: 32px;
+  .range-unit {
+    font-size: 9px;
   }
 
-  .detailed-toggle-btn svg {
-    width: 16px;
-    height: 16px;
+  .action-btn {
+    height: 28px;
+    padding: 3px 10px;
+    font-size: 10px;
   }
 
-  .filter-toggle-btn {
-    display: flex;
-    width: 32px;
-    height: 32px;
+  .action-btn svg {
+    width: 14px;
+    height: 14px;
   }
 
-  .filter-toggle-btn svg {
-    width: 16px;
-    height: 16px;
+  .action-btn .btn-label {
+    font-size: 10px;
   }
 
-  .filter-badge {
+  .action-btn .filter-badge {
     width: 14px;
     height: 14px;
     font-size: 8px;
@@ -534,32 +527,34 @@
   }
 
   .detailed-search-panel {
-    margin-top: 6px;
-    padding-top: 8px;
+    margin-top: 4px;
+    padding: 8px 10px 10px;
   }
 
   .detailed-search-grid {
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
     gap: 6px;
   }
 
   .detail-group label {
-    font-size: 10px;
+    font-size: 9px;
   }
 
   .range-input-group {
-    padding: 1px 6px;
+    height: 26px;
+    padding: 2px 6px;
   }
 
   .range-input-group input {
-    width: 35px;
+    width: 32px;
     font-size: 11px;
-    padding: 3px 0;
+    padding: 2px 0;
   }
 
   .detail-select {
     font-size: 11px;
-    padding: 4px 8px;
+    padding: 3px 8px;
+    height: 26px;
   }
 
   .checkbox-label {
@@ -567,15 +562,16 @@
   }
 
   .checkbox-label input[type="checkbox"] {
-    width: 14px;
-    height: 14px;
+    width: 13px;
+    height: 13px;
   }
 }
 
 @media (max-width: 480px) {
   .top-search-bar {
-    top: 40px;
-    padding: 3px 6px;
+    top: 36px;
+    padding: 2px 4px;
+    min-height: 28px;
   }
 
   .search-bar-container {
@@ -585,16 +581,19 @@
   .type-btn {
     font-size: 9px;
     padding: 2px 8px;
+    border-radius: 14px;
   }
 
   .search-type-toggle {
-    gap: 2px;
-    padding: 2px;
+    padding: 1.5px;
+    border-radius: 16px;
   }
 
   .search-location {
     min-width: 60px;
     padding: 2px 6px;
+    height: 24px;
+    border-radius: 16px;
   }
 
   .location-text {
@@ -606,17 +605,25 @@
     height: 12px;
   }
 
+  .clear-location {
+    font-size: 13px;
+  }
+
   .type-select {
     font-size: 10px;
     padding: 2px 6px;
+    height: 24px;
+    border-radius: 16px;
   }
 
   .search-range {
-    padding: 1px 3px 1px 4px;
+    height: 24px;
+    padding: 1px 3px 1px 6px;
+    border-radius: 16px;
   }
 
   .range-input {
-    width: 28px;
+    width: 32px;
     font-size: 10px;
     padding: 2px 0;
   }
@@ -626,31 +633,43 @@
   }
 
   .price-range {
-    min-width: 80px;
+    min-width: 85px;
   }
 
   .area-range {
     min-width: 70px;
   }
 
-  .detailed-toggle-btn {
-    width: 28px;
-    height: 28px;
+  .range-unit {
+    font-size: 8px;
   }
 
-  .detailed-toggle-btn svg {
-    width: 14px;
-    height: 14px;
+  .action-btn {
+    height: 24px;
+    padding: 2px 8px;
+    font-size: 9px;
+    border-radius: 16px;
   }
 
-  .filter-toggle-btn {
-    width: 28px;
-    height: 28px;
+  .action-btn svg {
+    width: 12px;
+    height: 12px;
   }
 
-  .filter-toggle-btn svg {
-    width: 14px;
-    height: 14px;
+  .action-btn .btn-label {
+    font-size: 9px;
+  }
+
+  .action-btn .filter-badge {
+    width: 12px;
+    height: 12px;
+    font-size: 7px;
+    top: -2px;
+    right: -2px;
+  }
+
+  .detailed-search-panel {
+    padding: 6px 8px 8px;
   }
 
   .detailed-search-grid {
@@ -658,353 +677,73 @@
     gap: 4px;
   }
 
+  .range-input-group {
+    height: 22px;
+    padding: 1px 4px;
+  }
+
   .range-input-group input {
     width: 28px;
     font-size: 10px;
+    padding: 2px 0;
   }
 
   .detail-select {
     font-size: 10px;
-    padding: 3px 6px;
+    padding: 2px 6px;
+    height: 22px;
+    border-radius: 16px;
   }
 
   .checkbox-label {
     font-size: 10px;
   }
-}
 
-@media (max-width: 380px) {
-  .top-search-bar {
-    top: 38px;
-    padding: 2px 4px;
-  }
-
-  .type-btn {
-    font-size: 8px;
-    padding: 2px 6px;
-  }
-
-  .search-location {
-    min-width: 40px;
-    padding: 2px 4px;
-  }
-
-  .location-text {
-    font-size: 9px;
-  }
-
-  .range-input {
-    width: 22px;
-    font-size: 9px;
-  }
-
-  .price-range {
-    min-width: 60px;
-  }
-
-  .area-range {
-    min-width: 55px;
-  }
-
-  .detailed-search-grid {
-    grid-template-columns: 1fr;
+  .checkbox-label input[type="checkbox"] {
+    width: 12px;
+    height: 12px;
   }
 }
-
-/* Túlcsordulás kezelése */
-.search-bar-container {
-  flex-wrap: wrap;
-}
-
-@media (max-width: 768px) {
-  .search-bar-container {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-  
-  .search-bar-container::-webkit-scrollbar {
-    display: none;
-  }
-}
-
-/* components/styles/TopSearchBar.css */
-
-.top-search-bar {
-  position: fixed;
-  top: 40px;
-  left: 0;
-  right: 0;
-  width: 100%;
-  background: rgba(255, 255, 255, 0.97);
-  backdrop-filter: blur(12px);
-  border-bottom: 2px solid #97d4ff;
-  z-index: 999;
-  padding: 8px 16px;
-  box-sizing: border-box;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  pointer-events: auto !important; /* ← FONTOS! */
-}
-
-/* Minden gyermek elem is fogadjon eseményeket */
-.top-search-bar * {
-  pointer-events: auto !important;
-}
-
-.search-bar-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  pointer-events: auto !important;
-}
-
-/* ... a többi stílus marad ... */
-
-/* Részletes keresés panel - biztosítjuk, hogy fogadjon eseményeket */
-.detailed-search-panel,
-.detailed-search-panel * {
-  pointer-events: auto !important;
-}
-
-.detailed-toggle-btn {
-  pointer-events: auto !important;
-  cursor: pointer;
-}
-
-/* styles/TopSearchBar.css - LISTÁS NÉZET GOMB */
-
-/* Listás nézet gomb a keresősávban */
-.list-view-toggle-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  border: 1.5px solid #d4e8ff;
-  border-radius: 50%;
-  background: #f5f9ff;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  flex-shrink: 0;
-}
-
-.list-view-toggle-btn svg {
-  width: 20px;
-  height: 20px;
-  stroke: #6b8ba0;
-  transition: stroke 0.3s ease;
-}
-
-.list-view-toggle-btn:hover {
-  border-color: #5099ce;
-  background: #edf4ff;
-}
-
-.list-view-toggle-btn:hover svg {
-  stroke: #5099ce;
-}
-
-.list-view-toggle-btn.active {
-  border-color: #5099ce;
-  background: #5099ce;
-}
-
-.list-view-toggle-btn.active svg {
-  stroke: white;
-}
-
-/* Mobil méret */
-@media (max-width: 768px) {
-  .list-view-toggle-btn {
-    width: 32px;
-    height: 32px;
-  }
-  
-  .list-view-toggle-btn svg {
-    width: 16px;
-    height: 16px;
-  }
-}
-
-@media (max-width: 480px) {
-  .list-view-toggle-btn {
-    width: 28px;
-    height: 28px;
-  }
-  
-  .list-view-toggle-btn svg {
-    width: 14px;
-    height: 14px;
-  }
-}
-
-/* A szám beviteli mezők nyílainak eltüntetése */
-.range-input,
-.range-input-group input,
-.detail-group input[type="number"] {
-  -moz-appearance: textfield;
-  appearance: textfield;
-}
-
-.range-input::-webkit-outer-spin-button,
-.range-input::-webkit-inner-spin-button,
-.range-input-group input::-webkit-outer-spin-button,
-.range-input-group input::-webkit-inner-spin-button,
-.detail-group input[type="number"]::-webkit-outer-spin-button,
-.detail-group input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-/* styles/TopSearchBar.css - kiegészítés */
-
-.top-search-bar {
-  position: fixed;
-  top: 40px;
-  left: 0;
-  right: 0;
-  width: 100%;
-  background: rgba(255, 255, 255, 0.97);
-  backdrop-filter: blur(12px);
-  border-bottom: 2px solid #97d4ff;
-  z-index: 999;
-  padding: 6px 16px;
-  box-sizing: border-box;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  pointer-events: auto !important;
-  min-height: 40px; /* Minimum magasság a stabil detektáláshoz */
-  max-height: 80px; /* Maximum magasság a túlzott növekedés elkerülésére */
-}
-
-/* A részletes keresés panel megnyitásakor a searchbar magassága megnő */
-.top-search-bar.expanded {
-  max-height: 400px; /* Elég magas a részletes keresés panelnek */
-}
-
-.detailed-search-panel {
-  margin-top: 6px;
-  padding-top: 10px;
-  border-top: 1.5px solid #e8f0fe;
-  animation: slideDown 0.3s ease;
-  background: rgba(255, 255, 255, 0.98);
-  border-radius: 0 0 12px 12px;
-  padding: 10px 16px 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  position: relative;
-  z-index: 1000;
-  pointer-events: auto !important;
-}
-
-/* styles/globals.css - frissítsd a top-search-bar stílusát: */
-
-.top-search-bar {
-  position: fixed;
-  top: var(--navbar-height);
-  left: 0;
-  right: 0;
-  width: 100%;
-  background: rgba(255, 255, 255, 0.97);
-  backdrop-filter: blur(12px);
-  border-bottom: 2px solid #97d4ff;
-  z-index: 999;
-  padding: 6px 16px;
-  box-sizing: border-box;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  pointer-events: auto !important;
-  min-height: 44px; /* Alap magasság */
-  max-height: 80px; /* Maximum magasság a részletes keresés nélkül */
-}
-
-/* Amikor a részletes keresés megjelenik, növeljük a max-height-t */
-.top-search-bar.expanded {
-  max-height: 500px; /* Elég magas a részletes keresés panelnek */
-}
-
-/* components/styles/TopSearchBar.css - MOBIL RÉSZ HOZZÁADÁSA */
 
 /* ============================================
-   ASZTALI NÉZET (MEGLÉVŐ)
+   MOBIL SEARCH OVERLAY
    ============================================ */
-.top-search-bar {
-  position: fixed;
-  top: 40px;
-  left: 0;
-  right: 0;
-  width: 100%;
-  background: rgba(255, 255, 255, 0.97);
-  backdrop-filter: blur(12px);
-  border-bottom: 2px solid #97d4ff;
-  z-index: 999;
-  padding: 6px 16px;
-  box-sizing: border-box;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  pointer-events: auto !important;
-  min-height: 44px;
-  max-height: 80px;
-}
 
-.top-search-bar.expanded {
-  max-height: 500px;
-}
-
-.search-bar-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  pointer-events: auto !important;
-}
-
-/* ... a többi asztali stílus marad ... */
-
-/* ============================================
-   MOBIL NÉZET - VÉKONY CSÍK
-   ============================================ */
 .top-search-bar.mobile-search-bar {
   position: fixed;
-  top: 44px;
+  top: 40px;
   left: 0;
   right: 0;
-  padding: 4px 12px;
-  min-height: 36px;
-  max-height: 36px;
-  background: rgba(255, 255, 255, 0.95);
+  padding: 3px 10px;
+  min-height: 32px;
+  max-height: 32px;
+  background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(8px);
   border-bottom: 1.5px solid #97d4ff;
   cursor: pointer;
   z-index: 999;
   display: flex;
   align-items: center;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 
 .mobile-search-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   width: 100%;
   padding: 2px 0;
 }
 
 .search-icon-mobile {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   stroke: #94a3b8;
   flex-shrink: 0;
 }
 
 .mobile-search-placeholder {
-  font-size: 12px;
+  font-size: 11px;
   color: #6b8ba0;
   flex: 1;
   white-space: nowrap;
@@ -1016,10 +755,10 @@
 .mobile-filter-badge {
   background: #5099ce;
   color: white;
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 700;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1027,16 +766,13 @@
   flex-shrink: 0;
 }
 
-/* ============================================
-   MOBIL KERESŐ OVERLAY
-   ============================================ */
 .mobile-search-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.4);
   z-index: 9999;
   animation: fadeIn 0.2s ease;
 }
@@ -1056,7 +792,7 @@
   z-index: 10000;
   display: flex;
   flex-direction: column;
-  animation: slideUp 0.3s ease;
+  animation: slideUp 0.25s ease;
 }
 
 @keyframes slideUp {
@@ -1068,14 +804,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
-  border-bottom: 1.5px solid #e8f0fe;
+  padding: 10px 16px;
+  border-bottom: 1.5px solid rgba(151, 212, 255, 0.3);
   flex-shrink: 0;
   background: #ffffff;
 }
 
 .mobile-search-header h2 {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   color: #2c3e50;
   margin: 0;
@@ -1084,12 +820,12 @@
 .mobile-search-close {
   background: none;
   border: none;
-  font-size: 22px;
+  font-size: 20px;
   color: #6b8ba0;
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 8px;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .mobile-search-close:hover {
@@ -1099,50 +835,43 @@
 .mobile-search-content {
   flex: 1;
   overflow-y: auto;
-  padding: 16px;
+  padding: 12px 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   -webkit-overflow-scrolling: touch;
 }
 
-/* Mobil elemek */
-.mobile-toggle {
-  padding: 4px;
-}
-
-.mobile-location {
-  padding: 8px 12px;
-}
-
-.mobile-type-select {
+.mobile-apply-btn {
+  padding: 10px 20px;
+  background: #5099ce;
+  color: white;
+  border: none;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: 4px;
   width: 100%;
 }
 
-.mobile-type-select .type-select {
-  width: 100%;
-  padding: 8px 12px;
-}
-
-.mobile-range {
-  padding: 4px 10px;
-}
-
-.mobile-range .range-input {
-  width: 50px;
-  font-size: 13px;
+.mobile-apply-btn:hover {
+  background: #3a7bb8;
 }
 
 .mobile-detailed-btn {
   width: 100%;
   border-radius: 24px;
-  padding: 10px;
-  gap: 8px;
-  font-size: 14px;
+  padding: 8px 16px;
+  gap: 6px;
+  font-size: 12px;
   font-weight: 500;
   color: #2c3e50;
   background: #f5f9ff;
-  border: 1.5px solid #d4e8ff;
+  border: 1.5px solid rgba(151, 212, 255, 0.3);
+  height: auto;
+  justify-content: center;
 }
 
 .mobile-detailed-btn.active {
@@ -1156,345 +885,84 @@
 }
 
 .mobile-detailed-btn svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   stroke: #6b8ba0;
 }
 
-.mobile-detailed-panel {
-  margin-top: 0;
-  padding: 12px 0;
-  border-top: 1.5px solid #e8f0fe;
-}
-
-.mobile-apply-btn {
-  padding: 12px 24px;
-  background: #5099ce;
-  color: white;
-  border: none;
-  border-radius: 24px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 4px;
+.mobile-search-content .search-type-toggle {
   width: 100%;
 }
 
-.mobile-apply-btn:hover {
-  background: #3a7bb8;
-  transform: translateY(-1px);
+.mobile-search-content .search-location {
+  width: 100%;
+  min-width: unset;
 }
 
-/* ============================================
-   MOBIL ALUL SÁV - 3 GOMB
-   ============================================ */
-.mobile-bottom-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 48px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  border-top: 1.5px solid #97d4ff;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  z-index: 1000;
-  padding: 0 8px;
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
+.mobile-search-content .search-type-select {
+  width: 100%;
 }
 
-.mobile-bottom-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1px;
-  background: none;
-  border: none;
-  padding: 4px 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  color: #94a3b8;
-  font-size: 8px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
+.mobile-search-content .type-select {
+  width: 100%;
+}
+
+.mobile-search-content .search-range {
+  width: 100%;
+}
+
+.mobile-search-content .range-input {
   flex: 1;
-  max-width: 80px;
-  border-radius: 8px;
-  position: relative;
+  width: auto;
 }
 
-.mobile-bottom-btn:hover {
-  color: #5099ce;
-  background: rgba(80, 153, 206, 0.06);
-}
-
-.mobile-bottom-btn.active {
-  color: #5099ce;
-}
-
-.mobile-bottom-btn.active svg {
-  stroke: #5099ce;
-}
-
-.mobile-bottom-btn svg {
-  width: 20px;
-  height: 20px;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  fill: none;
-  transition: stroke 0.2s ease;
-}
-
-.mobile-bottom-btn .btn-label {
-  font-size: 7px;
-  font-weight: 500;
-  color: #94a3b8;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-
-.mobile-bottom-btn.active .btn-label {
-  color: #5099ce;
-}
-
-/* Rétegek számláló jelvény */
-.mobile-bottom-btn .layer-badge {
-  position: absolute;
-  top: 0;
-  right: 4px;
-  background: #5099ce;
-  color: white;
-  font-size: 7px;
-  font-weight: 700;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* ============================================
-   MOBIL LAYER OVERLAY
-   ============================================ */
-.mobile-layer-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 9998;
-  animation: fadeIn 0.2s ease;
-}
-
-.mobile-layer-panel {
-  position: fixed;
-  bottom: 48px;
-  left: 0;
-  right: 0;
-  max-height: 60vh;
-  background: #ffffff;
-  border-radius: 16px 16px 0 0;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.12);
-  z-index: 9999;
-  padding: 16px 16px 24px;
-  animation: slideUpLayer 0.3s ease;
-  overflow-y: auto;
-}
-
-@keyframes slideUpLayer {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
-
-.mobile-layer-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 12px;
-  border-bottom: 1.5px solid #e8f0fe;
-  margin-bottom: 12px;
-}
-
-.mobile-layer-header h3 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #2c3e50;
-  margin: 0;
-}
-
-.mobile-layer-close {
-  background: none;
-  border: none;
-  font-size: 20px;
-  color: #6b8ba0;
-  cursor: pointer;
-  padding: 4px 8px;
-}
-
-.mobile-layer-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-}
-
-.mobile-layer-grid .layer-control-label {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  padding: 8px 4px;
-  border-radius: 10px;
-  border: 1.5px solid transparent;
+.mobile-detailed-panel {
+  margin-top: 4px;
+  padding: 8px 10px 10px;
+  border: 1.5px solid rgba(151, 212, 255, 0.3);
+  border-radius: 12px;
   background: #f8fafc;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  min-height: 40px;
-}
-
-.mobile-layer-grid .layer-control-label.checked {
-  background: rgba(80, 153, 206, 0.1);
-  border-color: #5099ce;
-}
-
-.mobile-layer-grid .layer-control-label .layer-icon svg {
-  width: 18px;
-  height: 18px;
-  stroke: #94a3b8;
-}
-
-.mobile-layer-grid .layer-control-label.checked .layer-icon svg {
-  stroke: #5099ce;
-}
-
-.mobile-layer-grid .layer-control-label .layer-name {
-  font-size: 7px;
-  font-weight: 500;
-  color: #94a3b8;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-
-.mobile-layer-grid .layer-control-label.checked .layer-name {
-  color: #5099ce;
-}
-
-/* Street View külön */
-.mobile-layer-grid .street-view-section {
-  grid-column: span 3;
-  display: flex;
-  justify-content: center;
-  padding: 4px 0 8px;
-  border-bottom: 1.5px solid #e8f0fe;
-  margin-bottom: 4px;
-}
-
-.mobile-layer-grid .street-view-label {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 16px;
-  border-radius: 20px;
-  background: #f0f7ff;
-  border: 1.5px solid #d4e8ff;
-}
-
-.mobile-layer-grid .street-view-label.active {
-  background: rgba(80, 153, 206, 0.15);
-  border-color: #5099ce;
-}
-
-.mobile-layer-grid .street-view-label .layer-icon svg {
-  stroke: #5099ce;
-}
-
-.mobile-layer-grid .street-view-label .layer-name {
-  color: #5099ce;
-  font-weight: 600;
-  font-size: 10px;
-}
-
-/* ============================================
-   RESPONZÍV
-   ============================================ */
-@media (max-width: 768px) {
-  .top-search-bar {
-    top: 44px;
-    padding: 4px 10px;
-    min-height: 36px;
-  }
 }
 
 @media (max-width: 480px) {
   .top-search-bar.mobile-search-bar {
-    top: 40px;
-    min-height: 32px;
-    max-height: 32px;
-    padding: 2px 10px;
+    top: 36px;
+    padding: 2px 8px;
+    min-height: 28px;
+    max-height: 28px;
   }
-  
+
+  .search-icon-mobile {
+    width: 12px;
+    height: 12px;
+  }
+
   .mobile-search-placeholder {
-    font-size: 11px;
+    font-size: 10px;
   }
-  
+
+  .mobile-filter-badge {
+    width: 14px;
+    height: 14px;
+    font-size: 7px;
+  }
+
   .mobile-search-header h2 {
-    font-size: 16px;
-  }
-  
-  .mobile-search-content {
-    padding: 12px;
-    gap: 10px;
-  }
-  
-  .mobile-range .range-input {
-    width: 40px;
-    font-size: 12px;
-  }
-  
-  .mobile-apply-btn {
-    padding: 10px 20px;
     font-size: 14px;
   }
-  
-  .mobile-bottom-bar {
-    height: 44px;
+
+  .mobile-search-content {
+    padding: 10px 12px;
+    gap: 6px;
   }
-  
-  .mobile-bottom-btn svg {
-    width: 18px;
-    height: 18px;
+
+  .mobile-apply-btn {
+    padding: 8px 16px;
+    font-size: 13px;
   }
-  
-  .mobile-bottom-btn .btn-label {
-    font-size: 6px;
-  }
-  
-  .mobile-layer-panel {
-    padding: 12px 12px 20px;
-    max-height: 55vh;
-  }
-  
-  .mobile-layer-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 4px;
-  }
-  
-  .mobile-layer-grid .layer-control-label {
-    min-height: 48px;
-    padding: 6px 2px;
-  }
-  
-  .mobile-layer-grid .layer-control-label .layer-icon svg {
-    width: 16px;
-    height: 16px;
+
+  .mobile-detailed-btn {
+    font-size: 11px;
+    padding: 6px 12px;
   }
 }
-

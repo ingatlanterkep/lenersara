@@ -1,12 +1,13 @@
 // src/components/LayerPanel.tsx
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useAnalytics } from '@/context/AnalyticsContext';
 import '../styles/HomePage.css';
+import '../styles/LayerPanel.css';
 
-// 🔥 Ikonok elérési útjai a public mappában
-const LAYER_ICONS = {
+// 🔥 Ikonok elérési útjai a public mappában - INDEX SIGNATURE-vel
+export const LAYER_ICONS: Record<string, string> = {
   satellite: '/icons/alap-muhold.png',
   crimeHeat: '/icons/alap-kozbiztonsag.png',
   transport: '/icons/alap-kozlek.png',
@@ -27,6 +28,11 @@ interface LayerPanelProps {
   compact?: boolean;
   isStreetViewMode?: boolean;
   setIsStreetViewMode?: (value: boolean) => void;
+  // 🔥 Mobil specifikus prop-ok
+  isMobile?: boolean;
+  isMobileLayerOpen?: boolean;
+  setIsMobileLayerOpen?: (value: boolean) => void;
+  activeLayerCount?: number;
 }
 
 const LayerPanel: React.FC<LayerPanelProps> = ({ 
@@ -37,6 +43,10 @@ const LayerPanel: React.FC<LayerPanelProps> = ({
   compact = false,
   isStreetViewMode = false,
   setIsStreetViewMode = () => {},
+  isMobile = false,
+  isMobileLayerOpen = false,
+  setIsMobileLayerOpen = () => {},
+  activeLayerCount = 0,
 }) => {
   const { cookiesAccepted, sendEvent } = useAnalytics();
   const prevLayersRef = useRef(layers);
@@ -95,6 +105,145 @@ const LayerPanel: React.FC<LayerPanelProps> = ({
     prevLayersRef.current = layers;
   }, [layers, cookiesAccepted]);
 
+  // 🔥 MOBIL ALSÓ SÁV GOMBOK - PNG IKONOKKAL
+  const MobileBottomBar = () => (
+    <div className="mobile-bottom-bar">
+      {/* 🔥 RÉTEGEK GOMB - PNG ikonnal */}
+      <button 
+        className={`mobile-bottom-btn ${isMobileLayerOpen ? 'active' : ''}`}
+        onClick={() => setIsMobileLayerOpen(true)}
+      >
+        <img 
+          src="/icons/reteg.png" 
+          alt="Rétegek"
+          className="mobile-bottom-icon"
+          width={24}
+          height={24}
+        />
+        <span className="btn-label">Rétegek</span>
+        {activeLayerCount > 0 && (
+          <span className="layer-badge">{activeLayerCount}</span>
+        )}
+      </button>
+
+      {/* 🔥 LISTA GOMB - PNG ikonnal */}
+      <button 
+        className="mobile-bottom-btn"
+        onClick={() => {
+          window.dispatchEvent(new CustomEvent('toggleListView'));
+        }}
+      >
+        <img 
+          src="/icons/lista.png" 
+          alt="Lista"
+          className="mobile-bottom-icon"
+          width={24}
+          height={24}
+        />
+        <span className="btn-label">Lista</span>
+      </button>
+
+      {/* 🔥 STREET VIEW GOMB - PEGMAN PNG ikonnal */}
+      <button 
+        className={`mobile-bottom-btn ${isStreetViewMode ? 'active' : ''}`}
+        onClick={() => setIsStreetViewMode(!isStreetViewMode)}
+      >
+        <img 
+          src="/icons/pegman.png" 
+          alt="Street View"
+          className="mobile-bottom-icon"
+          width={24}
+          height={24}
+        />
+        <span className="btn-label">Street View</span>
+      </button>
+    </div>
+  );
+
+  // 🔥 MOBIL RÉTEGPANEL OVERLAY
+  const MobileLayerOverlay = () => (
+    <>
+      <div 
+        className="mobile-layer-overlay"
+        onClick={() => setIsMobileLayerOpen(false)}
+      />
+      <div className="mobile-layer-panel">
+        <div className="mobile-layer-header">
+          <h3>Rétegek</h3>
+          <button 
+            className="mobile-layer-close"
+            onClick={() => setIsMobileLayerOpen(false)}
+          >
+            ✕
+          </button>
+        </div>
+        <div className="mobile-layer-grid">
+          {/* STREET VIEW - PEGMAN PNG IKONNAL */}
+          <div className="street-view-section">
+            <label 
+              className={`street-view-label ${isStreetViewMode ? 'active' : ''}`}
+              onClick={() => {
+                setIsStreetViewMode(!isStreetViewMode);
+              }}
+            >
+              <span className="layer-icon">
+                <img 
+                  src="/icons/pegman.png" 
+                  alt="Street View"
+                  className="layer-icon-img street-view-icon"
+                  width={24}
+                  height={24}
+                />
+              </span>
+              <span className="layer-name">Street View</span>
+            </label>
+          </div>
+
+          {/* RÉTEGEK - PNG IKONOKKAL */}
+          {allLayers.map(({ key, name }) => {
+            const iconPath = LAYER_ICONS[key];
+            
+            return (
+              <label
+                key={key}
+                className={`layer-control-label ${layers[key] ? 'checked' : ''}`}
+                onClick={() => {
+                  const newLayers = {
+                    ...layers,
+                    [key]: !layers[key]
+                  };
+                  setLayers(newLayers);
+                }}
+              >
+                <span className="layer-icon">
+                  <img 
+                    src={iconPath}
+                    alt={name}
+                    className="layer-icon-img"
+                    width={24}
+                    height={24}
+                  />
+                </span>
+                <span className="layer-name">{name}</span>
+              </label>
+            );
+          })}
+        </div>
+      </div>
+    </>
+  );
+
+  // 🔥 HA MOBIL - csak a mobil sávot és overlay-t rendereljük
+  if (isMobile) {
+    return (
+      <>
+        <MobileBottomBar />
+        {isMobileLayerOpen && <MobileLayerOverlay />}
+      </>
+    );
+  }
+
+  // 🔥 ASZTALI NÉZET
   return (
     <div className={`layer-panel-modern ${compact ? 'layer-panel-compact' : ''}`}>
       {!compact && (
@@ -131,7 +280,6 @@ const LayerPanel: React.FC<LayerPanelProps> = ({
 
         {/* RÉTEGEK LISTÁJA - PNG IKONOKKAL */}
         <div className="layers-list">
-          {/* 🔥 "RÉTEGEK" FELIRAT - A KÉPEK FÖLÖTT */}
           {compact && (
             <div className="layer-panel-header">
               <span className="layer-panel-title">Rétegek</span>
@@ -149,14 +297,13 @@ const LayerPanel: React.FC<LayerPanelProps> = ({
               />
               <span className="layer-icon">
                 <img 
-                  src={LAYER_ICONS[key as keyof typeof LAYER_ICONS]} 
+                  src={LAYER_ICONS[key]} 
                   alt={name}
                   className="layer-icon-img"
                   width={20}
                   height={20}
                 />
               </span>
-              {/* 🔥 A név csak hoverre jelenik meg (kivéve Street View) */}
               <span className="layer-name">
                 {compact ? shortName : name}
               </span>

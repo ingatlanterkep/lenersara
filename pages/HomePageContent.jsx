@@ -281,6 +281,28 @@ export default function HomePageContent({
     }
   }, [viewMode, posts.length, setPosts]);
 
+  // A HomePageContent komponensben, a többi useEffect után add hozzá:
+
+// 🔥 LISTA GOMB KEZELÉSE A LAYERPANELBŐL
+useEffect(() => {
+  const handleToggleList = () => {
+    console.log('[HomePage] toggleListView event received');
+    setViewMode('list');
+    isListDataLoadedRef.current = false;
+    const isCurrentlyList = window.location.pathname.endsWith('/lista');
+    let newPath = window.location.pathname;
+    if (isCurrentlyList) {
+      newPath = newPath.replace(/\/lista$/, '') || '/';
+    } else {
+      newPath = newPath.endsWith('/') ? `${newPath}lista` : `${newPath}/lista`;
+    }
+    navigate(newPath, { replace: false });
+  };
+
+  window.addEventListener('toggleListView', handleToggleList);
+  return () => window.removeEventListener('toggleListView', handleToggleList);
+}, [navigate]);
+
   const getFullImageUrl = (imagePath) => {
     if (!imagePath || typeof imagePath !== 'string') return '/placeholder.jpg';
     if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) return imagePath;
@@ -1035,149 +1057,20 @@ export default function HomePageContent({
           </div>
         )}
 
-        {/* MOBIL ALSÓ SÁV - 3 GOMB */}
-        <div className="mobile-bottom-bar">
-          <button 
-            className={`mobile-bottom-btn ${isMobileLayerOpen ? 'active' : ''}`}
-            onClick={handleLayerButton}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="2" y="2" width="20" height="20" rx="2" />
-              <line x1="2" y1="8" x2="22" y2="8" />
-              <line x1="2" y1="14" x2="22" y2="14" />
-            </svg>
-            <span className="btn-label">Rétegek</span>
-            {activeLayerCount > 0 && (
-              <span className="layer-badge">{activeLayerCount}</span>
-            )}
-          </button>
+<LayerPanel
+  zoom={zoom}
+  layers={layers}
+  setLayers={setLayers}
+  onClose={() => {}}
+  isMobile={true}
+  isStreetViewMode={isStreetViewMode}
+  setIsStreetViewMode={setIsStreetViewMode}
+  isMobileLayerOpen={isMobileLayerOpen}
+  setIsMobileLayerOpen={setIsMobileLayerOpen}
+  activeLayerCount={activeLayerCount}
+/>
 
-          <button 
-            className="mobile-bottom-btn"
-            onClick={handleListButton}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="3" y="4" width="18" height="4" rx="1"/>
-              <rect x="3" y="10" width="18" height="4" rx="1"/>
-              <rect x="3" y="16" width="18" height="4" rx="1"/>
-            </svg>
-            <span className="btn-label">Lista</span>
-          </button>
 
-          <button 
-            className={`mobile-bottom-btn ${isStreetViewMode ? 'active' : ''}`}
-            onClick={handleStreetViewButton}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="3" />
-              <path d="M19 9l-4 4-4-4-4 4-4-4" />
-              <path d="M5 15l4-4 4 4 4-4 4 4" />
-              <path d="M12 3v3" />
-              <path d="M12 18v3" />
-              <path d="M3 12h3" />
-              <path d="M18 12h3" />
-            </svg>
-            <span className="btn-label">Street View</span>
-          </button>
-        </div>
-
-{isMobileLayerOpen && (
-  <>
-    <div 
-      className="mobile-layer-overlay"
-      onClick={() => setIsMobileLayerOpen(false)}
-    />
-    <div className="mobile-layer-panel">
-      <div className="mobile-layer-header">
-        <h3>Rétegek</h3>
-        <button 
-          className="mobile-layer-close"
-          onClick={() => setIsMobileLayerOpen(false)}
-        >
-          ✕
-        </button>
-      </div>
-      <div className="mobile-layer-grid">
-        {/* STREET VIEW - PEGMAN PNG IKONNAL */}
-        <div className="street-view-section">
-          <label 
-            className={`street-view-label ${isStreetViewMode ? 'active' : ''}`}
-            onClick={() => {
-              setIsStreetViewMode(!isStreetViewMode);
-            }}
-          >
-            <span className="layer-icon">
-              <img 
-                src="/icons/pegman.png" 
-                alt="Street View"
-                className="layer-icon-img street-view-icon"
-                width={24}
-                height={24}
-              />
-            </span>
-            <span className="layer-name">Street View</span>
-          </label>
-        </div>
-
-        {/* RÉTEGEK - PNG IKONOKKAL */}
-        {[
-          { key: 'satellite', name: 'Műhold' },
-          { key: 'crimeHeat', name: 'Biztonság' },
-          { key: 'transport', name: 'Közlek.' },
-          { key: 'education', name: 'Oktatás' },
-          { key: 'shop', name: 'Boltok' },
-          { key: 'health', name: 'Eü.' },
-          { key: 'bank', name: 'Bankok' },
-          { key: 'outdoor', name: 'Szabad' },
-          { key: 'sport', name: 'Sport' },
-          { key: 'religion', name: 'Vallás' },
-        ].map(({ key, name }) => {
-          // Ikonok elérési útjai - ugyanazok, mint a LayerPanel-ben
-          const iconMap = {
-            satellite: '/icons/alap-muhold.png',
-            crimeHeat: '/icons/alap-kozbiztonsag.png',
-            transport: '/icons/alap-kozlek.png',
-            education: '/icons/alap-oktatas.png',
-            shop: '/icons/alap-bolt.png',
-            health: '/icons/alap-egeszseg.png',
-            bank: '/icons/alap-bank.png',
-            outdoor: '/icons/alap-szabad.png',
-            sport: '/icons/alap-sport.png',
-            religion: '/icons/alap-vallas.png',
-          };
-          
-          // 🔥 JAVÍTÁS: Egyszerű objektum elérés, type assertion nélkül
-          const iconPath = iconMap[key];
-          
-          return (
-            <label
-              key={key}
-              className={`layer-control-label ${layers[key] ? 'checked' : ''}`}
-              onClick={() => {
-                const newLayers = {
-                  ...layers,
-                  [key]: !layers[key]
-                };
-                setLayers(newLayers);
-              }}
-            >
-              <span className="layer-icon">
-                <img 
-                  src={iconPath}
-                  alt={name}
-                  className="layer-icon-img"
-                  width={24}
-                  height={24}
-                />
-              </span>
-              <span className="layer-name">{name}</span>
-            </label>
-          );
-        })}
-      </div>
-    </div>
-  </>
-)}
 
         <LocationSearchModal
           isOpen={locationSearchOpen}

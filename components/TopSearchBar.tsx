@@ -1,4 +1,4 @@
-// components/TopSearchBar.tsx - MOBIL RÉSZ HOZZÁADÁSA
+// components/TopSearchBar.tsx
 
 'use client';
 
@@ -6,6 +6,9 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import '../styles/TopSearchBar.css';
 
+// ============================================
+// INTERFÉSZ - EGÉSZÍTSD KI A HIÁNYZÓ PROPS-OKKAL
+// ============================================
 interface TopSearchBarProps {
   listingType: string;
   setListingType: (value: string) => void;
@@ -111,11 +114,13 @@ const TopSearchBar: React.FC<TopSearchBarProps> = ({
   const pathname = usePathname();
   const [searchTerm, setSearchTerm] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
+  
+  // 🔥 ASZTALI: részletes keresés állapota
   const [showDetailedSearch, setShowDetailedSearch] = useState(false);
+  
+  // 🔥 MOBIL: NINCS SZÜKSÉG KÜLÖN showDetailedSearch-re, mert alapból nyitva van
   const [priceUnit, setPriceUnit] = useState(listingType === 'eladó' ? 'M' : 'E');
   const inputRef = useRef<HTMLInputElement>(null);
-
-  // MOBIL: Keresőpanel nyitva tartása
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
 
   const displayLocation = selectedLocations.length > 0 
@@ -141,7 +146,6 @@ const TopSearchBar: React.FC<TopSearchBarProps> = ({
 
   const handleBlur = () => {
     if (isMobile) {
-      // Ne zárjuk be azonnal, hogy ne legyen villogás
       setTimeout(() => {
         setIsMobileSearchOpen(false);
       }, 150);
@@ -180,7 +184,6 @@ const TopSearchBar: React.FC<TopSearchBarProps> = ({
 
   const activeFilterCount = getActiveFilterCount();
 
-  // MOBIL: Ha megnyílik a keresőpanel, blokkoljuk a háttér görgetését
   useEffect(() => {
     if (isMobile && isMobileSearchOpen) {
       document.body.style.overflow = 'hidden';
@@ -192,10 +195,12 @@ const TopSearchBar: React.FC<TopSearchBarProps> = ({
     };
   }, [isMobile, isMobileSearchOpen]);
 
-  // ASZTALI NÉZET - teljes search bar
+  // ============================================
+  // ASZTALI NÉZET
+  // ============================================
   if (!isMobile) {
     return (
-      <div className={`top-search-bar ${isExpanded ? 'expanded' : ''}`}>
+      <div className="top-search-bar">
         <div className="search-bar-container">
           {/* Típus választó */}
           <div className="search-type-toggle">
@@ -304,29 +309,19 @@ const TopSearchBar: React.FC<TopSearchBarProps> = ({
 
           {/* Részletes keresés gomb */}
           <button 
-            className={`detailed-toggle-btn ${showDetailedSearch ? 'active' : ''}`}
+            className={`action-btn ${showDetailedSearch ? 'active' : ''}`}
             onClick={() => setShowDetailedSearch(!showDetailedSearch)}
-            title="Részletes keresés"
+            style={{ position: 'relative' }}
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="4" y1="21" x2="4" y2="14"/>
-              <line x1="4" y1="10" x2="4" y2="3"/>
-              <line x1="12" y1="21" x2="12" y2="12"/>
-              <line x1="12" y1="8" x2="12" y2="3"/>
-              <line x1="20" y1="21" x2="20" y2="16"/>
-              <line x1="20" y1="12" x2="20" y2="3"/>
-              <line x1="1" y1="14" x2="7" y2="14"/>
-              <line x1="9" y1="8" x2="15" y2="8"/>
-              <line x1="17" y1="16" x2="23" y2="16"/>
-            </svg>
+            <span className="btn-label">Részletes</span>
             {activeFilterCount > 0 && (
               <span className="filter-badge">{activeFilterCount}</span>
             )}
           </button>
 
-          {/* Listás nézet gomb */}
+          {/* Lista gomb */}
           <button 
-            className="list-view-toggle-btn"
+            className="action-btn"
             onClick={() => {
               const isCurrentlyList = window.location.pathname.endsWith('/lista');
               let newPath = window.location.pathname;
@@ -337,23 +332,17 @@ const TopSearchBar: React.FC<TopSearchBarProps> = ({
               }
               window.location.href = newPath;
             }}
-            title="Listás nézet"
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="3" y="4" width="18" height="4" rx="1"/>
-              <rect x="3" y="10" width="18" height="4" rx="1"/>
-              <rect x="3" y="16" width="18" height="4" rx="1"/>
-            </svg>
+            <span className="btn-label">Lista</span>
           </button>
         </div>
 
-        {/* Részletes keresés panel */}
+        {/* Részletes keresés panel - ASZTALI */}
         {showDetailedSearch && (
           <div className="detailed-search-panel">
             <div className="detailed-search-grid">
-              {/* Szobák száma */}
               <div className="detail-group">
-                <label>Szobák száma</label>
+                <label>Szobák</label>
                 <div className="range-input-group">
                   <input
                     type="number"
@@ -373,7 +362,6 @@ const TopSearchBar: React.FC<TopSearchBarProps> = ({
                 </div>
               </div>
 
-              {/* Építés éve */}
               <div className="detail-group">
                 <label>Építés éve</label>
                 <div className="range-input-group">
@@ -395,9 +383,8 @@ const TopSearchBar: React.FC<TopSearchBarProps> = ({
                 </div>
               </div>
 
-              {/* Emeletek száma */}
               <div className="detail-group">
-                <label>Emeletek száma</label>
+                <label>Emeletek</label>
                 <div className="range-input-group">
                   <input
                     type="number"
@@ -417,7 +404,6 @@ const TopSearchBar: React.FC<TopSearchBarProps> = ({
                 </div>
               </div>
 
-              {/* Telekterület */}
               <div className="detail-group">
                 <label>Telekterület</label>
                 <div className="range-input-group">
@@ -439,7 +425,6 @@ const TopSearchBar: React.FC<TopSearchBarProps> = ({
                 </div>
               </div>
 
-              {/* Állapot */}
               <div className="detail-group">
                 <label>Állapot</label>
                 <select 
@@ -456,9 +441,8 @@ const TopSearchBar: React.FC<TopSearchBarProps> = ({
                 </select>
               </div>
 
-              {/* Fűtés típusa */}
               <div className="detail-group">
-                <label>Fűtés típusa</label>
+                <label>Fűtés</label>
                 <select 
                   value={heatingType || ''} 
                   onChange={(e) => setHeatingType(e.target.value)}
@@ -469,11 +453,10 @@ const TopSearchBar: React.FC<TopSearchBarProps> = ({
                   <option value="elektromos">Elektromos</option>
                   <option value="távfűtés">Távfűtés</option>
                   <option value="fatüzelés">Fatüzelés</option>
-                  <option value="megújuló / hőszivattyú">Megújuló / hőszivattyú</option>
+                  <option value="megújuló / hőszivattyú">Megújuló</option>
                 </select>
               </div>
 
-              {/* Parkolás */}
               <div className="detail-group">
                 <label>Parkolás</label>
                 <select 
@@ -488,9 +471,8 @@ const TopSearchBar: React.FC<TopSearchBarProps> = ({
                 </select>
               </div>
 
-              {/* Komfort szint */}
               <div className="detail-group">
-                <label>Komfort szint</label>
+                <label>Komfort</label>
                 <select 
                   value={comfortLevel || ''} 
                   onChange={(e) => setComfortLevel(e.target.value)}
@@ -507,7 +489,6 @@ const TopSearchBar: React.FC<TopSearchBarProps> = ({
                 </select>
               </div>
 
-              {/* Checkbox-ok */}
               <div className="detail-group checkbox-group">
                 <label className="checkbox-label">
                   <input
@@ -515,7 +496,7 @@ const TopSearchBar: React.FC<TopSearchBarProps> = ({
                     checked={onlyWithImages}
                     onChange={() => setOnlyWithImages(!onlyWithImages)}
                   />
-                  Csak képes ingatlanok
+                  Csak képes
                 </label>
                 <label className="checkbox-label">
                   <input
@@ -523,11 +504,10 @@ const TopSearchBar: React.FC<TopSearchBarProps> = ({
                     checked={isNewBuildFilter || false}
                     onChange={() => setIsNewBuildFilter(!isNewBuildFilter)}
                   />
-                  Csak új építésű
+                  Új építésű
                 </label>
               </div>
 
-              {/* Pontosság */}
               <div className="detail-group">
                 <label>Pontosság</label>
                 <select
@@ -547,7 +527,9 @@ const TopSearchBar: React.FC<TopSearchBarProps> = ({
     );
   }
 
-  // ============ MOBIL NÉZET ============
+  // ============================================
+  // MOBIL NÉZET - RÉSZLETES KERESŐ ALAPBÓL NYITVA
+  // ============================================
   return (
     <>
       {/* MOBIL: Vékony csík a keresőmezővel */}
@@ -569,11 +551,10 @@ const TopSearchBar: React.FC<TopSearchBarProps> = ({
         </div>
       </div>
 
-      {/* MOBIL: Teljes keresőpanel (overlay) */}
+      {/* MOBIL: Teljes keresőpanel (overlay) - RÉSZLETES KERESŐ ALAPBÓL NYITVA */}
       {isMobileSearchOpen && (
         <div className="mobile-search-overlay">
           <div className="mobile-search-panel">
-            {/* Fejléc - Bezáró gomb */}
             <div className="mobile-search-header">
               <h2>Keresés</h2>
               <button 
@@ -584,10 +565,9 @@ const TopSearchBar: React.FC<TopSearchBarProps> = ({
               </button>
             </div>
 
-            {/* Keresés tartalom - ugyanaz, mint az asztali */}
             <div className="mobile-search-content">
               {/* Típus választó */}
-              <div className="search-type-toggle mobile-toggle">
+              <div className="search-type-toggle">
                 <button 
                   className={`type-btn ${listingType === 'eladó' ? 'active' : ''}`}
                   onClick={() => handleListingTypeChange('eladó')}
@@ -603,7 +583,7 @@ const TopSearchBar: React.FC<TopSearchBarProps> = ({
               </div>
 
               {/* Helyszín */}
-              <div className="search-location mobile-location" onClick={() => {
+              <div className="search-location" onClick={() => {
                 setIsMobileSearchOpen(false);
                 onLocationSearchOpen();
               }}>
@@ -617,7 +597,7 @@ const TopSearchBar: React.FC<TopSearchBarProps> = ({
               </div>
 
               {/* Ingatlantípus */}
-              <div className="search-type-select mobile-type-select">
+              <div className="search-type-select">
                 <select 
                   value={type} 
                   onChange={(e) => setType(e.target.value)}
@@ -640,7 +620,7 @@ const TopSearchBar: React.FC<TopSearchBarProps> = ({
               </div>
 
               {/* Ár tartomány */}
-              <div className="search-range price-range mobile-range">
+              <div className="search-range price-range">
                 <input
                   type="number"
                   placeholder="Min ár"
@@ -662,7 +642,7 @@ const TopSearchBar: React.FC<TopSearchBarProps> = ({
               </div>
 
               {/* Alapterület */}
-              <div className="search-range area-range mobile-range">
+              <div className="search-range area-range">
                 <input
                   type="number"
                   placeholder="Min m²"
@@ -683,226 +663,191 @@ const TopSearchBar: React.FC<TopSearchBarProps> = ({
                 <span className="range-unit">m²</span>
               </div>
 
-              {/* Részletes keresés gomb */}
-              <button 
-                className={`detailed-toggle-btn mobile-detailed-btn ${showDetailedSearch ? 'active' : ''}`}
-                onClick={() => setShowDetailedSearch(!showDetailedSearch)}
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="4" y1="21" x2="4" y2="14"/>
-                  <line x1="4" y1="10" x2="4" y2="3"/>
-                  <line x1="12" y1="21" x2="12" y2="12"/>
-                  <line x1="12" y1="8" x2="12" y2="3"/>
-                  <line x1="20" y1="21" x2="20" y2="16"/>
-                  <line x1="20" y1="12" x2="20" y2="3"/>
-                  <line x1="1" y1="14" x2="7" y2="14"/>
-                  <line x1="9" y1="8" x2="15" y2="8"/>
-                  <line x1="17" y1="16" x2="23" y2="16"/>
-                </svg>
-                <span>Részletes keresés</span>
-                {activeFilterCount > 0 && (
-                  <span className="filter-badge">{activeFilterCount}</span>
-                )}
-              </button>
-
-              {/* Részletes keresés panel mobilon */}
-              {showDetailedSearch && (
-                <div className="detailed-search-panel mobile-detailed-panel">
-                  <div className="detailed-search-grid">
-                    {/* Szobák száma */}
-                    <div className="detail-group">
-                      <label>Szobák száma</label>
-                      <div className="range-input-group">
-                        <input
-                          type="number"
-                          placeholder="Min"
-                          value={minRooms}
-                          onChange={(e) => setMinRooms(e.target.value)}
-                          step="any"
-                        />
-                        <span>-</span>
-                        <input
-                          type="number"
-                          placeholder="Max"
-                          value={maxRooms}
-                          onChange={(e) => setMaxRooms(e.target.value)}
-                          step="any"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Építés éve */}
-                    <div className="detail-group">
-                      <label>Építés éve</label>
-                      <div className="range-input-group">
-                        <input
-                          type="number"
-                          placeholder="Min"
-                          value={yearBuiltMin}
-                          onChange={(e) => setYearBuiltMin(e.target.value)}
-                          step="any"
-                        />
-                        <span>-</span>
-                        <input
-                          type="number"
-                          placeholder="Max"
-                          value={yearBuiltMax}
-                          onChange={(e) => setYearBuiltMax(e.target.value)}
-                          step="any"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Emeletek száma */}
-                    <div className="detail-group">
-                      <label>Emeletek száma</label>
-                      <div className="range-input-group">
-                        <input
-                          type="number"
-                          placeholder="Min"
-                          value={totalFloorsMin}
-                          onChange={(e) => setTotalFloorsMin(e.target.value)}
-                          step="any"
-                        />
-                        <span>-</span>
-                        <input
-                          type="number"
-                          placeholder="Max"
-                          value={totalFloorsMax}
-                          onChange={(e) => setTotalFloorsMax(e.target.value)}
-                          step="any"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Telekterület */}
-                    <div className="detail-group">
-                      <label>Telekterület</label>
-                      <div className="range-input-group">
-                        <input
-                          type="number"
-                          placeholder="Min"
-                          value={landAreaMin}
-                          onChange={(e) => setLandAreaMin(e.target.value)}
-                          step="any"
-                        />
-                        <span>-</span>
-                        <input
-                          type="number"
-                          placeholder="Max"
-                          value={landAreaMax}
-                          onChange={(e) => setLandAreaMax(e.target.value)}
-                          step="any"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Állapot */}
-                    <div className="detail-group">
-                      <label>Állapot</label>
-                      <select 
-                        value={condition || ''} 
-                        onChange={(e) => setCondition(e.target.value)}
-                        className="detail-select"
-                      >
-                        <option value="">Bármilyen</option>
-                        <option value="kiváló">Kiváló</option>
-                        <option value="felújított">Felújított</option>
-                        <option value="jó">Jó</option>
-                        <option value="lakható">Lakható</option>
-                        <option value="felújítandó">Felújítandó</option>
-                      </select>
-                    </div>
-
-                    {/* Fűtés típusa */}
-                    <div className="detail-group">
-                      <label>Fűtés típusa</label>
-                      <select 
-                        value={heatingType || ''} 
-                        onChange={(e) => setHeatingType(e.target.value)}
-                        className="detail-select"
-                      >
-                        <option value="">Bármilyen</option>
-                        <option value="gáz">Gáz</option>
-                        <option value="elektromos">Elektromos</option>
-                        <option value="távfűtés">Távfűtés</option>
-                        <option value="fatüzelés">Fatüzelés</option>
-                        <option value="megújuló / hőszivattyú">Megújuló / hőszivattyú</option>
-                      </select>
-                    </div>
-
-                    {/* Parkolás */}
-                    <div className="detail-group">
-                      <label>Parkolás</label>
-                      <select 
-                        value={parking || ''} 
-                        onChange={(e) => setParking(e.target.value)}
-                        className="detail-select"
-                      >
-                        <option value="">Bármilyen</option>
-                        <option value="garázs">Garázs</option>
-                        <option value="beálló">Beálló</option>
-                        <option value="utcai">Utcai</option>
-                      </select>
-                    </div>
-
-                    {/* Komfort szint */}
-                    <div className="detail-group">
-                      <label>Komfort szint</label>
-                      <select 
-                        value={comfortLevel || ''} 
-                        onChange={(e) => setComfortLevel(e.target.value)}
-                        className="detail-select"
-                      >
-                        <option value="">Bármilyen</option>
-                        <option value="Komfort nélküli">Komfort nélküli</option>
-                        <option value="Szoba-konyha">Szoba-konyha</option>
-                        <option value="Félkomfortos">Félkomfortos</option>
-                        <option value="Komfortos">Komfortos</option>
-                        <option value="Összkomfortos">Összkomfortos</option>
-                        <option value="Duplakomfortos">Duplakomfortos</option>
-                        <option value="Luxus">Luxus</option>
-                      </select>
-                    </div>
-
-                    {/* Checkbox-ok */}
-                    <div className="detail-group checkbox-group">
-                      <label className="checkbox-label">
-                        <input
-                          type="checkbox"
-                          checked={onlyWithImages}
-                          onChange={() => setOnlyWithImages(!onlyWithImages)}
-                        />
-                        Csak képes ingatlanok
-                      </label>
-                      <label className="checkbox-label">
-                        <input
-                          type="checkbox"
-                          checked={isNewBuildFilter || false}
-                          onChange={() => setIsNewBuildFilter(!isNewBuildFilter)}
-                        />
-                        Csak új építésű
-                      </label>
-                    </div>
-
-                    {/* Pontosság */}
-                    <div className="detail-group">
-                      <label>Pontosság</label>
-                      <select
-                        value={accuracy}
-                        onChange={(e) => setAccuracy(e.target.value)}
-                        className="detail-select"
-                      >
-                        <option value="any">Bármilyen</option>
-                        <option value="street">Utca szintű</option>
-                        <option value="region">Környék szintű</option>
-                      </select>
+              {/* 🔥 RÉSZLETES KERESŐ - ALAPBÓL NYITVA (NINCS KÜLÖN GOMB) */}
+              <div className="detailed-search-panel mobile-detailed-panel" style={{ marginTop: 0 }}>
+                <div className="detailed-search-grid">
+                  <div className="detail-group">
+                    <label>Szobák</label>
+                    <div className="range-input-group">
+                      <input
+                        type="number"
+                        placeholder="Min"
+                        value={minRooms}
+                        onChange={(e) => setMinRooms(e.target.value)}
+                        step="any"
+                      />
+                      <span>-</span>
+                      <input
+                        type="number"
+                        placeholder="Max"
+                        value={maxRooms}
+                        onChange={(e) => setMaxRooms(e.target.value)}
+                        step="any"
+                      />
                     </div>
                   </div>
-                </div>
-              )}
 
-              {/* Alkalmaz gomb */}
+                  <div className="detail-group">
+                    <label>Építés éve</label>
+                    <div className="range-input-group">
+                      <input
+                        type="number"
+                        placeholder="Min"
+                        value={yearBuiltMin}
+                        onChange={(e) => setYearBuiltMin(e.target.value)}
+                        step="any"
+                      />
+                      <span>-</span>
+                      <input
+                        type="number"
+                        placeholder="Max"
+                        value={yearBuiltMax}
+                        onChange={(e) => setYearBuiltMax(e.target.value)}
+                        step="any"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="detail-group">
+                    <label>Emeletek</label>
+                    <div className="range-input-group">
+                      <input
+                        type="number"
+                        placeholder="Min"
+                        value={totalFloorsMin}
+                        onChange={(e) => setTotalFloorsMin(e.target.value)}
+                        step="any"
+                      />
+                      <span>-</span>
+                      <input
+                        type="number"
+                        placeholder="Max"
+                        value={totalFloorsMax}
+                        onChange={(e) => setTotalFloorsMax(e.target.value)}
+                        step="any"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="detail-group">
+                    <label>Telekterület</label>
+                    <div className="range-input-group">
+                      <input
+                        type="number"
+                        placeholder="Min"
+                        value={landAreaMin}
+                        onChange={(e) => setLandAreaMin(e.target.value)}
+                        step="any"
+                      />
+                      <span>-</span>
+                      <input
+                        type="number"
+                        placeholder="Max"
+                        value={landAreaMax}
+                        onChange={(e) => setLandAreaMax(e.target.value)}
+                        step="any"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="detail-group">
+                    <label>Állapot</label>
+                    <select 
+                      value={condition || ''} 
+                      onChange={(e) => setCondition(e.target.value)}
+                      className="detail-select"
+                    >
+                      <option value="">Bármilyen</option>
+                      <option value="kiváló">Kiváló</option>
+                      <option value="felújított">Felújított</option>
+                      <option value="jó">Jó</option>
+                      <option value="lakható">Lakható</option>
+                      <option value="felújítandó">Felújítandó</option>
+                    </select>
+                  </div>
+
+                  <div className="detail-group">
+                    <label>Fűtés</label>
+                    <select 
+                      value={heatingType || ''} 
+                      onChange={(e) => setHeatingType(e.target.value)}
+                      className="detail-select"
+                    >
+                      <option value="">Bármilyen</option>
+                      <option value="gáz">Gáz</option>
+                      <option value="elektromos">Elektromos</option>
+                      <option value="távfűtés">Távfűtés</option>
+                      <option value="fatüzelés">Fatüzelés</option>
+                      <option value="megújuló / hőszivattyú">Megújuló</option>
+                    </select>
+                  </div>
+
+                  <div className="detail-group">
+                    <label>Parkolás</label>
+                    <select 
+                      value={parking || ''} 
+                      onChange={(e) => setParking(e.target.value)}
+                      className="detail-select"
+                    >
+                      <option value="">Bármilyen</option>
+                      <option value="garázs">Garázs</option>
+                      <option value="beálló">Beálló</option>
+                      <option value="utcai">Utcai</option>
+                    </select>
+                  </div>
+
+                  <div className="detail-group">
+                    <label>Komfort</label>
+                    <select 
+                      value={comfortLevel || ''} 
+                      onChange={(e) => setComfortLevel(e.target.value)}
+                      className="detail-select"
+                    >
+                      <option value="">Bármilyen</option>
+                      <option value="Komfort nélküli">Komfort nélküli</option>
+                      <option value="Szoba-konyha">Szoba-konyha</option>
+                      <option value="Félkomfortos">Félkomfortos</option>
+                      <option value="Komfortos">Komfortos</option>
+                      <option value="Összkomfortos">Összkomfortos</option>
+                      <option value="Duplakomfortos">Duplakomfortos</option>
+                      <option value="Luxus">Luxus</option>
+                    </select>
+                  </div>
+
+                  <div className="detail-group checkbox-group">
+                    <label className="checkbox-label">
+                      <input
+                        type="checkbox"
+                        checked={onlyWithImages}
+                        onChange={() => setOnlyWithImages(!onlyWithImages)}
+                      />
+                      Csak képes
+                    </label>
+                    <label className="checkbox-label">
+                      <input
+                        type="checkbox"
+                        checked={isNewBuildFilter || false}
+                        onChange={() => setIsNewBuildFilter(!isNewBuildFilter)}
+                      />
+                      Új építésű
+                    </label>
+                  </div>
+
+                  <div className="detail-group">
+                    <label>Pontosság</label>
+                    <select
+                      value={accuracy}
+                      onChange={(e) => setAccuracy(e.target.value)}
+                      className="detail-select"
+                    >
+                      <option value="any">Bármilyen</option>
+                      <option value="street">Utca szintű</option>
+                      <option value="region">Környék szintű</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
               <button 
                 className="mobile-apply-btn"
                 onClick={() => setIsMobileSearchOpen(false)}
