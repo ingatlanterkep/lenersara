@@ -23,60 +23,34 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
       }
     }
     
-    // Session ID lekérése
-    let sessionId = '';
-    let sessionCount = '1';
-    const gaSessionCookie = document.cookie.split(';').find(c => c.trim().startsWith('_ga_'));
-    if (gaSessionCookie) {
-      const match = gaSessionCookie.match(/GS1\.\d+\.(\d+)\.(\d+)/);
-      if (match) {
-        sessionId = match[1];
-        sessionCount = match[2];
-      }
-    }
-    
+    // Session ID - sessionStorage-ból, hogy ne változzon minden eseménynél
+    let sessionId = sessionStorage.getItem('ga_session_id');
     if (!sessionId) {
       sessionId = Math.floor(Date.now() / 1000).toString();
-      sessionCount = '1';
+      sessionStorage.setItem('ga_session_id', sessionId);
     }
 
     const params = new URLSearchParams();
+    
+    // 🔥 CSAK A KÖTELEZŐ ÉS HASZNOS PARAMÉTEREK
     params.append('v', '2');
     params.append('tid', measurementId);
     params.append('cid', clientId);
     params.append('en', eventName);
-    params.append('_s', sessionCount);
     params.append('sid', sessionId);
-    params.append('sct', sessionCount);
-    params.append('seg', '0');
     params.append('dl', window.location.href);
     params.append('dt', document.title);
     params.append('dr', document.referrer || '');
     params.append('ul', navigator.language || 'hu-hu');
     params.append('sr', `${window.screen.width}x${window.screen.height}`);
-    params.append('_et', '0');
-    params.append('_p', '1');
-    params.append('_ss', '1');
-    params.append('gcd', '13l3l3l2l1l1');
-    params.append('npa', '1');
-    params.append('dma_cps', 'a');
-    params.append('dma', '1');
-    params.append('_eu', 'AEAAAAQ');
-    params.append('ae', 'a');
-    params.append('are', '1');
-    params.append('frm', '0');
-    params.append('pscdl', 'noapi');
-    params.append('rcb', '1');
-    params.append('uaa', '');
-    params.append('uab', '64');
-    params.append('uafvl', '"Google Chrome";v="147", "Not.A/Brand";v="8", "Chromium";v="147"');
-    params.append('uam', 'Nexus 5');
-    params.append('uamb', '1');
-    params.append('uap', 'Android');
-    params.append('uapv', '6.0');
-    params.append('uaw', '0');
-    params.append('tag_exp', '115938465~115938468~118395334~119392696~119392704~119456239~119456247');
     
+    // ✅ CSAK AZ ELSŐ PAGE_VIEW-NÁL KÜLDJÜK A SESSION STARTOT
+    if (eventName === 'page_view' && !sessionStorage.getItem('ga_session_started')) {
+      params.append('_ss', '1');
+      sessionStorage.setItem('ga_session_started', 'true');
+    }
+    
+    // ✅ EGYEDI ESEMÉNYPARAMÉTEREK
     Object.entries(eventParams).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         if (typeof value === 'number') {
@@ -94,9 +68,6 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
       mode: 'no-cors',
       cache: 'no-cache',
       keepalive: true,
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
       body: '',
     }).catch(() => {});
     
