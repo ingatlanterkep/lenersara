@@ -28,11 +28,11 @@ interface LayerPanelProps {
   compact?: boolean;
   isStreetViewMode?: boolean;
   setIsStreetViewMode?: (value: boolean) => void;
-  // 🔥 Mobil specifikus prop-ok
   isMobile?: boolean;
   isMobileLayerOpen?: boolean;
   setIsMobileLayerOpen?: (value: boolean) => void;
   activeLayerCount?: number;
+  hideBottomBar?: boolean; // 🔥 ÚJ PROP
 }
 
 const LayerPanel: React.FC<LayerPanelProps> = ({ 
@@ -47,6 +47,7 @@ const LayerPanel: React.FC<LayerPanelProps> = ({
   isMobileLayerOpen = false,
   setIsMobileLayerOpen = () => {},
   activeLayerCount = 0,
+  hideBottomBar = false, // 🔥 ALAPÉRTELMEZETT false
 }) => {
   const { cookiesAccepted, sendEvent } = useAnalytics();
   const prevLayersRef = useRef(layers);
@@ -105,60 +106,57 @@ const LayerPanel: React.FC<LayerPanelProps> = ({
     prevLayersRef.current = layers;
   }, [layers, cookiesAccepted]);
 
-  // 🔥 MOBIL ALSÓ SÁV GOMBOK - PNG IKONOKKAL
-  const MobileBottomBar = () => (
-    <div className="mobile-bottom-bar">
-      {/* 🔥 RÉTEGEK GOMB - PNG ikonnal */}
-      <button 
-        className={`mobile-bottom-btn ${isMobileLayerOpen ? 'active' : ''}`}
-        onClick={() => setIsMobileLayerOpen(true)}
-      >
-        <img 
-          src="/icons/reteg.png" 
-          alt="Rétegek"
-          className="mobile-bottom-icon"
-          width={24}
-          height={24}
-        />
-        <span className="btn-label">Rétegek</span>
-        {activeLayerCount > 0 && (
-          <span className="layer-badge">{activeLayerCount}</span>
-        )}
-      </button>
+// 🔥 MOBIL ALSÓ SÁV GOMBOK - PNG IKONOKKAL
+const MobileBottomBar = () => (
+  <div className={`mobile-bottom-bar ${hideBottomBar ? 'hidden' : ''}`}>
+    <button 
+      className={`mobile-bottom-btn ${isMobileLayerOpen ? 'active' : ''}`}
+      onClick={() => setIsMobileLayerOpen(true)}
+    >
+      <img 
+        src="/icons/reteg.png" 
+        alt="Rétegek"
+        className="mobile-bottom-icon"
+        width={24}
+        height={24}
+      />
+      <span className="btn-label">Rétegek</span>
+      {activeLayerCount > 0 && (
+        <span className="layer-badge">{activeLayerCount}</span>
+      )}
+    </button>
 
-      {/* 🔥 LISTA GOMB - PNG ikonnal */}
-      <button 
-        className="mobile-bottom-btn"
-        onClick={() => {
-          window.dispatchEvent(new CustomEvent('toggleListView'));
-        }}
-      >
-        <img 
-          src="/icons/lista.png" 
-          alt="Lista"
-          className="mobile-bottom-icon"
-          width={24}
-          height={24}
-        />
-        <span className="btn-label">Lista</span>
-      </button>
+    <button 
+      className="mobile-bottom-btn"
+      onClick={() => {
+        window.dispatchEvent(new CustomEvent('toggleListView'));
+      }}
+    >
+      <img 
+        src="/icons/lista.png" 
+        alt="Lista"
+        className="mobile-bottom-icon"
+        width={24}
+        height={24}
+      />
+      <span className="btn-label">Lista</span>
+    </button>
 
-      {/* 🔥 STREET VIEW GOMB - PEGMAN PNG ikonnal */}
-      <button 
-        className={`mobile-bottom-btn ${isStreetViewMode ? 'active' : ''}`}
-        onClick={() => setIsStreetViewMode(!isStreetViewMode)}
-      >
-        <img 
-          src="/icons/pegman.png" 
-          alt="Street View"
-          className="mobile-bottom-icon"
-          width={24}
-          height={24}
-        />
-        <span className="btn-label">Street View</span>
-      </button>
-    </div>
-  );
+    <button 
+      className={`mobile-bottom-btn ${isStreetViewMode ? 'active' : ''}`}
+      onClick={() => setIsStreetViewMode(!isStreetViewMode)}
+    >
+      <img 
+        src="/icons/pegman.png" 
+        alt="Street View"
+        className="mobile-bottom-icon"
+        width={24}
+        height={24}
+      />
+      <span className="btn-label">Street View</span>
+    </button>
+  </div>
+);
 
   // 🔥 MOBIL RÉTEGPANEL OVERLAY
   const MobileLayerOverlay = () => (
@@ -233,17 +231,21 @@ const LayerPanel: React.FC<LayerPanelProps> = ({
     </>
   );
 
-  // 🔥 HA MOBIL - csak a mobil sávot és overlay-t rendereljük
-  if (isMobile) {
-    return (
-      <>
-        <MobileBottomBar />
-        {isMobileLayerOpen && <MobileLayerOverlay />}
-      </>
-    );
-  }
+// 🔥 HA MOBIL - csak a mobil sávot és overlay-t rendereljük
+if (isMobile) {
+  return (
+    <>
+      {!hideBottomBar && <MobileBottomBar />}
+      {isMobileLayerOpen && <MobileLayerOverlay />}
+    </>
+  );
+}
 
-  // 🔥 ASZTALI NÉZET
+
+  // 🔥 HA MOBIL - csak a mobil sávot és overlay-t rendereljük
+
+
+  // 🔥 ASZTALI NÉZET (változatlan)
   return (
     <div className={`layer-panel-modern ${compact ? 'layer-panel-compact' : ''}`}>
       {!compact && (

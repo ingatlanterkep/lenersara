@@ -530,27 +530,6 @@ useEffect(() => {
     setActiveLayerCount(count);
   }, [layers]);
 
-  // MOBIL: Alsó sáv gombok kezelése
-  const handleLayerButton = () => {
-    setIsMobileLayerOpen(true);
-  };
-
-  const handleListButton = () => {
-    setViewMode('list');
-    isListDataLoadedRef.current = false;
-    const isCurrentlyList = window.location.pathname.endsWith('/lista');
-    let newPath = window.location.pathname;
-    if (isCurrentlyList) {
-      newPath = newPath.replace(/\/lista$/, '') || '/';
-    } else {
-      newPath = newPath.endsWith('/') ? `${newPath}lista` : `${newPath}/lista`;
-    }
-    navigate(newPath, { replace: false });
-  };
-
-  const handleStreetViewButton = () => {
-    setIsStreetViewMode(!isStreetViewMode);
-  };
 
   useEffect(() => {
     const updateMapHeight = () => {
@@ -823,8 +802,6 @@ useEffect(() => {
       let newHeight = startHeight + deltaPercent;
       newHeight = Math.min(60, Math.max(25, newHeight));
       setMobileBottomHeight(newHeight);
-      const container = document.querySelector('.mobile-bottom-container');
-      if (container) container.style.height = `${newHeight}%`;
     };
     const onUp = () => {
       document.removeEventListener('mousemove', onMove);
@@ -1057,6 +1034,7 @@ useEffect(() => {
           </div>
         )}
 
+{/* 🔥 MOBIL: LayerPanel - LISTA NÉZETBEN ELREJTVE A BOTTOM BAR */}
 <LayerPanel
   zoom={zoom}
   layers={layers}
@@ -1068,6 +1046,7 @@ useEffect(() => {
   isMobileLayerOpen={isMobileLayerOpen}
   setIsMobileLayerOpen={setIsMobileLayerOpen}
   activeLayerCount={activeLayerCount}
+  hideBottomBar={viewMode === 'list'} // 🔥 LISTA NÉZETBEN ELREJTVE
 />
 
 

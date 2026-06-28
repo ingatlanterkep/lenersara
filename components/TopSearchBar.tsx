@@ -7,7 +7,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import '../styles/TopSearchBar.css';
 
 // ============================================
-// INTERFÉSZ - EGÉSZÍTSD KI A HIÁNYZÓ PROPS-OKKAL
+// INTERFÉSZ
 // ============================================
 interface TopSearchBarProps {
   listingType: string;
@@ -58,6 +58,9 @@ interface TopSearchBarProps {
   isMobile: boolean;
   onFilterToggle: () => void;
   isFilterOpen: boolean;
+  // 🔥 ÚJ PROPS-OK a térkép/lista váltáshoz
+  viewMode?: 'map' | 'list';
+  onViewModeChange?: (mode: 'map' | 'list') => void;
 }
 
 const TopSearchBar: React.FC<TopSearchBarProps> = ({
@@ -109,6 +112,8 @@ const TopSearchBar: React.FC<TopSearchBarProps> = ({
   isMobile,
   onFilterToggle,
   isFilterOpen,
+  viewMode = 'map',
+  onViewModeChange,
 }) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -183,6 +188,27 @@ const TopSearchBar: React.FC<TopSearchBarProps> = ({
   ]);
 
   const activeFilterCount = getActiveFilterCount();
+
+  // 🔥 Ellenőrizzük, hogy lista nézetben vagyunk-e
+  const isListView = pathname?.endsWith('/lista') || viewMode === 'list';
+
+  // 🔥 Térkép/lista váltás kezelése
+  const handleViewToggle = useCallback(() => {
+    if (onViewModeChange) {
+      // Ha van callback, azt használjuk
+      onViewModeChange(isListView ? 'map' : 'list');
+    } else {
+      // Fallback: URL alapú váltás
+      const isCurrentlyList = pathname?.endsWith('/lista');
+      let newPath = pathname || '/';
+      if (isCurrentlyList) {
+        newPath = newPath.replace(/\/lista$/, '') || '/';
+      } else {
+        newPath = newPath.endsWith('/') ? `${newPath}lista` : `${newPath}/lista`;
+      }
+      window.location.href = newPath;
+    }
+  }, [isListView, onViewModeChange, pathname]);
 
   useEffect(() => {
     if (isMobile && isMobileSearchOpen) {
@@ -319,21 +345,14 @@ const TopSearchBar: React.FC<TopSearchBarProps> = ({
             )}
           </button>
 
-          {/* Lista gomb */}
+          {/* 🔥 GÉP: Térkép/Lista gomb - dinamikus felirat */}
           <button 
-            className="action-btn"
-            onClick={() => {
-              const isCurrentlyList = window.location.pathname.endsWith('/lista');
-              let newPath = window.location.pathname;
-              if (isCurrentlyList) {
-                newPath = newPath.replace(/\/lista$/, '') || '/';
-              } else {
-                newPath = newPath.endsWith('/') ? `${newPath}lista` : `${newPath}/lista`;
-              }
-              window.location.href = newPath;
-            }}
+            className="action-btn view-toggle-btn"
+            onClick={handleViewToggle}
           >
-            <span className="btn-label">Lista</span>
+            <span className="btn-label">
+              {isListView ? 'Térkép' : 'Lista'}
+            </span>
           </button>
         </div>
 

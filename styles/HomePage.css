@@ -1929,90 +1929,8 @@ body.list-mode-active .list-view-wrapper {
     z-index: 1 !important;
   }
 
-  /* MOBIL ALSÓ SÁV - 3 GOMB */
-  .mobile-bottom-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 44px;
-    background: rgba(255, 255, 255, 0.96);
-    backdrop-filter: blur(10px);
-    border-top: 1.5px solid #97d4ff;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    z-index: 1000;
-    padding: 0 4px;
-    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.06);
-  }
 
-  .mobile-bottom-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 1px;
-    background: none;
-    border: none;
-    padding: 2px 8px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    color: #94a3b8;
-    font-size: 6px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    flex: 1;
-    max-width: 80px;
-    border-radius: 8px;
-    position: relative;
-  }
 
-  .mobile-bottom-btn svg {
-    width: 18px;
-    height: 18px;
-    stroke: currentColor;
-    stroke-width: 1.8;
-    fill: none;
-  }
-
-  .mobile-bottom-btn .btn-label {
-    font-size: 6px;
-    font-weight: 500;
-    color: #94a3b8;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    line-height: 1.1;
-  }
-
-  .mobile-bottom-btn.active {
-    color: #5099ce;
-  }
-
-  .mobile-bottom-btn.active svg {
-    stroke: #5099ce;
-  }
-
-  .mobile-bottom-btn.active .btn-label {
-    color: #5099ce;
-  }
-
-  .mobile-bottom-btn .layer-badge {
-    position: absolute;
-    top: -2px;
-    right: 4px;
-    background: #5099ce;
-    color: white;
-    font-size: 6px;
-    font-weight: 700;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
 
   /* ============================================
      MOBIL LISTÁS NÉZET - A TÉRKÉP HELYÉN
@@ -3033,3 +2951,34 @@ body.list-mode-active .list-view-wrapper {
   }
 }
 
+
+/* 🔥 LISTA NÉZETBEN TELJESEN ELREJTJÜK AZ ALSÓ SÁVOT ÉS MINDEN KONTÉNERT */
+body.list-mode-active .mobile-bottom-bar,
+body.list-mode-active .mobile-bottom-container,
+body.list-mode-active .mobile-bottom-bar *,
+body.list-mode-active .mobile-bottom-container *,
+body.list-mode-active [class*="mobile-bottom"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  max-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  overflow: hidden !important;
+  position: fixed !important;
+  bottom: -9999px !important;
+  left: -9999px !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  transform: scale(0) !important;
+  z-index: -9999 !important;
+}
+
+/* 🔥 LISTA NÉZETBEN A MOBIL LISTA WRAPPER TELJEN KITÖLTSE A KÉPERNYŐT */
+body.list-mode-active .mobile-list-wrapper {
+  bottom: 0 !important;
+  height: calc(100vh - var(--total-top-offset, 80px)) !important;
+}
