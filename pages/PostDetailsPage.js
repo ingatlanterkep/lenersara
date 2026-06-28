@@ -22,6 +22,7 @@ import {
   sendFavoriteToggle, 
   sendContactClick 
 } from '@/utils/directAnalytics';
+import FullScreenGallery from '../components/FullScreenGallery';
 
 // Dinamikus importok
 const PostDetailsGallery = dynamic(
@@ -115,6 +116,12 @@ const PostDetailsPage = React.memo(({ onLeadEvent }) => {
   const [sendingLead, setSendingLead] = useState(false);
   const [leadSent, setLeadSent] = useState(false);
   const [leadError, setLeadError] = useState('');
+
+  // 🔥 GALÉRIA STATE-EK A HASONLÓ POSZTOKHOZ
+  const [similarGalleryOpen, setSimilarGalleryOpen] = useState(false);
+  const [similarGalleryImages, setSimilarGalleryImages] = useState([]);
+  const [similarGalleryInitialIndex, setSimilarGalleryInitialIndex] = useState(0);
+  const [similarGalleryPost, setSimilarGalleryPost] = useState(null);
 
   const baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASEURL || 'http://localhost:5000';
 
@@ -363,7 +370,7 @@ const PostDetailsPage = React.memo(({ onLeadEvent }) => {
     }
   };
 
-  // 🔥 VIEW_ITEM ESEMÉNY - a sikeres kérés mintájára
+  // 🔥 VIEW_ITEM ESEMÉNY
   useEffect(() => {
     if (cookiesAccepted && post && postId) {
       sendViewItem(post, postId);
@@ -380,6 +387,32 @@ const PostDetailsPage = React.memo(({ onLeadEvent }) => {
 
   const handleReadMore = () => {
     setIsDescriptionExpanded(true);
+  };
+
+  // 🔥 KÉPRE KATTINTÁS A HASONLÓ POSZTOKNÁL - GALÉRIA MEGNYITÁSA
+  const handleSimilarImageClick = (e, similarPost) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!similarPost.images || similarPost.images.length === 0) return;
+    
+    const images = similarPost.images
+      .filter(img => img?.url)
+      .map(img => getFullImageUrl(img.url));
+    
+    if (images.length > 0) {
+      setSimilarGalleryImages(images);
+      setSimilarGalleryInitialIndex(0);
+      setSimilarGalleryPost(similarPost);
+      setSimilarGalleryOpen(true);
+    }
+  };
+
+  // 🔥 GALÉRIA BEZÁRÁSA
+  const handleSimilarGalleryClose = () => {
+    setSimilarGalleryOpen(false);
+    setSimilarGalleryPost(null);
+    setSimilarGalleryImages([]);
   };
 
   useEffect(() => {
@@ -621,7 +654,12 @@ const PostDetailsPage = React.memo(({ onLeadEvent }) => {
               rel="noopener noreferrer"
               onClick={() => handleContactClick('Similar_Post_Click', postId, similarPost._id)}
             >
-              <div className="similar-post-image">
+              {/* 🔥 KÉP - KATTINTÁSRA GALÉRIA NYÍLIK */}
+              <div 
+                className="similar-post-image"
+                onClick={(e) => handleSimilarImageClick(e, similarPost)}
+                style={{ cursor: 'pointer' }}
+              >
                 {similarPost.images && similarPost.images.length > 0 ? (
                   <picture>
                     <source srcSet={getImageUrls(similarPost.images[0]).webpUrl} type="image/webp" />
@@ -664,7 +702,7 @@ const PostDetailsPage = React.memo(({ onLeadEvent }) => {
         </div>
       </>
     );
-  }, [similarPosts, handleContactClick, postId, getImageUrls, formatPrice, formatAddress]);
+  }, [similarPosts, handleContactClick, postId, getImageUrls, formatPrice, formatAddress, handleSimilarImageClick]);
 
   // 🔥 KEDVENC GOMB KEZELÉSE
   const handleFavoriteToggle = useCallback((postIdToToggle) => {
@@ -1114,6 +1152,16 @@ const PostDetailsPage = React.memo(({ onLeadEvent }) => {
           </div>
         )}
       </div>
+
+      {/* 🔥 FULLSCREEN GALÉRIA - HASONLÓ POSZTOKHOZ */}
+      {similarGalleryOpen && similarGalleryImages.length > 0 && (
+        <FullScreenGallery
+          images={similarGalleryImages}
+          initialIndex={similarGalleryInitialIndex}
+          onClose={handleSimilarGalleryClose}
+          post={similarGalleryPost}
+        />
+      )}
     </div>
   );
 });
