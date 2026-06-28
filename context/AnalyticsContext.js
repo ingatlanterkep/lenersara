@@ -1,7 +1,15 @@
 // src/context/AnalyticsContext.js
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { 
+  createContext, 
+  useContext, 
+  useState, 
+  useEffect, 
+  useCallback,
+  useRef  // ← IMPORTÁLVA!
+} from 'react';
+
 import { sendDirectAnalyticsEvent, sendPageView } from '@/utils/directAnalytics';
 
 const AnalyticsContext = createContext();
@@ -9,7 +17,7 @@ const AnalyticsContext = createContext();
 export const AnalyticsProvider = ({ children }) => {
   const [cookiesAccepted, setCookiesAccepted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const pageViewSentRef = useRef(false); // ← Lock a dupla küldés ellen
+  const pageViewSentRef = useRef(false);
 
   // Cookie ellenőrzés
   const checkCookieConsent = useCallback(() => {
@@ -29,15 +37,12 @@ export const AnalyticsProvider = ({ children }) => {
     
     if (hasConsent && !pageViewSentRef.current) {
       pageViewSentRef.current = true;
-      // Csak egyszer küldjük el az első page_view-t
       sendPageView(document.title, window.location.href);
     }
     
-    // Cookie változás figyelése - de NE küldjünk újra page_view-t!
     const handleCookieUpdate = () => {
       const hasConsent = document.cookie.includes('ingatlanTerkepCookieConsent=true');
       setCookiesAccepted(hasConsent);
-      // ⚠️ NE küldjünk page_view-t itt, mert az már megtörtént!
     };
     window.addEventListener('cookieConsentUpdated', handleCookieUpdate);
     
