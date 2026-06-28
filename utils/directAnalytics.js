@@ -1,6 +1,9 @@
 // src/utils/directAnalytics.js
 'use client';
 
+// 🔥 MODUL SZINTŰ LOCK
+let sessionStarted = false;
+
 export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
   if (typeof window === 'undefined') return false;
   
@@ -13,7 +16,7 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
   try {
     const measurementId = 'G-TG5FRRRT0B';
     
-    // Client ID lekérése
+    // Client ID
     let clientId = 'anonymous';
     const gaCookie = document.cookie.split(';').find(c => c.trim().startsWith('_ga='));
     if (gaCookie) {
@@ -23,7 +26,7 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
       }
     }
     
-    // Session ID - sessionStorage-ból, hogy ne változzon minden eseménynél
+    // Session ID
     let sessionId = sessionStorage.getItem('ga_session_id');
     if (!sessionId) {
       sessionId = Math.floor(Date.now() / 1000).toString();
@@ -31,8 +34,6 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
     }
 
     const params = new URLSearchParams();
-    
-    // 🔥 CSAK A KÖTELEZŐ ÉS HASZNOS PARAMÉTEREK
     params.append('v', '2');
     params.append('tid', measurementId);
     params.append('cid', clientId);
@@ -44,13 +45,19 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
     params.append('ul', navigator.language || 'hu-hu');
     params.append('sr', `${window.screen.width}x${window.screen.height}`);
     
-    // ✅ CSAK AZ ELSŐ PAGE_VIEW-NÁL KÜLDJÜK A SESSION STARTOT
-    if (eventName === 'page_view' && !sessionStorage.getItem('ga_session_started')) {
+    // 🔥 ERŐSÍTETT LOCK - modul szintű + sessionStorage
+    if (
+      eventName === 'page_view' && 
+      !sessionStarted && 
+      !sessionStorage.getItem('ga_session_started')
+    ) {
       params.append('_ss', '1');
+      sessionStarted = true;
       sessionStorage.setItem('ga_session_started', 'true');
+      console.log('[DirectAnalytics] 🔥 ÚJ SESSION INDÍTVA');
     }
     
-    // ✅ EGYEDI ESEMÉNYPARAMÉTEREK
+    // Custom paraméterek
     Object.entries(eventParams).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         if (typeof value === 'number') {
@@ -71,7 +78,6 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
       body: '',
     }).catch(() => {});
     
-    console.log(`[DirectAnalytics] ✅ Elküldve: ${eventName}`, eventParams);
     return true;
     
   } catch (error) {
@@ -79,6 +85,8 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
     return false;
   }
 };
+
+// ... a többi export ugyanaz
 
 export const sendPageView = (pageTitle, pageLocation) => {
   return sendDirectAnalyticsEvent('page_view', {
