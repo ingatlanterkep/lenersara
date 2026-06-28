@@ -7,6 +7,7 @@ import {
   removeFavoritePost, 
   isFavoritePost 
 } from '@/utils/favoritePosts';
+import FullScreenGallery from './FullScreenGallery'; // ← IMPORTÁLD A FULLSCREEN GALLERY-T
 import '../styles/MapPopup.css';
 
 const MapPopup = ({ 
@@ -24,6 +25,7 @@ const MapPopup = ({
   const [images, setImages] = useState([]);
   const [displayPosition, setDisplayPosition] = useState(null);
   const [isReady, setIsReady] = useState(false);
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false); // 🔥 ÚJ STATE
   const popupRef = useRef(null);
   const containerRef = useRef(null);
   const measureRef = useRef(null);
@@ -176,6 +178,17 @@ const MapPopup = ({
     setCurrentImageIndex(prev => (prev < images.length - 1 ? prev + 1 : 0));
   };
 
+  // 🔥 KÉPRE KATTINTÁS - GALÉRIA MEGNYITÁSA
+  const handleImageClick = (e) => {
+    e?.stopPropagation();
+    setIsGalleryOpen(true);
+  };
+
+  // 🔥 GALÉRIA BEZÁRÁSA
+  const handleGalleryClose = () => {
+    setIsGalleryOpen(false);
+  };
+
   // Billentyűzet kezelés
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -303,95 +316,108 @@ const MapPopup = ({
 
   // Megjelenítés
   return createPortal(
-    <div 
-      ref={popupRef}
-      className="map-popup-container"
-      style={{
-        position: 'fixed',
-        left: `${displayPosition.x}px`,
-        top: `${displayPosition.y}px`,
-        zIndex: 2000,
-        pointerEvents: 'none',
-      }}
-      onClick={(e) => e.stopPropagation()}
-    >
+    <>
       <div 
-        className="map-popup"
-        ref={containerRef}
-        style={{ pointerEvents: 'auto' }}
+        ref={popupRef}
+        className="map-popup-container"
+        style={{
+          position: 'fixed',
+          left: `${displayPosition.x}px`,
+          top: `${displayPosition.y}px`,
+          zIndex: 2000,
+          pointerEvents: 'none',
+        }}
+        onClick={(e) => e.stopPropagation()}
       >
-        <button className="map-popup-close" onClick={onClose}>×</button>
+        <div 
+          className="map-popup"
+          ref={containerRef}
+          style={{ pointerEvents: 'auto' }}
+        >
+          <button className="map-popup-close" onClick={onClose}>×</button>
 
-        <div className="map-popup-gallery">
-          {images.length > 0 ? (
-            <>
-              <img 
-                src={images[currentImageIndex] || '/placeholder.jpg'} 
-                alt={post.title || 'Ingatlan'} 
-                className="map-popup-image"
-                onClick={handleOpenDetail}
-                onError={(e) => {
-                  console.error('[MapPopup] Kép betöltési hiba:', images[currentImageIndex]);
-                  e.target.src = '/placeholder.jpg';
-                }}
-              />
-              
-              {images.length > 1 && (
-                <>
-                  <button className="map-popup-nav left" onClick={prevImage}>‹</button>
-                  <button className="map-popup-nav right" onClick={nextImage}>›</button>
-                  <div className="map-popup-counter">
-                    {currentImageIndex + 1}/{images.length}
-                  </div>
-                </>
-              )}
-            </>
-          ) : (
-            <div className="map-popup-no-image">📷 Nincs kép</div>
-          )}
-        </div>
-
-        <div className="map-popup-info">
-          <div className="map-popup-price-area">
-            <span className="map-popup-price">{formatPrice()}</span>
-            <span className="map-popup-details">
-              {getArea() > 0 && (
-                <span className="map-popup-detail-item">{getArea()} m²</span>
-              )}
-              {getRooms() > 0 && (
-                <span className="map-popup-detail-item">{getRooms()} szoba</span>
-              )}
-            </span>
+          <div className="map-popup-gallery">
+            {images.length > 0 ? (
+              <>
+                <img 
+                  src={images[currentImageIndex] || '/placeholder.jpg'} 
+                  alt={post.title || 'Ingatlan'} 
+                  className="map-popup-image"
+                  onClick={handleImageClick} // 🔥 KÉPRE KATTINTÁS → GALÉRIA
+                  style={{ cursor: 'pointer' }}
+                  onError={(e) => {
+                    console.error('[MapPopup] Kép betöltési hiba:', images[currentImageIndex]);
+                    e.target.src = '/placeholder.jpg';
+                  }}
+                />
+                
+                {images.length > 1 && (
+                  <>
+                    <button className="map-popup-nav left" onClick={prevImage}>‹</button>
+                    <button className="map-popup-nav right" onClick={nextImage}>›</button>
+                    <div className="map-popup-counter">
+                      {currentImageIndex + 1}/{images.length}
+                    </div>
+                  </>
+                )}
+              </>
+            ) : (
+              <div className="map-popup-no-image">📷 Nincs kép</div>
+            )}
           </div>
 
-          {post.address && (
-            <div className="map-popup-address">
-              {post.address.city && <span>{post.address.city}</span>}
-              {post.address.street && <span>, {post.address.street}</span>}
+          <div className="map-popup-info">
+            <div className="map-popup-price-area">
+              <span className="map-popup-price">{formatPrice()}</span>
+              <span className="map-popup-details">
+                {getArea() > 0 && (
+                  <span className="map-popup-detail-item">{getArea()} m²</span>
+                )}
+                {getRooms() > 0 && (
+                  <span className="map-popup-detail-item">{getRooms()} szoba</span>
+                )}
+              </span>
             </div>
-          )}
 
-          <div className="map-popup-actions">
-            <button className="map-popup-view-btn" onClick={handleOpenDetail}>
-              Megnézem →
-            </button>
-            <button 
-              className={`map-popup-fav-btn ${isFavorite ? 'active' : ''}`}
-              onClick={handleFavoriteToggle}
-            >
-              <svg viewBox="0 0 24 24" 
-                fill={isFavorite ? '#ff4757' : 'none'} 
-                stroke={isFavorite ? '#ff4757' : '#666'}
-                strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                width="16" height="16"
+            {post.address && (
+              <div className="map-popup-address">
+                {post.address.city && <span>{post.address.city}</span>}
+                {post.address.street && <span>, {post.address.street}</span>}
+              </div>
+            )}
+
+            <div className="map-popup-actions">
+              <button className="map-popup-view-btn" onClick={handleOpenDetail}>
+                Megnézem →
+              </button>
+              <button 
+                className={`map-popup-fav-btn ${isFavorite ? 'active' : ''}`}
+                onClick={handleFavoriteToggle}
               >
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-              </svg>
-            </button>
+                <svg viewBox="0 0 24 24" 
+                  fill={isFavorite ? '#ff4757' : 'none'} 
+                  stroke={isFavorite ? '#ff4757' : '#666'}
+                  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                  width="16" height="16"
+                >
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>,
+
+      {/* 🔥 FULLSCREEN GALÉRIA - HA MEG NYITVA */}
+      {isGalleryOpen && (
+        <FullScreenGallery
+          images={images}
+          initialIndex={currentImageIndex}
+          onClose={handleGalleryClose}
+          post={post}
+        />
+      )}
+    </>,
     document.body
   );
 };
