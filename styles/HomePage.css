@@ -2951,34 +2951,3 @@ body.list-mode-active .list-view-wrapper {
   }
 }
 
-
-/* 🔥 LISTA NÉZETBEN TELJESEN ELREJTJÜK AZ ALSÓ SÁVOT ÉS MINDEN KONTÉNERT */
-body.list-mode-active .mobile-bottom-bar,
-body.list-mode-active .mobile-bottom-container,
-body.list-mode-active .mobile-bottom-bar *,
-body.list-mode-active .mobile-bottom-container *,
-body.list-mode-active [class*="mobile-bottom"] {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  height: 0 !important;
-  min-height: 0 !important;
-  max-height: 0 !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  border: none !important;
-  overflow: hidden !important;
-  position: fixed !important;
-  bottom: -9999px !important;
-  left: -9999px !important;
-  pointer-events: none !important;
-  width: 0 !important;
-  transform: scale(0) !important;
-  z-index: -9999 !important;
-}
-
-/* 🔥 LISTA NÉZETBEN A MOBIL LISTA WRAPPER TELJEN KITÖLTSE A KÉPERNYŐT */
-body.list-mode-active .mobile-list-wrapper {
-  bottom: 0 !important;
-  height: calc(100vh - var(--total-top-offset, 80px)) !important;
-}
