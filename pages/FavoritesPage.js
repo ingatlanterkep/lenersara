@@ -11,6 +11,7 @@ import {
 } from '../utils/favoritePosts';
 import { useAnalytics } from '@/context/AnalyticsContext';
 import { sendViewItem } from '@/utils/directAnalytics';
+import FullScreenGallery from '../components/FullScreenGallery';
 import '../styles/FavoritesPage.css';
 
 const MiniMapComponent = dynamic(
@@ -32,6 +33,12 @@ const FavoritesPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isClient, setIsClient] = useState(false);
+  
+  // 🔥 GALÉRIA STATE-EK
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [galleryInitialIndex, setGalleryInitialIndex] = useState(0);
+  const [galleryPost, setGalleryPost] = useState(null);
 
   useEffect(() => {
     setIsClient(true);
@@ -64,6 +71,31 @@ const FavoritesPage = () => {
       return `${priceInThousands.toFixed(1).replace(/\.0$/, '')} E Ft/hó`;
     }
     return "Ár nincs megadva";
+  };
+
+  // 🔥 KÉPRE KATTINTÁS - GALÉRIA MEGNYITÁSA
+  const handleImageClick = (e, post) => {
+    e.stopPropagation();
+    
+    if (!post.images || post.images.length === 0) return;
+    
+    const images = post.images
+      .filter(img => img?.url)
+      .map(img => getFullImageUrl(img.url));
+    
+    if (images.length > 0) {
+      setGalleryImages(images);
+      setGalleryInitialIndex(0);
+      setGalleryPost(post);
+      setIsGalleryOpen(true);
+    }
+  };
+
+  // 🔥 GALÉRIA BEZÁRÁSA
+  const handleGalleryClose = () => {
+    setIsGalleryOpen(false);
+    setGalleryPost(null);
+    setGalleryImages([]);
   };
 
   // 🔥 FAVORITES PAGE VIEW ESEMÉNY
@@ -129,19 +161,17 @@ const FavoritesPage = () => {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [isClient]);
 
-// FavoritesPage.js - handleRemoveFavorite függvény
-const handleRemoveFavorite = (postId) => {
-  if (!isClient) return;
-  if (window.confirm("Biztosan eltávolítod a kedvencekből?")) {
-    removeFavoritePost(postId);
-    setFavorites(prev => prev.filter(p => p._id !== postId));
-    if (selectedPost?._id === postId) {
-      setSelectedPost(null);
+  const handleRemoveFavorite = (postId) => {
+    if (!isClient) return;
+    if (window.confirm("Biztosan eltávolítod a kedvencekből?")) {
+      removeFavoritePost(postId);
+      setFavorites(prev => prev.filter(p => p._id !== postId));
+      if (selectedPost?._id === postId) {
+        setSelectedPost(null);
+      }
+      window.dispatchEvent(new Event('favoritesUpdated'));
     }
-    // 🔥 IDE ADD EZT A SORT:
-    window.dispatchEvent(new Event('favoritesUpdated'));
-  }
-};
+  };
 
   const handleCardClick = (post) => {
     if (!isClient) return;
@@ -153,7 +183,6 @@ const handleRemoveFavorite = (postId) => {
       window.open(url, '_blank');
     } else {
       setSelectedPost(post);
-      // 🔥 VIEW_ITEM ESEMÉNY a kiválasztott poszthoz
       if (cookiesAccepted) {
         sendViewItem(post, post._id);
       }
@@ -202,7 +231,12 @@ const handleRemoveFavorite = (postId) => {
                     className={`similar-post-card ${selectedPost?._id === post._id ? 'active' : ''}`}
                     onClick={() => handleCardClick(post)}
                   >
-                    <div className="similar-post-image">
+                    {/* 🔥 KÉP - KATTINTÁSRA GALÉRIA NYÍLIK */}
+                    <div 
+                      className="similar-post-image"
+                      onClick={(e) => handleImageClick(e, post)}
+                      style={{ cursor: 'pointer' }}
+                    >
                       {post.images?.[0] ? (
                         <picture>
                           <img
@@ -341,6 +375,16 @@ const handleRemoveFavorite = (postId) => {
             </div>
           )}
         </div>
+      )}
+
+      {/* 🔥 FULLSCREEN GALÉRIA */}
+      {isGalleryOpen && galleryImages.length > 0 && (
+        <FullScreenGallery
+          images={galleryImages}
+          initialIndex={galleryInitialIndex}
+          onClose={handleGalleryClose}
+          post={galleryPost}
+        />
       )}
     </div>
   );
