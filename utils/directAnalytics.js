@@ -4,52 +4,100 @@
 // 🔥 MODUL SZINTŰ VÁLTOZÓK
 let sessionStarted = false;
 
-// 🔥 EGYEDI CLIENT ID GENERÁLÁS
+// 🔥 EGYEDI CLIENT ID GENERÁLÁS - INKOGNITÓ BIZTOS
 const getClientId = () => {
   if (typeof window === 'undefined') return 'anonymous';
   
   try {
-    // Ellenőrizzük, hogy van-e már mentett client ID
-    let clientId = localStorage.getItem('ga_client_id');
-    
-    if (!clientId) {
-      // 🔥 Új egyedi azonosító generálása
-      if (crypto.randomUUID) {
-        clientId = crypto.randomUUID();
-      } else {
-        // Fallback régi böngészőkre
-        clientId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-          const r = Math.random() * 16 | 0;
-          const v = c === 'x' ? r : (r & 0x3 | 0x8);
-          return v.toString(16);
-        });
-      }
-      
-      localStorage.setItem('ga_client_id', clientId);
-      console.log('[DirectAnalytics] 🆕 Új Client ID generálva:', clientId);
-    } else {
-      console.log('[DirectAnalytics] ♻️ Meglévő Client ID használata:', clientId);
-    }
-    
-    return clientId;
-  } catch (error) {
-    // Ha a localStorage nem elérhető (pl. incognito módban), használjunk sessionStorage-t
-    console.warn('[DirectAnalytics] localStorage hiba, sessionStorage használata:', error);
+    // 🔥 1. PRÓBÁLJUK LOCALSTORAGE-T (normál mód)
+    let clientId = null;
     
     try {
-      let clientId = sessionStorage.getItem('ga_client_id');
-      if (!clientId) {
-        clientId = 'tmp-' + Math.random().toString(36).substring(2, 15);
-        sessionStorage.setItem('ga_client_id', clientId);
+      clientId = localStorage.getItem('ga_client_id');
+      if (clientId) {
+        console.log('[DirectAnalytics] ♻️ LocalStorage-ból:', clientId);
+        return clientId;
       }
-      return clientId;
     } catch (e) {
-      return 'anonymous-' + Math.random().toString(36).substring(2, 10);
+      console.warn('[DirectAnalytics] localStorage nem elérhető (valószínűleg inkognitó)');
     }
+    
+    // 🔥 2. PRÓBÁLJUK SESSIONSTORAGE-T (inkognitóban is működik)
+    try {
+      clientId = sessionStorage.getItem('ga_client_id');
+      if (clientId) {
+        console.log('[DirectAnalytics] ♻️ SessionStorage-ból:', clientId);
+        return clientId;
+      }
+    } catch (e) {
+      console.warn('[DirectAnalytics] sessionStorage nem elérhető');
+    }
+    
+    // 🔥 3. GENERÁLJUNK ÚJAT ÉS MENTSÜK EL MINDENHOVÁ
+    if (crypto.randomUUID) {
+      clientId = crypto.randomUUID();
+    } else {
+      // Fallback régi böngészőkre
+      clientId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+    
+    console.log('[DirectAnalytics] 🆕 ÚJ Client ID generálva:', clientId);
+    
+    // 🔥 MENTSÜK EL MINDEN LEHETSÉGES TÁROLÓBA
+    try {
+      localStorage.setItem('ga_client_id', clientId);
+    } catch (e) {
+      // Inkognitóban ez dobhat hibát
+    }
+    
+    try {
+      sessionStorage.setItem('ga_client_id', clientId);
+    } catch (e) {
+      // Ha ez is hibát dob, akkor sajnos nem tudjuk tárolni
+    }
+    
+    // 🔥 GA COOKIE GENERÁLÁSA (ha nincs)
+    generateGaCookie();
+    
+    return clientId;
+    
+  } catch (error) {
+    console.error('[DirectAnalytics] Client ID hiba:', error);
+    // 🔥 ULTIMÁT FALLBACK - random ID memóriában
+    return 'fallback-' + Math.random().toString(36).substring(2, 15);
   }
 };
 
-// 🔥 MEGLÉVŐ GA COOKIE ELLENŐRZÉS (opcionális)
+// 🔥 GA4 COOKIE GENERÁLÁS (ha nincs)
+const generateGaCookie = () => {
+  if (typeof document === 'undefined') return;
+  
+  try {
+    // Ellenőrizzük, hogy van-e már _ga cookie
+    if (document.cookie.includes('_ga=')) return;
+    
+    // Generáljunk egyet
+    const timestamp = Math.floor(Date.now() / 1000);
+    const random1 = Math.floor(Math.random() * 2147483647);
+    const random2 = Math.floor(Math.random() * 2147483647);
+    const gaValue = `GA1.1.${random1}.${random2}`;
+    
+    // 2 év expiráció
+    const expiry = new Date();
+    expiry.setFullYear(expiry.getFullYear() + 2);
+    
+    document.cookie = `_ga=${gaValue}; expires=${expiry.toUTCString()}; path=/; SameSite=Lax`;
+    console.log('[DirectAnalytics] 🍪 GA cookie generálva:', gaValue);
+  } catch (e) {
+    console.warn('[DirectAnalytics] GA cookie generálási hiba:', e);
+  }
+};
+
+// 🔥 MEGLÉVŐ GA COOKIE ELLENŐRZÉS
 const getGaCookieClientId = () => {
   try {
     const gaCookie = document.cookie.split(';').find(c => c.trim().startsWith('_ga='));
@@ -62,6 +110,20 @@ const getGaCookieClientId = () => {
   } catch (e) {
     // Ha hiba van a cookie olvasásban, csendben tovább
   }
+  return null;
+};
+
+// 🔥 GA4 GID COOKIE HASZNÁLATA
+const getGidClientId = () => {
+  try {
+    const gidCookie = document.cookie.split(';').find(c => c.trim().startsWith('_gid='));
+    if (gidCookie) {
+      const match = gidCookie.match(/GA1\.\d+\.(\d+)\.(\d+)/);
+      if (match) {
+        return match[1] + '.' + match[2];
+      }
+    }
+  } catch (e) {}
   return null;
 };
 
@@ -80,7 +142,12 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
     // 🔥 1. PRÓBÁLJUK MEG A GA COOKIE-BÓL (ha létezik)
     let clientId = getGaCookieClientId();
     
-    // 🔥 2. HA NINCS GA COOKIE, HASZNÁLJUK A SAJÁT GENERÁLTAT
+    // 🔥 2. PRÓBÁLJUK A GID COOKIE-BÓL
+    if (!clientId) {
+      clientId = getGidClientId();
+    }
+    
+    // 🔥 3. HA NINCS GA COOKIE, HASZNÁLJUK A SAJÁT GENERÁLTAT
     if (!clientId) {
       clientId = getClientId();
     }
@@ -157,33 +224,72 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
   }
 };
 
-// 🔥 SEGÉDFÜGGVÉNY: Client ID lekérdezése (debug célra)
-export const getCurrentClientId = () => {
-  if (typeof window === 'undefined') return null;
+// 🔥 SEGÉDFÜGGVÉNYEK GLOBÁLISSÁ TÉTELE (debug-hoz)
+if (typeof window !== 'undefined') {
+  window.getCurrentClientId = () => {
+    try {
+      const gaId = getGaCookieClientId();
+      if (gaId) return gaId;
+      
+      const gidId = getGidClientId();
+      if (gidId) return gidId;
+      
+      const localId = localStorage.getItem('ga_client_id');
+      if (localId) return localId;
+      
+      const sessionId = sessionStorage.getItem('ga_client_id');
+      if (sessionId) return sessionId;
+      
+      return 'NINCS_CLIENT_ID';
+    } catch (e) {
+      return 'HIBA: ' + e.message;
+    }
+  };
   
-  // Először próbáljuk a GA cookie-t
-  const gaId = getGaCookieClientId();
-  if (gaId) return gaId;
+  window.resetClientId = () => {
+    try {
+      localStorage.removeItem('ga_client_id');
+      sessionStorage.removeItem('ga_client_id');
+      document.cookie = '_ga=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      document.cookie = '_gid=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      console.log('[DirectAnalytics] 🔄 Client ID és GA cookie-k resetelve');
+    } catch (e) {
+      console.warn('[DirectAnalytics] Reset hiba:', e);
+    }
+  };
   
-  // Ha nincs, akkor a sajátunkat
-  try {
-    return localStorage.getItem('ga_client_id') || sessionStorage.getItem('ga_client_id') || null;
-  } catch {
-    return null;
-  }
-};
-
-// 🔥 RESET FUNKCIÓ (teszteléshez)
-export const resetClientId = () => {
-  if (typeof window === 'undefined') return;
-  try {
-    localStorage.removeItem('ga_client_id');
-    sessionStorage.removeItem('ga_client_id');
-    console.log('[DirectAnalytics] 🔄 Client ID resetelve');
-  } catch (e) {
-    console.warn('[DirectAnalytics] Reset hiba:', e);
-  }
-};
+  window.forceNewClientId = () => {
+    const newId = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36);
+    try {
+      localStorage.setItem('ga_client_id', newId);
+      sessionStorage.setItem('ga_client_id', newId);
+      generateGaCookie();
+    } catch (e) {}
+    console.log('[DirectAnalytics] 🔄 ÚJ Client ID kényszerítve:', newId);
+    return newId;
+  };
+  
+  window.analyticsDebug = {
+    getClientId: window.getCurrentClientId,
+    resetClientId: window.resetClientId,
+    forceNewClientId: window.forceNewClientId,
+    getCookies: () => {
+      return document.cookie.split(';').reduce((acc, cookie) => {
+        const [key, value] = cookie.trim().split('=');
+        if (key.startsWith('_ga') || key.startsWith('_gid')) {
+          acc[key] = value;
+        }
+        return acc;
+      }, {});
+    },
+    getStorage: () => {
+      return {
+        localStorage: localStorage.getItem('ga_client_id'),
+        sessionStorage: sessionStorage.getItem('ga_client_id')
+      };
+    }
+  };
+}
 
 // ... a többi export változatlan
 export const sendPageView = (pageTitle, pageLocation) => {
@@ -264,4 +370,16 @@ export const sendFirstVisit = () => {
   return sendDirectAnalyticsEvent('first_visit', {
     timestamp: new Date().toISOString()
   });
+};
+
+// 🔥 INICIALIZÁLÁS
+export const initAnalytics = () => {
+  if (typeof window === 'undefined') return;
+  
+  // GA cookie generálás, ha nincs
+  generateGaCookie();
+  
+  // Client ID előkészítés
+  const clientId = getClientId();
+  console.log('[DirectAnalytics] 🚀 Analitika inicializálva - Client ID:', clientId);
 };
