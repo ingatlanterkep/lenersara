@@ -2,7 +2,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
-import { sendDirectAnalyticsEvent, sendPageView, sendLayerToggle } from '@/utils/directAnalytics';
+import { sendDirectAnalyticsEvent, sendPageView, sendLayerToggle, initAnalytics } from '@/utils/directAnalytics';
 
 const AnalyticsContext = createContext();
 
@@ -35,18 +35,20 @@ export const AnalyticsProvider = ({ children }) => {
     });
   }, []);
 
-// src/context/AnalyticsContext.js
-useEffect(() => {
-  const hasConsent = document.cookie.includes('ingatlanTerkepCookieConsent=true');
-  setCookiesAccepted(hasConsent);
-  setIsLoading(false);
-  
-  if (hasConsent) {
-    setTimeout(() => {
-      sendPageView(document.title, window.location.href); // ← ELSŐ HÍVÁS
-    }, 500);
-  }
-  // ...
+  useEffect(() => {
+    // 🔥 ANALITIKA INICIALIZÁLÁSA
+    initAnalytics();
+    
+    const hasConsent = document.cookie.includes('ingatlanTerkepCookieConsent=true');
+    setCookiesAccepted(hasConsent);
+    setIsLoading(false);
+    
+    if (hasConsent) {
+      setTimeout(() => {
+        sendPageView(document.title, window.location.href);
+      }, 500);
+    }
+    
     // 🔥 Rendszeres ellenőrzés
     checkIntervalRef.current = setInterval(() => {
       checkCookieConsent();
@@ -55,8 +57,8 @@ useEffect(() => {
     // 🔥 Figyeljük a custom event-et
     const handleCookieUpdate = () => {
       console.log('[AnalyticsContext] 🔔 cookieConsentUpdated esemény fogadva');
-      checkCookieConsent();
-      if (cookiesAccepted) {
+      const hasConsentNow = checkCookieConsent();
+      if (hasConsentNow) {
         sendPageView(document.title, window.location.href);
       }
     };
