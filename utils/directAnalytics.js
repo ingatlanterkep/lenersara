@@ -1,8 +1,69 @@
 // src/utils/directAnalytics.js
 'use client';
 
-// 🔥 MODUL SZINTŰ LOCK
+// 🔥 MODUL SZINTŰ VÁLTOZÓK
 let sessionStarted = false;
+
+// 🔥 EGYEDI CLIENT ID GENERÁLÁS
+const getClientId = () => {
+  if (typeof window === 'undefined') return 'anonymous';
+  
+  try {
+    // Ellenőrizzük, hogy van-e már mentett client ID
+    let clientId = localStorage.getItem('ga_client_id');
+    
+    if (!clientId) {
+      // 🔥 Új egyedi azonosító generálása
+      if (crypto.randomUUID) {
+        clientId = crypto.randomUUID();
+      } else {
+        // Fallback régi böngészőkre
+        clientId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+          const r = Math.random() * 16 | 0;
+          const v = c === 'x' ? r : (r & 0x3 | 0x8);
+          return v.toString(16);
+        });
+      }
+      
+      localStorage.setItem('ga_client_id', clientId);
+      console.log('[DirectAnalytics] 🆕 Új Client ID generálva:', clientId);
+    } else {
+      console.log('[DirectAnalytics] ♻️ Meglévő Client ID használata:', clientId);
+    }
+    
+    return clientId;
+  } catch (error) {
+    // Ha a localStorage nem elérhető (pl. incognito módban), használjunk sessionStorage-t
+    console.warn('[DirectAnalytics] localStorage hiba, sessionStorage használata:', error);
+    
+    try {
+      let clientId = sessionStorage.getItem('ga_client_id');
+      if (!clientId) {
+        clientId = 'tmp-' + Math.random().toString(36).substring(2, 15);
+        sessionStorage.setItem('ga_client_id', clientId);
+      }
+      return clientId;
+    } catch (e) {
+      return 'anonymous-' + Math.random().toString(36).substring(2, 10);
+    }
+  }
+};
+
+// 🔥 MEGLÉVŐ GA COOKIE ELLENŐRZÉS (opcionális)
+const getGaCookieClientId = () => {
+  try {
+    const gaCookie = document.cookie.split(';').find(c => c.trim().startsWith('_ga='));
+    if (gaCookie) {
+      const match = gaCookie.match(/GA1\.\d+\.(\d+)\.(\d+)/);
+      if (match) {
+        return match[1] + '.' + match[2];
+      }
+    }
+  } catch (e) {
+    // Ha hiba van a cookie olvasásban, csendben tovább
+  }
+  return null;
+};
 
 export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
   if (typeof window === 'undefined') return false;
@@ -16,23 +77,30 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
   try {
     const measurementId = 'G-TG5FRRRT0B';
     
-    // Client ID
-    let clientId = 'anonymous';
-    const gaCookie = document.cookie.split(';').find(c => c.trim().startsWith('_ga='));
-    if (gaCookie) {
-      const match = gaCookie.match(/GA1\.\d+\.(\d+)\.(\d+)/);
-      if (match) {
-        clientId = match[1] + '.' + match[2];
-      }
+    // 🔥 1. PRÓBÁLJUK MEG A GA COOKIE-BÓL (ha létezik)
+    let clientId = getGaCookieClientId();
+    
+    // 🔥 2. HA NINCS GA COOKIE, HASZNÁLJUK A SAJÁT GENERÁLTAT
+    if (!clientId) {
+      clientId = getClientId();
     }
     
-    // Session ID
+    // 🔥 BIZTONSÁGI ELLENŐRZÉS: soha ne legyen 'anonymous'
+    if (!clientId || clientId === 'anonymous') {
+      clientId = getClientId(); // Újrapróbálkozás
+    }
+    
+    // Session ID kezelés
     let sessionId = sessionStorage.getItem('ga_session_id');
     if (!sessionId) {
       sessionId = Math.floor(Date.now() / 1000).toString();
       sessionStorage.setItem('ga_session_id', sessionId);
     }
-
+    
+    // 🔥 SESSION START EVENT KÜLDÉSE (HA ÚJ SESSION)
+    const isNewSession = !sessionStarted && !sessionStorage.getItem('ga_session_started');
+    
+    // Paraméterek összeállítása
     const params = new URLSearchParams();
     params.append('v', '2');
     params.append('tid', measurementId);
@@ -45,16 +113,12 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
     params.append('ul', navigator.language || 'hu-hu');
     params.append('sr', `${window.screen.width}x${window.screen.height}`);
     
-    // 🔥 ERŐSÍTETT LOCK - modul szintű + sessionStorage
-    if (
-      eventName === 'page_view' && 
-      !sessionStarted && 
-      !sessionStorage.getItem('ga_session_started')
-    ) {
+    // 🔥 HA ÚJ SESSION, KÜLDJÜK A _ss=1 PARAMÉTERT
+    if (eventName === 'page_view' && isNewSession) {
       params.append('_ss', '1');
       sessionStarted = true;
       sessionStorage.setItem('ga_session_started', 'true');
-      console.log('[DirectAnalytics] 🔥 ÚJ SESSION INDÍTVA');
+      console.log('[DirectAnalytics] 🔥 ÚJ SESSION INDÍTVA - CID:', clientId);
     }
     
     // Custom paraméterek
@@ -69,6 +133,13 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
     });
     
     const url = `https://region1.google-analytics.com/g/collect?${params.toString()}`;
+    
+    console.log(`[DirectAnalytics] 📤 Küldés: ${eventName}`, {
+      cid: clientId,
+      sid: sessionId,
+      isNewSession,
+      url: url.substring(0, 200) + '...'
+    });
     
     fetch(url, {
       method: 'POST',
@@ -86,8 +157,35 @@ export const sendDirectAnalyticsEvent = (eventName, eventParams = {}) => {
   }
 };
 
-// ... a többi export ugyanaz
+// 🔥 SEGÉDFÜGGVÉNY: Client ID lekérdezése (debug célra)
+export const getCurrentClientId = () => {
+  if (typeof window === 'undefined') return null;
+  
+  // Először próbáljuk a GA cookie-t
+  const gaId = getGaCookieClientId();
+  if (gaId) return gaId;
+  
+  // Ha nincs, akkor a sajátunkat
+  try {
+    return localStorage.getItem('ga_client_id') || sessionStorage.getItem('ga_client_id') || null;
+  } catch {
+    return null;
+  }
+};
 
+// 🔥 RESET FUNKCIÓ (teszteléshez)
+export const resetClientId = () => {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.removeItem('ga_client_id');
+    sessionStorage.removeItem('ga_client_id');
+    console.log('[DirectAnalytics] 🔄 Client ID resetelve');
+  } catch (e) {
+    console.warn('[DirectAnalytics] Reset hiba:', e);
+  }
+};
+
+// ... a többi export változatlan
 export const sendPageView = (pageTitle, pageLocation) => {
   return sendDirectAnalyticsEvent('page_view', {
     page_title: pageTitle || document.title,
