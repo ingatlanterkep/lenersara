@@ -29,7 +29,7 @@ export default function Hero({
   email = 'info@domainem.hu',
   openingHours = 'Hétfő-Péntek: 9:00 - 18:00',
   imageSrc = '/images/dr-léner-pintér-sára-ügyvédasszony.png',
-  imageAlt = 'Dr. Ügyvéd úr'
+  imageAlt = 'dr. Léner-Pintér Sára ügyvédasszony'
 }: HeroProps) {
   return (
     <div className="hero">

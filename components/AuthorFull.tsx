@@ -9,14 +9,14 @@ export default function AuthorFull() {
         <div className="author-full-image">
           <Image
             src="/images/ugyved-foto.jpg"
-            alt="Dr. Ügyvéd Úr"
+            alt="dr. Léner-Pintér Sára ügyvédasszony"
             width={180}
             height={180}
             className="author-image"
           />
         </div>
         <div>
-          <h2 className="author-full-name">Dr. Ügyvéd Úr</h2>
+          <h2 className="author-full-name">dr. Léner-Pintér Sára ügyvédasszony</h2>
           <p className="author-full-subtitle">Ügyvéd, mediátor</p>
         </div>
       </div>

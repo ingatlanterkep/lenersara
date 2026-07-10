@@ -135,7 +135,7 @@ export default function Csaladjog() {
         {
           '@context': 'https://schema.org',
           '@type': 'LocalBusiness',
-          name: 'Dr. Kovács Péter ügyvédi iroda',
+          name: 'dr. Léner-Pintér Sára ügyvédi iroda',
           address: {
             '@type': 'PostalAddress',
             streetAddress: 'Fő utca 1.',

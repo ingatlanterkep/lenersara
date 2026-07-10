@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Kapcsolat | Dr. Kovács Péter ügyvéd Veszprém',
-  description: 'Vegye fel a kapcsolatot Dr. Kovács Péter ügyvéddel Veszprémben. Telefon, email, cím és online konzultáció.',
+  title: 'Kapcsolat | dr. Léner-Pintér Sára ügyvédasszony Veszprém',
+  description: 'Vegye fel a kapcsolatot dr. Léner-Pintér Sára ügyvédasszonnyal Veszprémben. Telefon, email, cím és online konzultáció.',
 }
 
 export default function Kapcsolat() {

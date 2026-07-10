@@ -3,8 +3,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Bemutatkozás | Dr. Kovács Péter ügyvéd Veszprém',
-  description: 'Dr. Kovács Péter ügyvéd bemutatkozása. 25 év tapasztalat családjogi, ingatlanjogi és öröklési ügyekben Veszprémben.',
+  title: 'Bemutatkozás | dr. Léner-Pintér Sára ügyvédasszony Veszprém',
+  description: 'dr. Léner-Pintér Sára ügyvédasszony bemutatkozása. 25 év tapasztalat családjogi, ingatlanjogi és öröklési ügyekben Veszprémben.',
 }
 
 export default function Rolam() {
@@ -12,14 +12,14 @@ export default function Rolam() {
     <div className="section section-white">
       <div className="container">
         <div className="about-page">
-          <h1 className="about-title">Dr. Kovács Péter</h1>
+          <h1 className="about-title">dr. Léner-Pintér Sára</h1>
           <p className="about-subtitle">Ügyvéd, mediátor</p>
           
           <div className="about-content">
             <div className="about-image">
               <Image 
                 src="/images/dr-kovacs-peter.jpg" 
-                alt="Dr. Kovács Péter" 
+                alt="dr. Léner-Pintér Sára" 
                 width={200} 
                 height={200} 
               />

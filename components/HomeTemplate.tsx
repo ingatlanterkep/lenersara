@@ -24,7 +24,7 @@ export default function HomeTemplate({ services, trustItems, faqItems }: HomeTem
     <>
       <div className="hero-section">
 <Hero 
-  title='Dr. <span class="highlight">Ügyvéd</span> Úr'
+  title='sr. <span class="highlight">Ügyvéd</span> Asszony'
   subtitle="Ügyvéd, mediátor"
   description="Több mint 25 éves szakmai tapasztalattal segítek ügyfeleimnek családjogi, ingatlanjogi és öröklési ügyekben. Irodám Veszprém szívében található, de online konzultációra is van lehetőség."
   ctaText="Hívjon most: +36 20 490 5530"
@@ -35,7 +35,7 @@ export default function HomeTemplate({ services, trustItems, faqItems }: HomeTem
   email="drlpsmobil@gmail.com"
   openingHours="Hétfő-Péntek: 9:00 - 18:00"
   imageSrc="/images/dr-léner-pintér-sára-ügyvédasszony.png"
-  imageAlt="Dr. Ügyvéd Úr - ügyvéd, mediátor"
+  imageAlt="dr. Léner-Pintér Sára ügyvédasszony - ügyvéd, mediátor"
 />
 
         <TrustBar items={trustItems} />
