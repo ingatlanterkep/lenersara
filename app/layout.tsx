@@ -1,49 +1,45 @@
-// app/layout.js
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import './globals.css';
-import QueryProvider from '@/components/QueryProvider';
-import CookieConsentWrapper from '@/components/CookieConsentWrapper';
-import NavbarWrapper from '@/components/NavbarWrapper';
-import { AnalyticsProvider } from '@/context/AnalyticsContext';
-
-const inter = Inter({ subsets: ['latin'] });
+// app/layout.tsx
+import type { Metadata } from 'next'
+import './globals.css'
+import Navigation from '@/components/Navigation'
+import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
- title: 'Ingatlan-Térkép – Térképes ingatlankereső Magyarországon',
-  description: 'Eladó és kiadó lakások, házak és telkek interaktív térképen. Valós idejű keresés, ár-összehasonlítás és részletes szűrés.',
+  title: 'Ügyvéd Veszprém | Családjog, ingatlanjog, mediáció',
+  description: 'Családjogi ügyvéd Veszprémben. Válóper, gyermekelhelyezés, ingatlan adásvételi szerződések, mediáció és öröklési ügyek. 25+ év tapasztalat.',
   icons: {
-    icon: '/favicon.ico',
+    icon: [
+      { url: '/favicon32.ico', sizes: 'any' },
+     ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+    other: [
+      {
+        rel: 'mask-icon',
+        url: '/safari-pinned-tab.svg',
+      },
+    ],
   },
-};
+  manifest: '/site.webmanifest',
+  // Opcionális: theme color
+  themeColor: '#0a1628',
+}
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
   return (
     <html lang="hu">
-      <head>
-        <meta name="google-site-verification" content="yQlc1lCX5QARvKqku5GPIvO3oicfi1eOnoBeBdeU7Wo" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#000000" />
-        <meta name="robots" content="index, follow" />
-        <meta name="author" content="Ingatlan-Térkép" />
-        <link rel="manifest" href="/manifest.json" />
-        <link rel="apple-touch-icon" href="/l.png" />
-      </head>
-      <body className={inter.className}>
-                  <CookieConsentWrapper />
-        <AnalyticsProvider>
-          <NavbarWrapper />
-          <QueryProvider>
-            {children}
-          </QueryProvider>
-
-          <div id="fullscreen-gallery-root"></div>
-        </AnalyticsProvider>
+      <body>
+        <Navigation />
+        <main>
+          {children}
+        </main>
+        <Footer />
       </body>
     </html>
-  );
+  )
 }

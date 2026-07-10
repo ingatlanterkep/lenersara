@@ -1,8 +1,15 @@
 {
   "compilerOptions": {
-    "typeRoots": ["./node_modules/@types", "./types"],
+    "typeRoots": [
+      "./node_modules/@types",
+      "./types"
+    ],
     "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -12,7 +19,7 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "react-jsx",
+    "jsx": "preserve",
     "incremental": true,
     "plugins": [
       {
@@ -20,7 +27,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": [
+        "./*"
+      ]
     }
   },
   "include": [
@@ -30,7 +39,13 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts",
-     "./types/**/*.d.ts"
-, "pages/HomePageContent.ttsx", "pages/HomePageContent.ttsx", "pages/PostDetailsPage.js", "components/BreadcrumbSchema.tsy"  ],
-  "exclude": ["node_modules"]
+    "./types/**/*.d.ts",
+    "pages/HomePageContent.ttsx",
+    "pages/HomePageContent.ttsx",
+    "pages/PostDetailsPage.js",
+    "components/BreadcrumbSchema.tsy"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
