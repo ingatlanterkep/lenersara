@@ -24,7 +24,7 @@ export default function HomeTemplate({ services, trustItems, faqItems }: HomeTem
     <>
       <div className="hero-section">
 <Hero 
-  title='sr. <span class="highlight">Ügyvéd</span> Asszony'
+  title='dr. <span class="highlight">Ügyvéd</span> Asszony'
   subtitle="Ügyvéd, mediátor"
   description="Több mint 25 éves szakmai tapasztalattal segítek ügyfeleimnek családjogi, ingatlanjogi és öröklési ügyekben. Irodám Veszprém szívében található, de online konzultációra is van lehetőség."
   ctaText="Hívjon most: +36 20 490 5530"
