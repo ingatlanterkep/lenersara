@@ -7,7 +7,7 @@ export default function Home() {
       title: 'Családjog',
       description: 'Válóper, gyermektartás, gyermekelhelyezés, szülői felügyelet és vagyonmegosztás.',
       href: '/szolgaltatasok/csaladjog',
-      icon: '/images/családjog.png'
+      icon: '/images/csaladjog.png'
     },
     {
       title: 'Ingatlanjog',
@@ -19,19 +19,19 @@ export default function Home() {
       title: 'Mediáció',
       description: 'Alternatív vitarendezés és családi közvetítés jogvitákban.',
       href: '/szolgaltatasok/mediacio',
-      icon: '/images/mediáció.png'
+      icon: '/images/mediacio.png'
     },
     {
       title: 'Öröklési ügyek',
       description: 'Végrendelet készítés, hagyatéki eljárás és öröklési okiratok.',
       href: '/szolgaltatasok/orokles',
-      icon: '/images/öröklés.png'
+      icon: '/images/orokles.png'
     },
     {
       title: 'Cégeljárások',
       description: 'Cégalapítás, cégátírás, cégbejegyzés és cégjogi tanácsadás.',
       href: '/szolgaltatasok/egyeb/cegeljarasok',
-      icon: '/images/cégeljárás.png'
+      icon: '/images/cegeljaras.png'
     },
     {
       title: 'Okiratszerkesztés',
@@ -71,5 +71,23 @@ export default function Home() {
     }
   ]
 
-  return <HomeTemplate services={services} trustItems={trustItems} faqItems={faqItems} />
+  const testimonials = [
+    {
+      rating: 5,
+      text: 'Végig nyugodtan és érthetően segített a válóper során. Minden lépést előre egyeztettünk, így tudtam mire számítsak.',
+      author: 'Anikó'
+    },
+    {
+      rating: 5,
+      text: 'Gyors, precíz, korrekt tájékoztatást kaptam az ingatlan adásvétel során. Profi és megbízható szakember.',
+      author: 'Tamás'
+    },
+    {
+      rating: 5,
+      text: 'Köszönöm a segítséget a hagyatéki eljárásban! Csak ajánlani tudom mindenkinek, aki egyértelmű és érthető tájékoztatást szeretne.',
+      author: 'Mária'
+    }
+  ]
+
+  return <HomeTemplate services={services} trustItems={trustItems} faqItems={faqItems} testimonials={testimonials} />
 }

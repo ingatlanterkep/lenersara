@@ -1,3 +1,4 @@
+// components/ServiceTemplate.tsx
 import { ReactNode } from 'react'
 import Hero from './Hero'
 import Breadcrumb from './Breadcrumb'
@@ -54,7 +55,7 @@ export default function ServiceTemplate({
   trustItems,
   content,
   whenToContact,
-  timelineTitle = 'Hogyan zajlik a konzultáció?',
+  timelineTitle = 'Hogyan zajlik az eljárás?',
   timelineSteps,
   faqTitle = 'Gyakori kérdések',
   faqItems,
@@ -63,7 +64,6 @@ export default function ServiceTemplate({
 }: ServiceTemplateProps) {
   return (
     <>
-      {/* TELJES KÉPERNYŐMAGASSÁGÚ HERO SZEKCIÓ */}
       <div className="hero-section">
         <Hero 
           title={heroTitle}
@@ -75,23 +75,20 @@ export default function ServiceTemplate({
         <TrustBar items={trustItems} />
       </div>
 
-      {/* TARTALOM */}
       <div className="section page-content">
         <div className="container">
           
-          {/* Breadcrumb */}
           <div className="breadcrumb-wrapper">
             <Breadcrumb items={breadcrumbItems} />
           </div>
 
-          {/* Tartalom - BUBORÉK */}
           <div className="section-card">
             <div className="prose" style={{ maxWidth: '100%' }}>
               {content}
             </div>
           </div>
 
-          {/* "Mikor forduljon ügyvédhez?" - BUBORÉK */}
+          {/* "Mikor forduljon ügyvédhez?" - FINOMÍTVA */}
           {whenToContact && (
             <div className="section-card" style={{ marginTop: '2rem' }}>
               <div className="when-to-contact">
@@ -101,7 +98,7 @@ export default function ServiceTemplate({
                 <ul className="when-to-contact-list">
                   {whenToContact.items.map((item, index) => (
                     <li key={index} className="when-to-contact-item">
-                      <span className="when-to-contact-check">✓</span>
+                      <span className="when-to-contact-dot">●</span>
                       {item}
                     </li>
                   ))}
@@ -122,13 +119,15 @@ export default function ServiceTemplate({
             </div>
           )}
 
-          {/* Timeline - BUBORÉK */}
+          {/* Timeline - SZÁMOK FORMÁZVA */}
           <div className="section-card" style={{ marginTop: '2rem' }}>
             <h2 className="section-title">{timelineTitle}</h2>
             <div className="timeline-horizontal">
               {timelineSteps.map((step, index) => (
                 <div key={step.number} className="timeline-horizontal-item">
-                  <div className="timeline-horizontal-number">{step.number}</div>
+                  <div className="timeline-horizontal-number">
+                    {String(step.number).padStart(2, '0')}
+                  </div>
                   {index < timelineSteps.length - 1 && (
                     <div className="timeline-horizontal-line" />
                   )}
@@ -139,17 +138,15 @@ export default function ServiceTemplate({
             </div>
           </div>
 
-          {/* Elérhetőség - BUBORÉK */}
           <div className="section-card" style={{ marginTop: '2rem' }}>
             <ContactInfo 
-              phone="+36 20 123 4567"
-              email="info@ugyvedi-iroda.hu"
-              address="8200 Veszprém, Fő utca 1."
-              openingHours="Hétfő-Péntek: 8:00 - 18:00"
+              phone="+36 20 490 5530"
+              email="drlpsmobil@gmail.com"
+              address="8200 Veszprém, Füredi u. 11."
+              openingHours="Hétfő-Péntek: 9:00 - 18:00"
             />
           </div>
 
-          {/* Jogi figyelmeztetés */}
           <div className="disclaimer-wrapper" style={{ marginTop: '1.5rem' }}>
             <div className="alert alert-warning" style={{ fontSize: '0.8rem', opacity: 0.5 }}>
               <p>{disclaimer}</p>
@@ -159,7 +156,6 @@ export default function ServiceTemplate({
         </div>
       </div>
 
-      {/* FAQ - KÉK HÁTTÉR */}
       <div className="faq-section-blue-full">
         <div className="container">
           <FAQ items={faqItems} title={faqTitle} blue />
