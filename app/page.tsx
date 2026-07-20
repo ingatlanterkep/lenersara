@@ -7,7 +7,7 @@ export default function Home() {
       title: 'Családjog',
       description: 'Válóper, gyermektartás, gyermekelhelyezés, szülői felügyelet és vagyonmegosztás.',
       href: '/szolgaltatasok/csaladjog',
-      icon: '/images/csaladjog.png'
+      icon: '/images/családjog.png'
     },
     {
       title: 'Ingatlanjog',
@@ -19,19 +19,19 @@ export default function Home() {
       title: 'Mediáció',
       description: 'Alternatív vitarendezés és családi közvetítés jogvitákban.',
       href: '/szolgaltatasok/mediacio',
-      icon: '/images/mediacio.png'
+      icon: '/images/mediáció.png'
     },
     {
       title: 'Öröklési ügyek',
       description: 'Végrendelet készítés, hagyatéki eljárás és öröklési okiratok.',
       href: '/szolgaltatasok/orokles',
-      icon: '/images/orokles.png'
+      icon: '/images/öröklés.png'
     },
     {
       title: 'Cégeljárások',
       description: 'Cégalapítás, cégátírás, cégbejegyzés és cégjogi tanácsadás.',
       href: '/szolgaltatasok/egyeb/cegeljarasok',
-      icon: '/images/cegeljaras.png'
+      icon: '/images/cégeljárás.png'
     },
     {
       title: 'Okiratszerkesztés',

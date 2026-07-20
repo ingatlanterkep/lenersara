@@ -8,7 +8,7 @@ export default function AuthorFull() {
       <div className="author-full-header">
         <div className="author-full-image">
           <Image
-            src="/images/dr-léner-pintér-sára-ügyvédasszony.png"
+            src="/images/dr-léner-pintér-sára.png"
             alt="dr. Léner-Pintér Sára ügyvédasszony"
             width={180}
             height={180}

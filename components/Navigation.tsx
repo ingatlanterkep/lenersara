@@ -29,7 +29,7 @@ export default function Navigation() {
     <nav className="navbar">
       <div className="container navbar-inner">
         <Link href="/" className="navbar-logo">
-          dr. Léner-Pintér Sára egyéni ügyvéd
+          Ügyvédi Megoldás
         </Link>
 
         <div className="navbar-menu">

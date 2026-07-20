@@ -1,0 +1,507 @@
+/* app/globals.css - TELJESEN ÚJ HERO LAYOUT */
+/* ============================================================
+   HERO SZEKCIÓ - ZSÚFOLT, NAGYOBB KÉP, PONTOK JOBB OLDALT
+   ============================================================ */
+
+/* --- Hero szekció --- */
+.hero-section {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 44px); /* NAVBAR MAGASSÁGÁVAL CSÖKKENTVE */  overflow: hidden;
+  min-height: calc(100vh - 44px);}
+
+/* --- Hero háttérképpel --- */
+.hero {
+  background-image: url('/images/hero-bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-height: 0;
+}
+
+
+
+/* --- FLEXBOX KONTAINER - 3 OSZLOP --- */
+.hero-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  gap: 1rem;
+}
+
+/* ============================================================
+   1. BAL OLDAL - TARTALOM (NAGYOBB, ZSÚFOLTABB)
+   ============================================================ */
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 0 0 43%;
+  max-width: 43%;
+  padding-left: 3rem;
+}
+
+/* --- CÍM - NAGYOBB --- */
+.hero-title {
+  font-family: var(--font-heading);
+  font-size: 3.0rem;
+  font-weight: 350;
+  color: var(--color-white);
+  line-height: 1.0;
+  letter-spacing: 0.0em;
+  margin-bottom: 0;
+  text-shadow: 0 2px 30px rgba(0, 0, 0, 0.25);
+  position: relative;
+}
+
+/* --- CÍM ALÁ HÚZÁS --- */
+.hero-title::after {
+  content: '';
+  display: block;
+  width: 80px;
+  height: 3px;
+  background: var(--color-accent);
+  margin-top: 0.2rem;
+  opacity: 0.8;
+  transition: var(--transition);
+}
+
+.hero:hover .hero-title::after {
+  width: 120px;
+  opacity: 1;
+}
+
+/* --- ALCÍM --- */
+.hero-subtitle {
+  font-family: var(--font-sans);
+  font-size: 1.3rem;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.75);
+  margin-top: 0;
+  margin-bottom: 0;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* --- LEÍRÁS - NAGYOBB --- */
+.hero-description {
+  font-family: var(--font-sans);
+  font-size: 1.2rem;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.5);
+  max-width: 540px;
+  line-height: 1.8;
+  margin: 0;
+  letter-spacing: 0.01em;
+}
+
+/* --- Citátum --- */
+.hero-quote {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.35);
+  padding-left: 0;
+  border-left: none;
+  margin: 0;
+  max-width: 480px;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+}
+
+.hero-quote p {
+  display: inline;
+}
+
+.hero-quote p::before {
+  content: '"';
+  color: var(--color-accent);
+  opacity: 0.5;
+}
+
+.hero-quote p::after {
+  content: '"';
+  color: var(--color-accent);
+  opacity: 0.5;
+}
+
+.hero-quote footer {
+  font-style: normal;
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.15);
+  margin-top: 0.1rem;
+  display: block;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* --- Gombok --- */
+.hero-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 0.1rem;
+}
+
+.hero-buttons .btn {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  padding: 0.85rem 2.2rem;
+  border-radius: 2px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  min-width: 140px;
+}
+
+.hero-buttons .btn-primary {
+  background: var(--color-accent);
+  color: var(--color-white);
+  border: none;
+}
+
+.hero-buttons .btn-primary:hover {
+  background: var(--color-accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(245, 130, 32, 0.35);
+}
+
+.hero-buttons .btn-secondary {
+  background: transparent;
+  color: var(--color-white);
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+}
+
+.hero-buttons .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+/* --- MEGJELENŐ ELÉRHETŐSÉGEK --- */
+.hero-contact-reveal {
+  animation: fadeInUp 0.3s ease;
+  margin-top: 0.2rem;
+}
+
+.hero-contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.9);
+  padding: 0.4rem 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: var(--transition);
+  letter-spacing: 0.02em;
+  backdrop-filter: blur(4px);
+}
+
+.hero-contact-link:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--color-white);
+  transform: translateX(4px);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================
+   2. KÖZÉP - KÉP (NAGYOBB, KÖZÉPEN)
+   ============================================================ */
+.hero-image-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 0 0 42%;
+  max-width: 42%;
+}
+
+.hero-image-frame {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  aspect-ratio: 3/4.2;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+  background: transparent !important;
+}
+
+.hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 40px rgba(0, 0, 0, 0.15));
+}
+
+/* ============================================================
+   3. JOBB OLDAL - PONTOK (EGYMÁS ALATT, VIZSZINTESEN)
+   ============================================================ */
+.hero-right-points {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  flex: 0 0 15%;
+  max-width: 15%;
+  padding-right: 2rem;
+}
+
+.hero-right-point {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.03em;
+  padding: 0.5rem 0.8rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  border-left: 3px solid var(--color-accent);
+  transition: var(--transition);
+  backdrop-filter: blur(2px);
+}
+
+.hero-right-point:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.95);
+  transform: translateX(-4px);
+  border-left-color: var(--color-accent);
+  box-shadow: 0 4px 20px rgba(245, 130, 32, 0.1);
+}
+
+.hero-right-point-icon {
+  font-size: 0.6rem;
+  color: var(--color-accent);
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+/* ============================================================
+   RESPONSIVE - HERO
+   ============================================================ */
+@media (max-width: 1200px) {
+  .hero-title {
+    font-size: 3.6rem;
+  }
+  
+  .hero-content {
+    flex: 0 0 45%;
+    max-width: 45%;
+    padding-left: 2rem;
+  }
+  
+  .hero-image-wrapper {
+    flex: 0 0 30%;
+    max-width: 30%;
+  }
+  
+  .hero-image-frame {
+    max-width: 400px;
+  }
+  
+  .hero-right-points {
+    flex: 0 0 25%;
+    max-width: 25%;
+    padding-right: 1rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .hero-container {
+    flex-direction: column;
+    text-align: center;
+    padding: 1.5rem 2rem;
+    gap: 0.8rem;
+    height: auto;
+    min-height: 100vh;
+    justify-content: center;
+  }
+
+  .hero-content {
+    flex: 0 0 100%;
+    max-width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+    align-items: center;
+    order: 1;
+  }
+
+  .hero-title {
+    font-size: 3.2rem;
+  }
+
+  .hero-title::after {
+    margin: 0.2rem auto 0;
+  }
+
+  .hero-description {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .hero-buttons {
+    justify-content: center;
+  }
+
+  .hero-quote {
+    max-width: 100%;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .hero-image-wrapper {
+    flex: 0 0 100%;
+    max-width: 100%;
+    order: 2;
+  }
+
+  .hero-image-frame {
+    max-width: 350px;
+    margin: 0 auto;
+  }
+
+  .hero-right-points {
+    flex: 0 0 100%;
+    max-width: 100%;
+    padding-right: 0;
+    order: 3;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .hero-right-point {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+    min-width: 180px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+
+  .hero {
+    padding: 2rem 0;
+    min-height: auto;
+    flex: none;
+  }
+
+  .hero-container {
+    padding: 0.5rem 1.5rem;
+    gap: 0.6rem;
+  }
+
+  .hero-title {
+    font-size: 2.8rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .hero-description {
+    font-size: 1rem;
+    max-width: 100%;
+  }
+
+  .hero-buttons {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .hero-buttons .btn {
+    font-size: 0.85rem;
+    padding: 0.6rem 1.4rem;
+    min-width: 100px;
+  }
+
+  .hero-quote {
+    font-size: 0.9rem;
+  }
+
+  .hero-image-frame {
+    max-width: 280px;
+  }
+
+  .hero-right-points {
+    gap: 0.4rem;
+  }
+
+  .hero-right-point {
+    font-size: 0.8rem;
+    padding: 0.3rem 0.6rem;
+    min-width: 150px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 2.2rem;
+  }
+
+  .hero-image-frame {
+    max-width: 220px;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero-buttons .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .hero-right-points {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero-right-point {
+    min-width: unset;
+    justify-content: flex-start;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.75rem;
+  }
+}
+

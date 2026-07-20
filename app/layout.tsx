@@ -1,6 +1,10 @@
 // app/layout.tsx
 import type { Metadata } from 'next'
 import './globals.css'
+import './gnavbar.css'
+import './ghero.css'
+
+
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 
