@@ -26,9 +26,10 @@
 .author-image-wrapper {
   flex-shrink: 0;
   width: 460px;
+  min-width: 460px;
   height: auto;
   overflow: visible; /* Nincs vágás */
-  background: transparent; /* Nincs háttér */
+  background: transparent !important; /* Nincs háttér */
   box-shadow: none; /* Nincs árnyék */
   border: none; /* Nincs keret */
   border-radius: 0; /* Nincs lekerekítés */
@@ -39,7 +40,7 @@
 .author-image {
   width: 100%;
   height: 100%;
-  object-fit:inherit; /* A teljes kép látszódjon */
+  object-fit:none; /* A teljes kép látszódjon */
   display: block;
 }
 
