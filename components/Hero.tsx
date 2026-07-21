@@ -72,14 +72,14 @@ export default function Hero({
           {showPhone && (
             <div className="hero-contact-reveal">
               <a href={`tel:${phone.replace(/\s/g, '')}`} className="hero-contact-link">
-                📞 {phone}
+                {phone}
               </a>
             </div>
           )}
           {showEmail && (
             <div className="hero-contact-reveal">
               <a href={`mailto:${email}`} className="hero-contact-link">
-                ✉️ {email}
+                {email}
               </a>
             </div>
           )}

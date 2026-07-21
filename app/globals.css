@@ -1,11 +1,11 @@
-/* app/globals.css - Prémium ügyvédi iroda stílus Lato-val */
 /* ============================================================
-   SZÍNEK ÉS ALAPBEÁLLÍTÁSOK
+   GLOBÁLIS STÍLUSOK - ALAPOK
    ============================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap');
+
 
 :root {
-  /* Fő színek */
+  /* SZÍNEK */
   --color-primary: #10284a;
   --color-primary-dark: #0a1f38;
   --color-accent: #f58220;
@@ -23,14 +23,13 @@
   --color-gray-800: #343a40;
   --color-gray-900: #212529;
 
-  /* Háttér színek */
+  /* HÁTTÉR */
   --bg-page: var(--color-primary);
   --bg-card: var(--color-white);
   --bg-faq: var(--color-primary-dark);
   --bg-footer: var(--color-primary-dark);
-  --bg-navbar: var(--color-primary-dark);
 
-  /* Térközök */
+  /* TÉRKÖZÖK */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
   --spacing-md: 1rem;
@@ -40,36 +39,30 @@
   --spacing-3xl: 3.5rem;
   --spacing-4xl: 4.5rem;
   --spacing-5xl: 6rem;
-  --spacing-6xl: 8rem;
 
-  /* Betűk - LATO a fő betűtípus */
-  --font-serif: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
-  --font-sans: 'Lato', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-heading: 'Lato', 'Playfair Display', Georgia, serif;
+  /* BETŰTÍPUS - MINDENHOL LATO */
+  --font-primary: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
-  /* Árnyékok */
+  /* ÁRNYÉKOK */
   --shadow-sm: 0 4px 16px rgba(16, 40, 74, 0.04);
   --shadow-md: 0 12px 48px rgba(16, 40, 74, 0.07);
   --shadow-lg: 0 20px 64px rgba(16, 40, 74, 0.09);
   --shadow-hover: 0 18px 52px rgba(16, 40, 74, 0.13);
   --shadow-orange: 0 4px 24px rgba(245, 130, 32, 0.25);
   --shadow-orange-glow: 0 0 40px rgba(245, 130, 32, 0.08);
-  --shadow-nav: 0 2px 20px rgba(10, 22, 40, 0.3);
-  --shadow-text: 0 2px 20px rgba(0, 0, 0, 0.15);
 
-  /* Border radius */
+  /* BORDER RADIUS */
   --radius-sm: 8px;
   --radius-md: 16px;
   --radius-lg: 20px;
   --radius-xl: 24px;
-  --radius-full: 9999px;
 
-  /* Tranzíció */
+  /* TRANZÍCIÓ */
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ============================================================
-   ALAP STÍLUSOK
+   ALAPBEÁLLÍTÁSOK
    ============================================================ */
 * {
   margin: 0;
@@ -82,12 +75,13 @@ html {
 }
 
 body {
-  font-family: var(--font-sans);
+  font-family: var(--font-primary);
   color: var(--color-gray-900);
   background: var(--bg-page);
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-weight: 300;
 }
 
 img {
@@ -102,16 +96,6 @@ a {
 }
 
 /* ============================================================
-   TIPOGRÁFIA
-   ============================================================ */
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-serif);
-  color: var(--color-primary);
-  font-weight: 700;
-  line-height: 1.15;
-}
-
-/* ============================================================
    CONTAINER
    ============================================================ */
 .container {
@@ -121,20 +105,36 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ============================================================
-   GOMBOK (általános)
+   SZEKCIÓK
+   ============================================================ */
+.section {
+  padding: 6rem 0;
+}
+
+.page-content {
+  background-image: url('/images/background.png');
+  background-repeat: repeat;
+  background-size: auto;
+  background-position: top left;
+  padding: 2rem 0 3rem;
+  min-height: 100vh;
+}
+
+/* ============================================================
+   GOMBOK
    ============================================================ */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-sans);
+  font-family: var(--font-primary);
   font-size: 1rem;
-  font-weight: 400;
+  font-weight: 300;
   padding: 0.8rem 2rem;
-  border-radius: var(--radius-sm);
+  border-radius: 2px;
   border: none;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: var(--transition);
   text-align: center;
   gap: 0.5rem;
   letter-spacing: 0.02em;
@@ -148,7 +148,7 @@ h1, h2, h3, h4, h5, h6 {
 .btn-primary:hover {
   background: var(--color-accent-hover);
   transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(245, 130, 32, 0.35);
+  box-shadow: var(--shadow-orange);
 }
 
 .btn-secondary {
@@ -166,8 +166,6 @@ h1, h2, h3, h4, h5, h6 {
 .btn-accent {
   background: var(--color-accent);
   color: var(--color-white);
-  font-size: 1rem;
-  padding: 0.8rem 2rem;
 }
 
 .btn-accent:hover {
@@ -189,1176 +187,177 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ============================================================
-   SZEKCIÓK ÉS KÁRTYÁK
-   ============================================================ */
-.section {
-  padding: 6rem 0;
-}
-
-.page-content {
-  background-image: url('/images/background.png');
-  background-repeat: repeat;
-  background-size: auto;
-  background-position: top left;
-  padding: 2rem 0 3rem;
-  min-height: 100vh;
-}
-
-/* FEHÉR KÁRTYÁK - CSEMPÉVEL (PONTOS MÉRET) */
-.section-card {
-  background-image: url('/images/white-background.png');
-  background-repeat: repeat;
-  background-size: 100% auto; /* VÍZSZINTESEN KITÖLTI, FÜGGŐLEGESEN ISMÉTLŐDIK */
-  background-position: top center;
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-md);
-  padding: 70px 72px;
-  margin-bottom: 4rem;
-  transition: box-shadow 0.3s ease, border-color 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  position: relative;
-}
-.section-card::before {
-  content: '';
-  position: absolute;
-  top: -1px;
-  left: 2rem;
-  right: 2rem;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
-  opacity: 0.3;
-  border-radius: 0 0 2px 2px;
-}
-
-.section-card:hover {
-  border-color: rgba(245, 130, 32, 0.15);
-  box-shadow: var(--shadow-orange-glow);
-}
-
-.section-card:last-child {
-  margin-bottom: 0;
-}
-
-/* ============================================================
-   CÍMEK ÉS DEKORÁCIÓ
-   ============================================================ */
-.section-title {
-  font-family: var(--font-serif);
-  font-size: 3.5rem;
-  font-weight: 700;
-  color: var(--color-primary);
-  text-align: center;
-  margin-bottom: 0.5rem;
-  letter-spacing: -0.02em;
-}
-
-.section-title-white {
-  font-family: var(--font-serif);
-  font-size: 3.5rem;
-  font-weight: 700;
-  color: var(--color-white);
-  text-align: center;
-  margin-bottom: 0.5rem;
-  letter-spacing: -0.02em;
-}
-
-.section-title-white::after {
-  content: '';
-  display: block;
-  width: 4rem;
-  height: 3px;
-  background: var(--color-accent);
-  margin: 0.75rem auto 0;
-  opacity: 0.6;
-}
-
-.section-subtitle {
-  font-family: var(--font-sans);
-  font-size: 1.15rem;
-  font-weight: 300;
-  color: #6c7482;
-  text-align: center;
-  margin-top: 0.25rem;
-  margin-bottom: 2.5rem;
-  letter-spacing: 0.01em;
-}
-
-.section-title-wrapper {
-  text-align: center;
-  margin-bottom: 4rem;
-}
-
-.section-divider {
-  display: inline-block;
-  width: 72px;
-  height: 3.5px;
-  background: var(--color-accent);
-  border-radius: 2px;
-  margin: 0.75rem auto 0;
-}
-
-/* ============================================================
-   SZOLGÁLTATÁS GRID ÉS KÁRTYÁK
-   ============================================================ */
-.service-grid-modern {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2.5rem;
-  margin-top: 2rem;
-}
-
-.service-card-modern {
-  display: block;
-  background: var(--color-white);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-gray-200);
-  box-shadow: var(--shadow-sm);
-  overflow: hidden;
-  transition: all 0.3s ease;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.service-card-modern:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-hover);
-  border-color: var(--color-gray-300);
-}
-
-.service-card-image-wrapper {
-  position: relative;
-  width: 100%;
-  height: 260px;
-  overflow: hidden;
-  border-top-left-radius: var(--radius-lg);
-  border-top-right-radius: var(--radius-lg);
-  flex-shrink: 0;
-}
-
-.service-card-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.4s ease;
-}
-
-.service-card-modern:hover .service-card-image {
-  transform: scale(1.03);
-}
-
-.service-card-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(10, 22, 40, 0.1) 0%,
-    rgba(10, 22, 40, 0.4) 100%
-  );
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  padding: 1.25rem;
-  opacity: 0;
-  transition: var(--transition);
-}
-
-.service-card-modern:hover .service-card-overlay {
-  opacity: 1;
-}
-
-.service-card-tag {
-  background: var(--color-accent);
-  color: var(--color-white);
-  padding: 0.25rem 0.75rem;
-  border-radius: 2rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  backdrop-filter: blur(4px);
-  background: rgba(245, 130, 32, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.service-card-content {
-  padding: 2.25rem 1.75rem 1.75rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  flex: 1;
-}
-
-.service-card-title-modern {
-  font-family: var(--font-serif);
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-primary);
-  margin-bottom: 0.15rem;
-  line-height: 1.2;
-}
-
-.service-card-title-modern::after {
-  content: '';
-  display: block;
-  width: 2rem;
-  height: 2px;
-  background: var(--color-accent);
-  margin-top: 0.5rem;
-  transition: var(--transition);
-}
-
-.service-card-modern:hover .service-card-title-modern::after {
-  width: 3rem;
-}
-
-.service-card-description-modern {
-  font-size: 1rem;
-  line-height: 1.7;
-  color: var(--color-gray-600);
-  flex: 1;
-  font-weight: 300;
-}
-
-.service-card-footer {
-  display: flex;
-  justify-content: flex-start;
-  padding-top: 0.25rem;
-}
-
-.service-card-link-modern {
-  font-family: var(--font-sans);
-  font-size: 1rem;
-  font-weight: 400;
-  color: var(--color-accent);
-  transition: color 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.service-card-link-modern::after {
-  content: '→';
-  transition: transform 0.25s ease;
-  font-size: 1.1rem;
-}
-
-.service-card-modern:hover .service-card-link-modern {
-  color: var(--color-accent-hover);
-}
-
-.service-card-modern:hover .service-card-link-modern::after {
-  transform: translateX(6px);
-}
-
-
-
-/* ============================================================
-   TESTIMONIALS
-   ============================================================ */
-.testimonials-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-}
-
-.testimonial-card {
-  background: var(--color-gray-50);
-  border-radius: 12px;
-  padding: 1.5rem;
-  border: 1px solid var(--color-gray-200);
-}
-
-.testimonial-stars {
-  display: flex;
-  gap: 0.15rem;
-  margin-bottom: 0.75rem;
-  letter-spacing: 0.1rem;
-}
-
-.testimonial-star {
-  display: inline-block;
-  font-size: 1.1rem;
-  line-height: 1;
-  color: #f59e0b;
-}
-
-.testimonial-text {
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: var(--color-gray-700);
-  margin-bottom: 0.75rem;
-  font-style: italic;
-  font-weight: 300;
-}
-
-.testimonial-author {
-  font-weight: 400;
-  color: var(--color-gray-900);
-  font-size: 0.9rem;
-}
-
-@media (max-width: 768px) {
-  .testimonials-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ============================================================
-   KAPCSOLAT
-   ============================================================ */
-.contact-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
-  margin-top: 2rem;
-}
-
-@media (max-width: 768px) {
-  .contact-container {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-}
-
-.contact-info-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1.75rem;
-}
-
-.contact-info-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 1.25rem;
-  padding: 1rem 1.25rem;
-  background: var(--color-gray-50);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--color-gray-200);
-  transition: var(--transition);
-}
-
-.contact-info-item:hover {
-  border-color: var(--color-accent);
-  transform: translateX(4px);
-  box-shadow: var(--shadow-sm);
-}
-
-.contact-info-icon {
-  font-size: 1.6rem;
-  flex-shrink: 0;
-  width: 2.5rem;
-  text-align: center;
-}
-
-.contact-info-label {
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
-  font-weight: 400;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--color-gray-600);
-  margin-bottom: 0.15rem;
-}
-
-.contact-info-value {
-  font-size: 1.15rem;
-  font-weight: 400;
-  color: var(--color-primary);
-}
-
-.contact-info-note {
-  font-size: 0.85rem;
-  color: var(--color-gray-500);
-  font-weight: 300;
-}
-
-.contact-info-cta-wrapper {
-  margin-top: 0.5rem;
-}
-
-.contact-map-wrapper {
-  position: relative;
-  min-height: 340px;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--color-gray-200);
-  transition: var(--transition);
-}
-
-.contact-map-wrapper:hover {
-  border-color: var(--color-accent);
-}
-
-.contact-map {
-  width: 100%;
-  height: 100%;
-  min-height: 340px;
-}
-
-.contact-map iframe {
-  width: 100%;
-  height: 100%;
-  min-height: 340px;
-  border: 0;
-}
-
-/* ============================================================
-   FAQ
-   ============================================================ */
-.faq-section-blue-full {
-  background: var(--bg-faq);
-  padding: 5rem 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.04);
-}
-
-.faq-section-blue-full .section-title {
-  color: var(--color-white);
-}
-
-.faq-section-blue-full .section-divider {
-  background: var(--color-accent);
-}
-
-.faq-blue-wrapper {
-  max-width: 56rem;
-  margin: 0 auto;
-}
-
-.faq-blue-items {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 2rem;
-  margin-top: 1rem;
-}
-
-@media (max-width: 768px) {
-  .faq-blue-items {
-    grid-template-columns: 1fr;
-    gap: 0;
-  }
-}
-
-.faq-blue-item {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  transition: var(--transition);
-  padding-right: 0.5rem;
-}
-
-.faq-blue-item:last-child {
-  border-bottom: none;
-}
-
-@media (max-width: 768px) {
-  .faq-blue-item:last-child {
-    border-bottom: none;
-  }
-}
-
-.faq-blue-question {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding: 0.7rem 0;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 300;
-  text-align: left;
-  color: rgba(255, 255, 255, 0.8);
-  font-family: var(--font-sans);
-  letter-spacing: 0.01em;
-  transition: var(--transition);
-  gap: 0.75rem;
-}
-
-.faq-blue-question:hover {
-  color: var(--color-white);
-}
-
-.faq-blue-question .faq-toggle {
-  font-size: 1.25rem;
-  color: rgba(255, 255, 255, 0.15);
-  flex-shrink: 0;
-  transition: var(--transition);
-  font-weight: 300;
-}
-
-.faq-blue-question:hover .faq-toggle {
-  color: var(--color-accent);
-}
-
-.faq-blue-answer {
-  padding: 0 0 0.7rem 0;
-  color: rgba(255, 255, 255, 0.4);
-  line-height: 1.6;
-  font-size: 0.85rem;
-  padding-right: 0.5rem;
-  font-weight: 300;
-}
-
-/* ============================================================
-   FOOTER
-   ============================================================ */
-.footer {
-  background: var(--bg-footer);
-  color: rgba(255, 255, 255, 0.5);
-  padding: 3rem 0 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.03);
-}
-
-.footer-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 2rem;
-}
-
-@media (max-width: 768px) {
-  .footer-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-@media (max-width: 480px) {
-  .footer-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.footer-heading {
-  font-family: var(--font-heading);
-  font-weight: 300;
-  font-size: 1rem;
-  color: rgba(255, 255, 255, 0.85);
-  margin-bottom: 0.75rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.footer-text {
-  font-size: 0.85rem;
-  line-height: 1.7;
-  color: rgba(255, 255, 255, 0.35);
-  font-weight: 300;
-}
-
-.footer-links {
-  list-style: none;
-  padding: 0;
-}
-
-.footer-links li {
-  margin-bottom: 0.25rem;
-}
-
-.footer-links a {
-  color: rgba(255, 255, 255, 0.35);
-  font-size: 0.85rem;
-  transition: var(--transition);
-  font-weight: 300;
-}
-
-.footer-links a:hover {
-  color: var(--color-accent);
-}
-
-.footer-divider {
-  border-top: 1px solid rgba(255, 255, 255, 0.03);
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-}
-
-.footer-copyright {
-  text-align: center;
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.2);
-  letter-spacing: 0.02em;
-  font-weight: 300;
-}
-
-/* ============================================================
-   RESPONSIVE
+   RESPONSIVE - ALAP
    ============================================================ */
 @media (max-width: 1024px) {
   .section {
     padding: 4rem 0;
   }
 
-  .section-card {
-    padding: 48px 40px;
-    margin-bottom: 3rem;
-  }
-
-  .service-grid-modern {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2rem;
-  }
-
-  .contact-container {
-    grid-template-columns: 1fr;
-    gap: 3rem;
-  }
-
-  .section-title {
-    font-size: 3rem;
+  .container {
+    padding: 0 1.5rem;
   }
 }
 
 @media (max-width: 768px) {
-
-  .section-card {
-    padding: 28px 20px;
-    border-radius: var(--radius-lg);
-    margin-bottom: 2rem;
+  .section {
+    padding: 2rem 0;
   }
 
-  .section-title {
-    font-size: 2.2rem;
+  .container {
+    padding: 0 1rem;
   }
-
-  .section-title-white {
-    font-size: 2.2rem;
-  }
-
-  .service-grid-modern {
-    grid-template-columns: 1fr;
-    gap: 1.75rem;
-  }
-
-  .contact-map-wrapper {
-    min-height: 240px;
-  }
-
-  .contact-map {
-    min-height: 240px;
-  }
-
-  .contact-map iframe {
-    min-height: 240px;
-  }
-
-  .faq-section-blue-full {
-    padding: 3rem 0;
-  }
-
-  .faq-blue-items {
-    grid-template-columns: 1fr;
-  }
-
-  .footer-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-/* ============================================================
-   KÁRTYÁK - PREMIUM, KÖRBESZEGÉLYEZVE
-   ============================================================ */
-
-/* --- FEHÉR KÁRTYÁK (szekciók) --- */
-.section-card {
-  background-image: url('/images/white-background.png');
-  background-repeat: repeat;
-  background-size: 100% auto;
-  background-position: top center;
-  border-radius: var(--radius-xl);
-  padding: 70px 72px;
-  margin-bottom: 4rem;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  
-  /* --- KÖRBESZEGÉLYEZÉS --- */
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 
-    0 4px 20px rgba(16, 40, 74, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  
-  transform: translateY(0);
-}
-
-/* --- KÁRTYA BELSŐ GLOW EFFEKT --- */
-.section-card::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  right: -50%;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(
-    circle,
-    rgba(245, 130, 32, 0.03) 0%,
-    transparent 70%
-  );
-  pointer-events: none;
-  transition: all 0.6s ease;
-  z-index: 0;
-}
-
-/* --- DUPLA SZEGÉLY EFFEKT (belső világos vonal) --- */
-.section-card::after {
-  content: '';
-  position: absolute;
-  inset: 1px;
-  border-radius: calc(var(--radius-xl) - 1px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-
-/* --- KÁRTYA HOVER --- */
-.section-card:hover {
-  transform: translateY(-6px);
-  border-color: rgba(245, 130, 32, 0.25);
-  box-shadow: 
-    0 20px 60px rgba(16, 40, 74, 0.1),
-    0 0 0 1px rgba(245, 130, 32, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-}
-
-.section-card:hover::after {
-  opacity: 1;
-}
-
-.section-card:last-child {
-  margin-bottom: 0;
-}
-
-/* --- KÁRTYA BELSŐ TARTALOM (z-index fix) --- */
-.section-card > * {
-  position: relative;
-  z-index: 2;
 }
 
 /* ============================================================
-   SZOLGÁLTATÁS KÁRTYÁK - KÖRBESZEGÉLYEZVE
+   BREADCRUMB - NARANCS SÁV A LINKEKKEL
    ============================================================ */
 
-.service-grid-modern {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2.5rem;
-  margin-top: 2rem;
-}
-
-.service-card-modern {
-  display: block;
-  background: var(--color-white);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  
-  /* --- KÖRBESZEGÉLYEZÉS --- */
-  border: 1px solid var(--color-gray-200);
-  box-shadow: 0 4px 16px rgba(16, 40, 74, 0.04);
-}
-
-/* --- BELSŐ SZEGÉLY EFFEKT --- */
-.service-card-modern::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  pointer-events: none;
-  z-index: 2;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-
-/* --- SZOLGÁLTATÁS KÁRTYA - HOVER --- */
-.service-card-modern:hover {
-  transform: translateY(-8px);
-  border-color: var(--color-accent);
-  box-shadow: 
-    0 20px 60px rgba(16, 40, 74, 0.12),
-    0 0 0 1px rgba(245, 130, 32, 0.08);
-}
-
-.service-card-modern:hover::before {
-  opacity: 1;
-}
-
-/* --- KÉP RESZ --- */
-.service-card-image-wrapper {
-  position: relative;
+/* --- A SÁV KONTÉNER --- */
+.breadcrumb-bar {
   width: 100%;
-  height: 260px;
-  overflow: hidden;
-  border-top-left-radius: var(--radius-lg);
-  border-top-right-radius: var(--radius-lg);
-  flex-shrink: 0;
+  padding: 0 0rem;
+  margin-top: 0rem;
+  margin-bottom: 2rem;
 }
 
-.service-card-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+@media (max-width: 768px) {
+  .breadcrumb-bar {
+    padding: 0 0rem;
+    margin-bottom: 1.5rem;
+  }
 }
 
-.service-card-modern:hover .service-card-image {
-  transform: scale(1.05);
-}
-
-/* --- OVERLAY --- */
-.service-card-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(10, 22, 40, 0.1) 0%,
-    rgba(10, 22, 40, 0.5) 100%
+/* --- MAGA A SÁV --- */
+.breadcrumb-bar-inner {
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 0.35rem 1.5rem;
+  background: linear-gradient(90deg, 
+    var(--color-accent) 0%, 
+    rgba(245, 130, 32, 0.8) 15%, 
+    rgba(245, 130, 32, 0.5) 30%, 
+    rgba(245, 130, 32, 0.25) 50%, 
+    rgba(245, 130, 32, 0.08) 75%, 
+    transparent 100%
   );
+  border-radius: 4px;
+  opacity: 0.9;
+  min-height: 2.2rem;
   display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  padding: 1.25rem;
-  opacity: 0;
-  transition: all 0.4s ease;
-}
-
-.service-card-modern:hover .service-card-overlay {
-  opacity: 1;
-}
-
-.service-card-tag {
-  background: var(--color-accent);
-  color: var(--color-white);
-  padding: 0.25rem 0.75rem;
-  border-radius: 2rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  backdrop-filter: blur(4px);
-  background: rgba(245, 130, 32, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  transform: translateY(-10px);
-  transition: all 0.4s ease;
-}
-
-.service-card-modern:hover .service-card-tag {
-  transform: translateY(0);
-}
-
-/* --- TARTALOM --- */
-.service-card-content {
-  padding: 2.25rem 1.75rem 1.75rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  flex: 1;
-}
-
-.service-card-title-modern {
-  font-family: var(--font-serif);
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-primary);
-  margin-bottom: 0.15rem;
-  line-height: 1.2;
-  transition: color 0.3s ease;
-}
-
-.service-card-modern:hover .service-card-title-modern {
-  color: var(--color-accent);
-}
-
-.service-card-title-modern::after {
-  content: '';
-  display: block;
-  width: 2rem;
-  height: 2px;
-  background: var(--color-accent);
-  margin-top: 0.5rem;
-  transition: all 0.3s ease;
-}
-
-.service-card-modern:hover .service-card-title-modern::after {
-  width: 3rem;
-}
-
-.service-card-description-modern {
-  font-size: 1rem;
-  line-height: 1.7;
-  color: var(--color-gray-600);
-  flex: 1;
-  font-weight: 300;
-}
-
-.service-card-footer {
-  display: flex;
-  justify-content: flex-start;
-  padding-top: 0.25rem;
-}
-
-.service-card-link-modern {
-  font-family: var(--font-sans);
-  font-size: 1rem;
-  font-weight: 400;
-  color: var(--color-accent);
-  transition: all 0.3s ease;
-  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
 }
 
-.service-card-link-modern::after {
-  content: '→';
-  transition: transform 0.3s ease;
-  font-size: 1.1rem;
+@media (max-width: 480px) {
+  .breadcrumb-bar-inner {
+    padding: 0.25rem 1rem;
+    min-height: 1.8rem;
+  }
 }
 
-.service-card-modern:hover .service-card-link-modern {
-  color: var(--color-accent-hover);
-}
-
-.service-card-modern:hover .service-card-link-modern::after {
-  transform: translateX(6px);
-}
-
-/* ============================================================
-   TESZTIMONIAL KÁRTYÁK - KÖRBESZEGÉLYEZVE
-   ============================================================ */
-
-.testimonials-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-}
-
-.testimonial-card {
-  background: var(--color-white);
-  border-radius: var(--radius-md);
-  padding: 1.5rem;
-  
-  /* --- KÖRBESZEGÉLYEZÉS --- */
-  border: 1px solid var(--color-gray-200);
-  box-shadow: 0 4px 16px rgba(16, 40, 74, 0.04);
-  
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-/* --- BELSŐ SZEGÉLY EFFEKT --- */
-.testimonial-card::before {
-  content: '';
-  position: absolute;
-  inset: 1px;
-  border-radius: calc(var(--radius-md) - 1px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-
-/* --- TESZTIMONIAL HOVER --- */
-.testimonial-card:hover {
-  transform: translateY(-6px);
-  border-color: var(--color-accent);
-  box-shadow: 
-    0 16px 48px rgba(16, 40, 74, 0.1),
-    0 0 0 1px rgba(245, 130, 32, 0.06);
-}
-
-.testimonial-card:hover::before {
-  opacity: 1;
-}
-
-/* --- IDÉZŐJEL DEKORÁCIÓ --- */
-.testimonial-card .quote-mark {
-  position: absolute;
-  top: 5px;
-  right: 20px;
-  font-size: 4rem;
-  font-family: var(--font-serif);
-  color: var(--color-accent);
-  opacity: 0.08;
-  pointer-events: none;
-  transition: all 0.4s ease;
-  line-height: 1;
-}
-
-.testimonial-card:hover .quote-mark {
-  opacity: 0.15;
-  transform: scale(1.1);
-}
-
-.testimonial-stars {
+/* --- A LISTA --- */
+.breadcrumb-bar-list {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 0.15rem;
-  margin-bottom: 0.75rem;
-  letter-spacing: 0.1rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
 }
 
-.testimonial-star {
-  display: inline-block;
-  font-size: 1.1rem;
-  line-height: 1;
-  color: #f59e0b;
-  transition: all 0.3s ease;
+/* --- EGY LISTAELEM --- */
+.breadcrumb-bar-item {
+  display: flex;
+  align-items: center;
+  font-family: var(--font-primary);
+  font-size: 0.8rem;
+  font-weight: 300;
+  color: var(--color-gray-800);
+  letter-spacing: 0.02em;
+  line-height: 1.4;
 }
 
-.testimonial-card:hover .testimonial-star {
-  transform: scale(1.1);
+@media (max-width: 480px) {
+  .breadcrumb-bar-item {
+    font-size: 0.7rem;
+  }
 }
 
-.testimonial-text {
-  font-size: 0.95rem;
-  line-height: 1.6;
+/* --- LINK --- */
+.breadcrumb-bar-link {
   color: var(--color-gray-700);
-  margin-bottom: 0.75rem;
-  font-style: italic;
+  text-decoration: none;
+  transition: var(--transition);
+  padding: 0.1rem 0.15rem;
+  position: relative;
   font-weight: 300;
 }
 
-.testimonial-author {
-  font-weight: 400;
-  color: var(--color-gray-900);
-  font-size: 0.9rem;
-  transition: color 0.3s ease;
+.breadcrumb-bar-link::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--color-white);
+  transition: width 0.3s ease;
 }
 
-.testimonial-card:hover .testimonial-author {
-  color: var(--color-accent);
+.breadcrumb-bar-link:hover {
+  color: var(--color-white);
+}
+
+.breadcrumb-bar-link:hover::after {
+  width: 100%;
+}
+
+/* --- JELENLEGI OLDAL --- */
+.breadcrumb-bar-current {
+  color: var(--color-white);
+  font-weight: 400;
+  padding: 0.1rem 0.15rem;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* --- ELVÁLASZTÓ --- */
+.breadcrumb-bar-sep {
+  margin: 0 0.3rem;
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: 300;
+  font-size: 0.6rem;
+  opacity: 0.6;
+}
+
+@media (max-width: 480px) {
+  .breadcrumb-bar-sep {
+    margin: 0 0.15rem;
+    font-size: 0.5rem;
+  }
 }
 
 /* ============================================================
-   KAPCSOLAT KÁRTYÁK - KÖRBESZEGÉLYEZVE
+   SECTION TITLE - TIMELINE CÍM
    ============================================================ */
-
-.contact-info-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 1.25rem;
-  padding: 1rem 1.25rem;
-  background: var(--color-gray-50);
-  border-radius: var(--radius-sm);
-  
-  /* --- KÖRBESZEGÉLYEZÉS --- */
-  border: 1px solid var(--color-gray-200);
-  box-shadow: 0 2px 8px rgba(16, 40, 74, 0.02);
-  
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-/* --- BAL OLDALI NARANCS CSÍK --- */
-.contact-info-item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: 3px;
-  background: var(--color-accent);
-  transform: scaleY(0);
-  transform-origin: center;
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* --- KAPCSOLAT HOVER --- */
-.contact-info-item:hover {
-  border-color: var(--color-accent);
-  transform: translateX(4px);
-  box-shadow: 
-    0 8px 24px rgba(245, 130, 32, 0.08),
-    0 0 0 1px rgba(245, 130, 32, 0.04);
-  background: var(--color-white);
-}
-
-.contact-info-item:hover::before {
-  transform: scaleY(1);
-}
-
-.contact-info-icon {
-  font-size: 1.6rem;
-  flex-shrink: 0;
-  width: 2.5rem;
-  text-align: center;
-  transition: all 0.3s ease;
-}
-
-.contact-info-item:hover .contact-info-icon {
-  transform: scale(1.1);
-}
-
-.contact-info-label {
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
-  font-weight: 400;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--color-gray-600);
-  margin-bottom: 0.15rem;
-}
-
-.contact-info-value {
-  font-size: 1.15rem;
-  font-weight: 400;
-  color: var(--color-primary);
-  transition: color 0.3s ease;
-}
-
-.contact-info-item:hover .contact-info-value {
-  color: var(--color-accent);
-}
-
-.contact-info-note {
-  font-size: 0.85rem;
-  color: var(--color-gray-500);
+.section-title {
+  font-family: var(--font-primary);
+  font-size: 2.2rem;
   font-weight: 300;
+  color: var(--color-primary);
+  text-align: center;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.01em;
 }
 
-/* --- TÉRKÉP HOVER --- */
-.contact-map-wrapper {
-  position: relative;
-  min-height: 340px;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  
-  /* --- KÖRBESZEGÉLYEZÉS --- */
-  border: 1px solid var(--color-gray-200);
-  box-shadow: 0 4px 16px rgba(16, 40, 74, 0.04);
-  
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+.section-title::after {
+  content: '';
+  display: block;
+  width: 4rem;
+  height: 3px;
+  background: var(--color-accent);
+  margin: 0.75rem auto 0;
+  border-radius: 2px;
+  opacity: 0.6;
 }
-
-.contact-map-wrapper:hover {
-  border-color: var(--color-accent);
-  box-shadow: 
-    0 12px 40px rgba(245, 130, 32, 0.08),
-    0 0 0 1px rgba(245, 130, 32, 0.04);
-  transform: scale(1.01);
-}
-
-.contact-map {
-  width: 100%;
-  height: 100%;
-  min-height: 340px;
-}
-
-.contact-map iframe {
-  width: 100%;
-  height: 100%;
-  min-height: 340px;
-  border: 0;
-}
-

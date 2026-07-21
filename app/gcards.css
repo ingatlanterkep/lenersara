@@ -1,0 +1,2361 @@
+/* ============================================================
+   KÁRTYÁK - PRÉMIUM, ÁTFOGÓ STÍLUSOK
+   Minden kártya elem extrás, jól kinéző CSS designnal
+   ============================================================ */
+
+:root {
+  /* KÁRTYA SPECIFIKUS VÁLTOZÓK */
+  --card-radius-sm: 8px;
+  --card-radius-md: 12px;
+  --card-radius-lg: 16px;
+  --card-radius-xl: 20px;
+  --card-shadow-sm: 0 2px 8px rgba(16, 40, 74, 0.04);
+  --card-shadow-md: 0 8px 32px rgba(16, 40, 74, 0.06);
+  --card-shadow-lg: 0 16px 48px rgba(16, 40, 74, 0.08);
+  --card-shadow-xl: 0 24px 64px rgba(16, 40, 74, 0.1);
+  --card-shadow-hover: 0 12px 40px rgba(16, 40, 74, 0.12);
+  --card-transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  --card-border-color: var(--color-gray-200);
+  --card-bg: var(--color-white);
+}
+
+/* ============================================================
+   1. ALAP KÁRTYA
+   ============================================================ */
+.card {
+  background: var(--card-bg);
+  border-radius: var(--card-radius-lg);
+  border: 1px solid var(--card-border-color);
+  box-shadow: var(--card-shadow-sm);
+  padding: 1.5rem;
+  transition: var(--card-transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--card-shadow-hover);
+  border-color: var(--color-accent);
+}
+
+.card-flat {
+  box-shadow: none;
+  border-color: var(--color-gray-100);
+}
+
+.card-flat:hover {
+  box-shadow: var(--card-shadow-sm);
+}
+
+.card-borderless {
+  border: none;
+  box-shadow: none;
+}
+
+.card-borderless:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--card-shadow-sm);
+}
+
+
+/* --- FEHÉR SZEKCIÓ KÁRTYÁK --- */
+.section-card {
+  background-image: url('/images/white-background.png');
+  background-repeat: repeat;
+  background-size: 100% auto;
+  background-position: top center;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  padding: 48px 56px;
+  margin-bottom: 3rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  position: relative;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+/* Glow keret - MINDEN OLDALON */
+.section-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: var(--radius-xl);
+  padding: 2px;
+  background: linear-gradient(135deg, transparent 30%, var(--color-accent), transparent 70%);
+  opacity: 0;
+  transition: all 0.6s ease;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.section-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--card-shadow-xl);
+  border-color: var(--color-accent);
+}
+
+.section-card:hover::before {
+  opacity: 0.8;
+  height: 4px;
+}
+
+.section-card:last-child {
+  margin-bottom: 0;
+}
+
+.section-card-glow {
+  position: relative;
+}
+
+.section-card-glow::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: var(--card-radius-xl);
+  background: linear-gradient(135deg, var(--color-accent), transparent 40%, var(--color-accent), transparent 70%);
+  opacity: 0;
+  transition: var(--card-transition);
+  z-index: -1;
+  padding: 1px;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.section-card-glow:hover::after {
+  opacity: 1;
+}
+
+/* ============================================================
+   3. SZOLGÁLTATÁS KÁRTYÁK (SERVICE GRID)
+   ============================================================ */
+.service-grid-modern {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.75rem;
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+  .service-grid-modern {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .service-grid-modern {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+}
+
+.service-card-modern {
+  display: block;
+  background: var(--card-bg);
+  border-radius: var(--card-radius-lg);
+  overflow: hidden;
+  transition: var(--card-transition);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-gray-200);
+  box-shadow: var(--card-shadow-sm);
+  position: relative;
+}
+
+.service-card-modern::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: var(--card-radius-lg);
+  background: linear-gradient(135deg, var(--color-accent), transparent 50%, var(--color-accent));
+  opacity: 0;
+  transition: var(--card-transition);
+  z-index: 2;
+  padding: 1px;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.service-card-modern::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, transparent 50%, rgba(245, 130, 32, 0.03) 50%);
+  pointer-events: none;
+  transition: var(--card-transition);
+  z-index: 1;
+  border-radius: 0 0 0 60px;
+}
+
+.service-card-modern:hover {
+  transform: translateY(-8px) scale(1.01);
+  border-color: var(--color-accent);
+  box-shadow: var(--card-shadow-hover);
+}
+
+.service-card-modern:hover::before {
+  opacity: 1;
+}
+
+.service-card-modern:hover::after {
+  background: linear-gradient(135deg, transparent 50%, rgba(245, 130, 32, 0.07) 50%);
+  width: 80px;
+  height: 80px;
+  border-radius: 0 0 0 80px;
+}
+
+.service-card-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  border-top-left-radius: var(--card-radius-lg);
+  border-top-right-radius: var(--card-radius-lg);
+  flex-shrink: 0;
+}
+
+.service-card-image-wrapper .service-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.service-card-modern:hover .service-card-image-wrapper .service-card-image {
+  transform: scale(1.06);
+}
+
+.service-card-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(10, 22, 40, 0.1) 0%, rgba(10, 22, 40, 0.5) 100%);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 1.25rem;
+  opacity: 0;
+  transition: var(--card-transition);
+  backdrop-filter: blur(2px);
+}
+
+.service-card-modern:hover .service-card-overlay {
+  opacity: 1;
+}
+
+.service-card-tag {
+  background: var(--color-accent);
+  color: var(--color-white);
+  padding: 0.3rem 0.8rem;
+  border-radius: 2px;
+  font-size: 0.7rem;
+  font-weight: 300;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transform: translateY(-10px);
+  transition: var(--card-transition);
+  backdrop-filter: blur(4px);
+}
+
+.service-card-modern:hover .service-card-tag {
+  transform: translateY(0);
+}
+
+.service-card-content {
+  padding: 1.5rem 1.5rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+  position: relative;
+  z-index: 2;
+}
+
+.service-card-footer {
+  display: flex;
+  justify-content: flex-start;
+  padding-top: 0;
+}
+
+/* ============================================================
+   4. SZOLGÁLTATÁS KÁRTYA VARIÁCIÓK
+   ============================================================ */
+.service-card-compact .service-card-image-wrapper {
+  height: 140px;
+}
+
+.service-card-compact .service-card-content {
+  padding: 1rem 1.25rem 1rem;
+}
+
+.service-card-compact .typo-service-title {
+  font-size: 1.1rem;
+}
+
+.service-card-compact .typo-service-description {
+  font-size: 0.8rem;
+}
+
+.service-card-large .service-card-image-wrapper {
+  height: 280px;
+}
+
+.service-card-large .service-card-content {
+  padding: 2rem 2rem 1.75rem;
+}
+
+.service-card-large .typo-service-title {
+  font-size: 1.6rem;
+}
+
+.service-card-large .typo-service-description {
+  font-size: 1rem;
+}
+
+/* ============================================================
+   5. TESZTIMONIAL KÁRTYÁK
+   ============================================================ */
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 1200px) {
+  .testimonials-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .testimonials-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .testimonials-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .testimonials-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
+
+.testimonial-card {
+  background: var(--card-bg);
+  border-radius: var(--card-radius-md);
+  padding: 1.25rem 1.25rem 1rem;
+  border: 1px solid var(--color-gray-200);
+  transition: var(--card-transition);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--card-shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+
+.testimonial-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-accent), transparent);
+  opacity: 0.3;
+  transition: var(--card-transition);
+}
+
+.testimonial-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--color-accent);
+  transform: scaleY(0);
+  transform-origin: center;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.testimonial-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-accent);
+  box-shadow: var(--card-shadow-hover);
+}
+
+.testimonial-card:hover::before {
+  opacity: 0.8;
+}
+
+.testimonial-card:hover::after {
+  transform: scaleY(1);
+}
+
+.testimonial-stars {
+  display: flex;
+  gap: 0.1rem;
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.05rem;
+  flex-shrink: 0;
+}
+
+.testimonial-star {
+  display: inline-block;
+  font-size: 0.9rem;
+  line-height: 1;
+  color: #f59e0b;
+  transition: all 0.3s ease;
+}
+
+.testimonial-card:hover .testimonial-star {
+  transform: scale(1.05);
+}
+
+.testimonial-text {
+  font-family: var(--font-primary);
+  font-size: 0.8rem;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--color-gray-700);
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.testimonial-author {
+  font-family: var(--font-primary);
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--color-primary);
+  padding-top: 0.4rem;
+  border-top: 1px solid rgba(16, 40, 74, 0.04);
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   6. TESZTIMONIAL VARIÁCIÓK
+   ============================================================ */
+.testimonial-card-quote {
+  padding: 1.5rem 1.5rem 1.25rem;
+}
+
+.testimonial-card-quote .testimonial-text {
+  font-size: 0.9rem;
+  -webkit-line-clamp: 6;
+}
+
+.testimonial-card-quote .testimonial-author {
+  font-size: 0.8rem;
+}
+
+.testimonial-card-minimal {
+  padding: 1rem 1rem 0.75rem;
+}
+
+.testimonial-card-minimal .testimonial-text {
+  font-size: 0.75rem;
+  -webkit-line-clamp: 3;
+}
+
+.testimonial-card-minimal .testimonial-author {
+  font-size: 0.7rem;
+}
+
+/* ============================================================
+   7. TESZTIMONIAL FOOTER
+   ============================================================ */
+.testimonials-footer {
+  text-align: center;
+  margin-top: 2.5rem;
+}
+
+.testimonials-view-all {
+  font-family: var(--font-primary);
+  font-size: 0.95rem;
+  font-weight: 300;
+  color: var(--color-accent);
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.testimonials-view-all::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--color-accent);
+  transition: width 0.3s ease;
+}
+
+.testimonials-view-all:hover {
+  color: var(--color-accent-hover);
+}
+
+.testimonials-view-all:hover::after {
+  width: 100%;
+}
+
+/* ============================================================
+   8. KAPCSOLAT KÁRTYÁK
+   ============================================================ */
+.contact-container {
+  display: grid;
+  grid-template-columns: 0.9fr 1fr;
+  gap: 3rem;
+  margin-top: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .contact-container {
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .contact-container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+.contact-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 0.25rem;
+}
+
+.contact-info-item {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid rgba(16, 40, 74, 0.04);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.contact-info-item:last-of-type {
+  border-bottom: none;
+}
+
+.contact-info-item:hover {
+  padding-left: 0.75rem;
+}
+
+.contact-info-icon {
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-accent);
+  opacity: 0.5;
+  transition: all 0.3s ease;
+}
+
+.contact-info-item:hover .contact-info-icon {
+  opacity: 0.9;
+  transform: scale(1.05);
+}
+
+.contact-info-item > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.contact-info-label {
+  display: block;
+  font-family: var(--font-primary);
+  font-size: 0.75rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-gray-500);
+  margin-bottom: 0.1rem;
+}
+
+.contact-info-value {
+  font-family: var(--font-primary);
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: var(--color-primary);
+  line-height: 1.4;
+}
+
+.contact-info-cta-wrapper {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(16, 40, 74, 0.04);
+}
+
+.contact-info-cta-wrapper .btn {
+  font-size: 1rem;
+  padding: 0.7rem 2rem;
+}
+
+/* ============================================================
+   9. TÉRKÉP KÁRTYA
+   ============================================================ */
+.contact-map-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-width: 560px;
+  border-radius: var(--card-radius-md);
+  overflow: hidden;
+  transition: var(--card-transition);
+  box-shadow: var(--card-shadow-md);
+}
+
+.contact-map-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: calc(var(--card-radius-md) + 4px);
+  background: linear-gradient(135deg, var(--color-accent), transparent 40%, var(--color-accent), transparent 70%, var(--color-accent));
+  opacity: 0.15;
+  transition: var(--card-transition);
+  z-index: -1;
+}
+
+.contact-map-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: calc(var(--card-radius-md) - 2px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.contact-map-wrapper:hover {
+  transform: scale(1.01) translateY(-3px);
+  box-shadow: var(--card-shadow-hover);
+}
+
+.contact-map-wrapper:hover::before {
+  opacity: 0.3;
+  inset: -6px;
+}
+
+.contact-map-wrapper:hover::after {
+  opacity: 1;
+}
+
+.contact-map {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.contact-map iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* ============================================================
+   10. FAQ KÁRTYÁK
+   ============================================================ */
+.faq-section-blue-full {
+  background: var(--bg-faq);
+  padding: 5rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  position: relative;
+  overflow: hidden;
+}
+
+.faq-section-blue-full::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(245, 130, 32, 0.03), transparent 70%);
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+.faq-section-blue-full .section-title {
+  color: var(--color-white);
+}
+
+.faq-section-blue-full .section-divider {
+  background: var(--color-accent);
+}
+
+.faq-blue-wrapper {
+  max-width: 56rem;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.faq-blue-items {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 2rem;
+  margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .faq-blue-items {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
+.faq-blue-item {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  padding-right: 0.5rem;
+  position: relative;
+}
+
+.faq-blue-item:hover {
+  border-color: rgba(245, 130, 32, 0.2);
+}
+
+.faq-blue-item:last-child {
+  border-bottom: none;
+}
+
+.faq-blue-question {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0.8rem 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  gap: 0.75rem;
+  position: relative;
+}
+
+.faq-blue-question .faq-toggle {
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.15);
+  flex-shrink: 0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 300;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.faq-blue-question:hover .faq-toggle {
+  color: var(--color-accent);
+  background: rgba(245, 130, 32, 0.08);
+}
+
+.faq-blue-answer {
+  padding: 0 0 0.8rem 0;
+  line-height: 1.6;
+  padding-right: 0.5rem;
+  animation: fadeInDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================================
+   11. AUTHOR KÁRTYA
+   ============================================================ */
+.author {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 0 0.5rem;
+}
+
+.author-inner {
+  display: flex;
+  gap: 3rem;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .author-inner {
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 2rem;
+  }
+}
+
+.author-image-wrapper {
+  flex-shrink: 0;
+  width: 360px;
+  min-width: 360px;
+  height: auto;
+  overflow: visible;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  border-radius: 0;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.author:hover .author-image-wrapper {
+  transform: translateY(-4px);
+}
+
+.author-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: drop-shadow(0 10px 30px rgba(16, 40, 74, 0.08));
+}
+
+.author:hover .author-image {
+  transform: scale(1.02);
+}
+
+@media (max-width: 1024px) {
+  .author-image-wrapper {
+    width: 280px;
+    min-width: 280px;
+  }
+}
+
+@media (max-width: 768px) {
+  .author-image-wrapper {
+    width: 220px;
+    min-width: 220px;
+  }
+}
+
+@media (max-width: 480px) {
+  .author-image-wrapper {
+    width: 180px;
+    min-width: 180px;
+  }
+}
+
+.author-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.author-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.author-cta {
+  margin-top: 0.5rem;
+}
+
+.author-cta .btn {
+  font-family: var(--font-primary);
+  font-size: 0.95rem;
+  font-weight: 300;
+  padding: 0.7rem 2rem;
+  letter-spacing: 0.02em;
+  background: var(--color-accent);
+  color: var(--color-white);
+  border: none;
+  border-radius: 2px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.author-cta .btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.author-cta .btn:hover {
+  background: var(--color-accent-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(245, 130, 32, 0.3);
+}
+
+.author-cta .btn:hover::before {
+  opacity: 1;
+}
+
+/* ============================================================
+   12. FOOTER KÁRTYA
+   ============================================================ */
+.footer {
+  background: var(--bg-footer);
+  color: rgba(255, 255, 255, 0.5);
+  padding: 3rem 0 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.03);
+  position: relative;
+  overflow: hidden;
+}
+
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+  opacity: 0.1;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
+@media (max-width: 768px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-links li {
+  margin-bottom: 0.25rem;
+  transition: all 0.3s ease;
+}
+
+.footer-links li:hover {
+  transform: translateX(4px);
+}
+
+.footer-divider {
+  border-top: 1px solid rgba(255, 255, 255, 0.03);
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+}
+
+/* ============================================================
+   13. TIMELINE KÁRTYÁK
+   ============================================================ */
+.timeline-horizontal {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+  position: relative;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 1024px) {
+  .timeline-horizontal {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .timeline-horizontal {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
+
+.timeline-horizontal-item {
+  position: relative;
+  padding: 1.5rem 1.25rem;
+  background: var(--card-bg);
+  border-radius: var(--card-radius-sm);
+  border: 1px solid var(--color-gray-200);
+  transition: var(--card-transition);
+  box-shadow: var(--card-shadow-sm);
+}
+
+.timeline-horizontal-item:hover {
+  transform: translateY(-6px);
+  border-color: var(--color-accent);
+  box-shadow: var(--card-shadow-hover);
+}
+
+.timeline-horizontal-number {
+  font-family: var(--font-primary);
+  font-size: 2rem;
+  font-weight: 300;
+  color: var(--color-accent);
+  opacity: 0.2;
+  margin-bottom: 0.25rem;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.timeline-horizontal-title {
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-primary);
+  margin-bottom: 0.25rem;
+  line-height: 1.2;
+}
+
+.timeline-horizontal-description {
+  font-family: var(--font-primary);
+  font-size: 0.85rem;
+  font-weight: 300;
+  color: var(--color-gray-600);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ============================================================
+   14. TÁBLÁZAT KÁRTYÁK
+   ============================================================ */
+.table-wrapper {
+  overflow-x: auto;
+  margin: 2rem 0;
+  border-radius: var(--card-radius-sm);
+  border: 1px solid var(--color-gray-200);
+  box-shadow: var(--card-shadow-sm);
+}
+
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  background: var(--card-bg);
+}
+
+.comparison-table thead tr {
+  background: var(--color-primary);
+  border-bottom: none;
+}
+
+.comparison-table th {
+  padding: 1rem 1.25rem;
+  text-align: left;
+  font-family: var(--font-primary);
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--color-white);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.comparison-table td {
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--color-gray-100);
+  font-family: var(--font-primary);
+  font-size: 0.95rem;
+  font-weight: 300;
+  color: var(--color-gray-700);
+  line-height: 1.6;
+}
+
+.comparison-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.comparison-table tbody tr:hover {
+  background: rgba(245, 130, 32, 0.02);
+}
+
+.comparison-table .icon-cell {
+  font-size: 1.1rem;
+  min-width: 2rem;
+}
+
+/* ============================================================
+   15. MIKOR FORDULJON KÁRTYA
+   ============================================================ */
+.when-to-contact {
+  max-width: 100%;
+}
+
+.when-to-contact .section-title {
+  font-family: var(--font-primary);
+  font-size: 2.2rem;
+  font-weight: 300;
+  color: var(--color-primary);
+  text-align: center;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.01em;
+}
+
+.when-to-contact .section-title::after {
+  content: '';
+  display: block;
+  width: 4rem;
+  height: 3px;
+  background: var(--color-accent);
+  margin: 0.75rem auto 0;
+  border-radius: 2px;
+  opacity: 0.6;
+}
+
+.when-to-contact-list {
+  list-style: none;
+  padding: 0;
+  margin: 2rem 0 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem 2rem;
+}
+
+@media (max-width: 768px) {
+  .when-to-contact-list {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+}
+
+.when-to-contact-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  font-family: var(--font-primary);
+  font-size: 0.95rem;
+  font-weight: 300;
+  color: var(--color-gray-700);
+  line-height: 1.5;
+  background: var(--color-gray-50);
+  border-radius: var(--card-radius-sm);
+  border: 1px solid var(--color-gray-100);
+  transition: all 0.3s ease;
+}
+
+.when-to-contact-item:hover {
+  background: var(--card-bg);
+  border-color: var(--color-accent);
+  box-shadow: var(--card-shadow-sm);
+  transform: translateX(4px);
+}
+
+.when-to-contact-dot {
+  flex-shrink: 0;
+  color: var(--color-accent);
+  font-size: 0.6rem;
+  margin-top: 0.5rem;
+  opacity: 0.6;
+}
+
+.when-to-contact-note {
+  font-family: var(--font-primary);
+  font-size: 0.9rem;
+  font-weight: 300;
+  color: var(--color-gray-500);
+  text-align: center;
+  margin-top: 1.5rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--color-gray-50);
+  border-radius: var(--card-radius-sm);
+  border: 1px solid var(--color-gray-200);
+  line-height: 1.6;
+}
+
+.when-to-contact-cta {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.when-to-contact-cta .btn {
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  font-weight: 300;
+  padding: 0.85rem 2.5rem;
+  letter-spacing: 0.02em;
+  background: var(--color-accent);
+  color: var(--color-white);
+  border: none;
+  border-radius: 2px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.when-to-contact-cta .btn:hover {
+  background: var(--color-accent-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(245, 130, 32, 0.3);
+}
+
+/* ============================================================
+   16. PROSE KÁRTYA
+   ============================================================ */
+.prose {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.prose h2 {
+  font-family: var(--font-primary);
+  font-size: 2.2rem;
+  font-weight: 400;
+  color: var(--color-primary);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin-top: 3.5rem;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid rgba(245, 130, 32, 0.15);
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.prose h2 .number {
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--color-accent);
+  opacity: 0.4;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+.prose h2::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background: var(--color-accent);
+  border-radius: 1px;
+}
+
+.prose h2:first-of-type {
+  margin-top: 0;
+}
+
+.prose h3 {
+  font-family: var(--font-primary);
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: var(--color-primary);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  margin-top: 2rem;
+  margin-bottom: 0.4rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid rgba(16, 40, 74, 0.06);
+}
+
+.prose h3 .number {
+  color: var(--color-accent);
+  opacity: 0.4;
+  font-weight: 300;
+  margin-right: 0.5rem;
+}
+
+.prose p {
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  font-weight: 300;
+  color: var(--color-gray-800);
+  line-height: 1.9;
+  letter-spacing: 0.01em;
+  margin-bottom: 1.5rem;
+}
+
+.prose p strong {
+  font-weight: 500;
+  color: var(--color-primary);
+}
+
+.prose p:last-child {
+  margin-bottom: 0;
+}
+
+.prose ul,
+.prose ol {
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  font-weight: 300;
+  color: var(--color-gray-800);
+  line-height: 1.9;
+  padding-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.prose ul li,
+.prose ol li {
+  margin-bottom: 0.4rem;
+  padding-left: 0.5rem;
+}
+
+.prose ul li::marker {
+  color: var(--color-accent);
+}
+
+.prose ol li::marker {
+  color: var(--color-accent);
+  font-weight: 400;
+}
+
+.prose ul li strong,
+.prose ol li strong {
+  font-weight: 500;
+  color: var(--color-primary);
+}
+
+.prose a {
+  color: var(--color-accent);
+  transition: var(--card-transition);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: rgba(245, 130, 32, 0.25);
+  font-weight: 400;
+}
+
+.prose a:hover {
+  color: var(--color-accent-hover);
+  text-decoration-color: var(--color-accent);
+}
+
+.prose blockquote {
+  font-family: var(--font-primary);
+  font-size: 1.2rem;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--color-gray-700);
+  line-height: 1.7;
+  padding: 1rem 1.5rem 1rem 2.5rem;
+  margin: 2rem 0;
+  background: rgba(245, 130, 32, 0.03);
+  border-radius: var(--card-radius-sm);
+  border-left: 4px solid var(--color-accent);
+  position: relative;
+}
+
+.prose blockquote::before {
+  content: '"';
+  position: absolute;
+  left: 0.75rem;
+  top: 0.5rem;
+  font-size: 2.5rem;
+  color: var(--color-accent);
+  opacity: 0.12;
+  font-style: normal;
+  font-weight: 300;
+}
+
+.prose blockquote footer {
+  font-style: normal;
+  font-weight: 300;
+  color: var(--color-gray-500);
+  margin-top: 0.5rem;
+  padding-left: 0.5rem;
+  font-size: 0.9rem;
+}
+
+/* ============================================================
+   17. KATEGÓRIA BEVEZETŐ KÁRTYA
+   ============================================================ */
+.category-intro {
+  max-width: 800px;
+  margin: 0 auto 2rem;
+  text-align: center;
+}
+
+.category-intro p {
+  font-family: var(--font-primary);
+  font-size: 1.05rem;
+  font-weight: 300;
+  color: var(--color-gray-700);
+  line-height: 1.8;
+  letter-spacing: 0.01em;
+  margin-bottom: 0.75rem;
+}
+
+.category-intro p:last-child {
+  margin-bottom: 0;
+}
+
+/* ============================================================
+   18. SERVICE DESCRIPTION KÁRTYA
+   ============================================================ */
+.service-description-content {
+  max-width: 100%;
+}
+
+.service-description-content p {
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  font-weight: 300;
+  color: var(--color-gray-800);
+  line-height: 1.8;
+  letter-spacing: 0.01em;
+  margin-bottom: 1.25rem;
+  padding-left: 1.5rem;
+  border-left: 2px solid rgba(245, 130, 32, 0.08);
+}
+
+.service-description-content p:last-child {
+  margin-bottom: 0;
+}
+
+.service-description-content p strong {
+  font-weight: 400;
+  color: var(--color-primary);
+}
+
+.service-description-content h2 {
+  font-family: var(--font-primary);
+  font-size: 1.8rem;
+  font-weight: 300;
+  color: var(--color-primary);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.service-description-content h2::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.15rem;
+  bottom: 0.15rem;
+  width: 3px;
+  background: var(--color-accent);
+  border-radius: 2px;
+  opacity: 0.6;
+}
+
+.service-description-content h2:first-child {
+  margin-top: 0;
+}
+
+.service-description-content h3 {
+  font-family: var(--font-primary);
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: var(--color-primary);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.service-description-content h3::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.15rem;
+  bottom: 0.15rem;
+  width: 2px;
+  background: var(--color-accent);
+  border-radius: 2px;
+  opacity: 0.3;
+}
+
+.service-description-content ul,
+.service-description-content ol {
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  font-weight: 300;
+  color: var(--color-gray-800);
+  line-height: 1.8;
+  padding-left: 2.5rem;
+  margin-bottom: 1.25rem;
+  list-style: none;
+}
+
+.service-description-content ul li,
+.service-description-content ol li {
+  margin-bottom: 0.35rem;
+  padding-left: 0.5rem;
+  position: relative;
+}
+
+.service-description-content ul li::before {
+  content: '—';
+  position: absolute;
+  left: -1.5rem;
+  color: var(--color-accent);
+  opacity: 0.5;
+}
+
+.service-description-content ul li strong {
+  font-weight: 400;
+  color: var(--color-primary);
+}
+
+.service-description-content ol {
+  counter-reset: item;
+}
+
+.service-description-content ol li {
+  counter-increment: item;
+  padding-left: 0.5rem;
+}
+
+.service-description-content ol li::before {
+  content: counter(item) '.';
+  position: absolute;
+  left: -1.8rem;
+  color: var(--color-accent);
+  opacity: 0.5;
+  font-weight: 400;
+}
+
+.service-description-content a {
+  color: var(--color-accent);
+  transition: var(--card-transition);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: rgba(245, 130, 32, 0.2);
+}
+
+.service-description-content a:hover {
+  color: var(--color-accent-hover);
+  text-decoration-color: var(--color-accent);
+}
+
+.service-description-content blockquote {
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--color-gray-700);
+  line-height: 1.8;
+  padding: 0.5rem 1.5rem 0.5rem 2.5rem;
+  margin: 1.25rem 0;
+  border-left: 3px solid var(--color-accent);
+  background: rgba(245, 130, 32, 0.03);
+  border-radius: 0 var(--card-radius-sm) var(--card-radius-sm) 0;
+  position: relative;
+}
+
+.service-description-content blockquote::before {
+  content: '"';
+  position: absolute;
+  left: 0.5rem;
+  top: 0;
+  font-size: 2rem;
+  color: var(--color-accent);
+  opacity: 0.15;
+  font-style: normal;
+}
+
+.service-description-content blockquote footer {
+  font-style: normal;
+  font-weight: 300;
+  color: var(--color-gray-500);
+  margin-top: 0.25rem;
+  padding-left: 1.5rem;
+}
+
+/* ============================================================
+   19. KALLOUT KÁRTYÁK
+   ============================================================ */
+.callout {
+  background: var(--color-gray-50);
+  border-left: 4px solid var(--color-accent);
+  padding: 1.25rem 1.5rem;
+  margin: 1.75rem 0;
+  border-radius: 0 var(--card-radius-sm) var(--card-radius-sm) 0;
+  font-family: var(--font-primary);
+  font-size: 0.95rem;
+  font-weight: 300;
+  color: var(--color-gray-700);
+  line-height: 1.7;
+}
+
+.callout strong {
+  font-weight: 500;
+  color: var(--color-primary);
+}
+
+.callout .callout-icon {
+  font-size: 1.2rem;
+  margin-right: 0.5rem;
+}
+
+.callout-warning {
+  background: rgba(245, 130, 32, 0.05);
+  border-left: 4px solid var(--color-accent);
+}
+
+.callout-info {
+  background: rgba(16, 40, 74, 0.04);
+  border-left: 4px solid var(--color-primary);
+}
+
+.callout-success {
+  background: rgba(34, 197, 94, 0.05);
+  border-left: 4px solid #22c55e;
+}
+
+.callout-danger {
+  background: rgba(239, 68, 68, 0.05);
+  border-left: 4px solid #ef4444;
+}
+
+/* ============================================================
+   20. SUMMARY KÁRTYA
+   ============================================================ */
+.summary {
+  background: var(--color-gray-50);
+  border-radius: var(--card-radius-sm);
+  padding: 1.5rem 2rem;
+  margin: 2rem 0 1.5rem;
+  border: 1px solid var(--color-gray-200);
+}
+
+.summary-title {
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-primary);
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.summary ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem 1.5rem;
+}
+
+@media (max-width: 600px) {
+  .summary ul {
+    grid-template-columns: 1fr;
+  }
+}
+
+.summary ul li {
+  padding-left: 1.5rem;
+  position: relative;
+  margin-bottom: 0.2rem;
+  font-size: 0.95rem;
+  color: var(--color-gray-700);
+}
+
+.summary ul li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--color-accent);
+  font-weight: 400;
+}
+
+/* ============================================================
+   21. RESPONSIVE - KÁRTYÁK
+   ============================================================ */
+@media (max-width: 1024px) {
+  .section-card {
+    padding: 40px 36px;
+    margin-bottom: 2.5rem;
+  }
+
+  .prose {
+    max-width: 100%;
+  }
+
+  .prose h2 {
+    font-size: 1.9rem;
+    margin-top: 3rem;
+  }
+
+  .comparison-table th,
+  .comparison-table td {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .contact-map-wrapper {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .section-card {
+    padding: 28px 20px;
+    border-radius: var(--card-radius-lg);
+    margin-bottom: 1.75rem;
+  }
+
+  .prose h2 {
+    font-size: 1.6rem;
+    margin-top: 2.5rem;
+    flex-wrap: wrap;
+  }
+
+  .prose h2 .number {
+    font-size: 0.85rem;
+  }
+
+  .prose h3 {
+    font-size: 1.1rem;
+  }
+
+  .prose p {
+    font-size: 0.95rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .prose ul,
+  .prose ol {
+    padding-left: 1.25rem;
+    font-size: 0.95rem;
+  }
+
+  .prose blockquote {
+    font-size: 1rem;
+    padding: 0.75rem 1rem 0.75rem 2rem;
+  }
+
+  .comparison-table th,
+  .comparison-table td {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  .when-to-contact .section-title {
+    font-size: 1.8rem;
+  }
+
+  .when-to-contact-item {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.6rem;
+  }
+
+  .timeline-horizontal-number {
+    font-size: 1.5rem;
+  }
+
+  .timeline-horizontal-title {
+    font-size: 0.9rem;
+  }
+
+  .timeline-horizontal-description {
+    font-size: 0.8rem;
+  }
+
+  .summary ul {
+    grid-template-columns: 1fr;
+  }
+
+  .summary {
+    padding: 1.25rem 1.25rem;
+  }
+
+  .service-card-modern::after {
+    width: 40px;
+    height: 40px;
+    border-radius: 0 0 0 40px;
+  }
+
+  .service-card-modern:hover::after {
+    width: 60px;
+    height: 60px;
+    border-radius: 0 0 0 60px;
+  }
+
+  .contact-container {
+    gap: 1.5rem;
+  }
+
+  .contact-info-list {
+    gap: 0.5rem;
+  }
+
+  .contact-info-item {
+    padding: 0.5rem 0;
+  }
+
+  .faq-section-blue-full {
+    padding: 3rem 0;
+  }
+
+  .faq-blue-items {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-card {
+    padding: 20px 14px;
+    border-radius: var(--card-radius-md);
+    margin-bottom: 1.25rem;
+  }
+
+  .prose h2 {
+    font-size: 1.3rem;
+    margin-top: 2rem;
+  }
+
+  .prose h2 .number {
+    font-size: 0.75rem;
+  }
+
+  .prose h3 {
+    font-size: 1rem;
+  }
+
+  .prose p {
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+
+  .prose ul,
+  .prose ol {
+    font-size: 0.9rem;
+    padding-left: 1rem;
+  }
+
+  .prose blockquote {
+    font-size: 0.9rem;
+    padding: 0.6rem 0.75rem 0.6rem 1.5rem;
+  }
+
+  .callout {
+    padding: 1rem 1.25rem;
+    font-size: 0.9rem;
+  }
+
+  .comparison-table {
+    font-size: 0.75rem;
+  }
+
+  .comparison-table th,
+  .comparison-table td {
+    padding: 0.4rem 0.5rem;
+  }
+
+  .when-to-contact .section-title {
+    font-size: 1.5rem;
+  }
+
+  .when-to-contact-item {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.5rem;
+  }
+
+  .when-to-contact-cta .btn {
+    font-size: 0.9rem;
+    padding: 0.7rem 1.8rem;
+  }
+
+  .timeline-horizontal-item {
+    padding: 1rem;
+  }
+
+  .summary {
+    padding: 1rem 1rem;
+  }
+
+  .summary ul li {
+    font-size: 0.85rem;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .service-card-content {
+    padding: 1.25rem 1.25rem 1rem;
+  }
+
+  .service-card-image-wrapper {
+    height: 160px;
+  }
+
+  .contact-info-value {
+    font-size: 0.9rem;
+  }
+
+  .contact-info-label {
+    font-size: 0.65rem;
+  }
+
+  .contact-info-item {
+    gap: 0.75rem;
+    padding: 0.4rem 0;
+  }
+
+  .contact-info-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .contact-info-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .testimonial-text {
+    font-size: 0.75rem;
+    -webkit-line-clamp: 3;
+  }
+
+  .testimonial-author {
+    font-size: 0.7rem;
+  }
+
+  .testimonial-card {
+    padding: 0.75rem 0.75rem 0.6rem;
+  }
+}
+
+/* ============================================================
+   22. ANIMÁCIÓK
+   ============================================================ */
+@keyframes cardFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card-fade-in-up {
+  animation: cardFadeInUp 0.6s ease forwards;
+}
+
+.card-fade-in-up-1 {
+  animation-delay: 0.05s;
+}
+
+.card-fade-in-up-2 {
+  animation-delay: 0.1s;
+}
+
+.card-fade-in-up-3 {
+  animation-delay: 0.15s;
+}
+
+.card-fade-in-up-4 {
+  animation-delay: 0.2s;
+}
+
+.card-fade-in-up-5 {
+  animation-delay: 0.25s;
+}
+
+.card-fade-in-up-6 {
+  animation-delay: 0.3s;
+}
+
+@keyframes cardGlowPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(245, 130, 32, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 20px 5px rgba(245, 130, 32, 0.05);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 130, 32, 0.1);
+  }
+}
+
+.card-glow-pulse {
+  animation: cardGlowPulse 2s ease-in-out infinite;
+}
+
+/* ============================================================
+   23. KÁRTYA ÉLEN MEGJELENŐ ELEMEK
+   ============================================================ */
+.card-corner-badge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 2px;
+  font-family: var(--font-primary);
+  font-size: 0.6rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--color-accent);
+  color: var(--color-white);
+  z-index: 3;
+}
+
+.card-corner-badge-primary {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.card-corner-badge-outline {
+  background: transparent;
+  color: var(--color-accent);
+  border: 1px solid var(--color-accent);
+}
+
+/* ============================================================
+   24. KÁRTYA FELSŐ VONALAK
+   ============================================================ */
+.card-top-line {
+  position: relative;
+}
+
+.card-top-line::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: 0 0 2px 2px;
+}
+
+.card-top-line-accent::before {
+  background: linear-gradient(90deg, var(--color-accent), transparent);
+}
+
+.card-top-line-primary::before {
+  background: linear-gradient(90deg, var(--color-primary), transparent);
+}
+
+.card-top-line-gradient::before {
+  background: linear-gradient(90deg, var(--color-accent), var(--color-primary), var(--color-accent));
+}
+
+/* ============================================================
+   25. KÁRTYA HÁTTÉR ELEMEK
+   ============================================================ */
+.card-pattern {
+  position: relative;
+}
+
+.card-pattern::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -30%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(245, 130, 32, 0.02), transparent 70%);
+  pointer-events: none;
+  border-radius: 50%;
+  z-index: 0;
+}
+
+.card-pattern > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================================
+   HERO - ALUL TÉRKÖZ
+   ============================================================ */
+.hero {
+  padding: 4rem 0 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 2rem 0 0.5rem;
+  }
+}
+
+.hero-section {
+  margin-bottom: 0;
+}
+
+/* ============================================================
+   TIMELINE - VÍZSZINTES SZÁMVONAL
+   ============================================================ */
+
+.timeline-section {
+  padding: 2rem 0 1rem;
+}
+
+.timeline-numberline {
+  position: relative;
+  max-width: 1100px;
+  margin: 2rem auto 0;
+  padding: 1rem 0;
+}
+
+/* --- A VONAL --- */
+.timeline-numberline-track {
+  position: absolute;
+  top: 2.5rem;
+  left: 2rem;
+  right: 2rem;
+  height: 2px;
+  background: var(--color-gray-300);
+  opacity: 0.3;
+  z-index: 0;
+}
+
+/* --- A LÉPÉSEK KONTÉNER --- */
+.timeline-numberline-steps {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  z-index: 1;
+  gap: 1rem;
+}
+
+/* --- EGY LÉPÉS --- */
+.timeline-numberline-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  text-align: center;
+  min-width: 0;
+}
+
+/* --- A GOLYÓ --- */
+.timeline-numberline-dot {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--color-white);
+  border: 2px solid var(--color-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  margin-bottom: 0.75rem;
+  transition: var(--transition);
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(245, 130, 32, 0.15);
+}
+
+.timeline-numberline-step:hover .timeline-numberline-dot {
+  transform: scale(1.08);
+  box-shadow: 0 4px 16px rgba(245, 130, 32, 0.25);
+  background: var(--color-accent);
+}
+
+.timeline-numberline-step:hover .timeline-numberline-dot .timeline-numberline-number {
+  color: var(--color-white);
+}
+
+/* --- A SZÁM A GOLYÓBAN --- */
+.timeline-numberline-number {
+  font-family: var(--font-primary);
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--color-accent);
+  transition: var(--transition);
+  line-height: 1;
+}
+
+/* --- A TARTALOM ALATTA --- */
+.timeline-numberline-content {
+  max-width: 180px;
+}
+
+.timeline-numberline-title {
+  font-family: var(--font-primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-primary);
+  margin-bottom: 0.2rem;
+  line-height: 1.2;
+}
+
+.timeline-numberline-description {
+  font-family: var(--font-primary);
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: var(--color-gray-600);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* ============================================================
+   RESPONSZÍV - TIMELINE
+   ============================================================ */
+
+/* 5 lépés esetén kisebb betűk */
+.timeline-numberline-steps.has-5-steps .timeline-numberline-content {
+  max-width: 140px;
+}
+
+.timeline-numberline-steps.has-5-steps .timeline-numberline-title {
+  font-size: 0.8rem;
+}
+
+.timeline-numberline-steps.has-5-steps .timeline-numberline-description {
+  font-size: 0.7rem;
+}
+
+/* 4 lépés esetén */
+.timeline-numberline-steps.has-4-steps .timeline-numberline-content {
+  max-width: 160px;
+}
+
+/* Reszponzív */
+@media (max-width: 1024px) {
+  .timeline-numberline-track {
+    left: 1.5rem;
+    right: 1.5rem;
+    top: 2.2rem;
+  }
+
+  .timeline-numberline-dot {
+    width: 42px;
+    height: 42px;
+  }
+
+  .timeline-numberline-number {
+    font-size: 1rem;
+  }
+
+  .timeline-numberline-content {
+    max-width: 150px;
+  }
+
+  .timeline-numberline-title {
+    font-size: 0.8rem;
+  }
+
+  .timeline-numberline-description {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .timeline-numberline {
+    overflow-x: auto;
+    padding-bottom: 1rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .timeline-numberline-track {
+    display: none;
+  }
+
+  .timeline-numberline-steps {
+    display: flex;
+    gap: 1.5rem;
+    min-width: max-content;
+    padding: 0 1rem;
+    justify-content: flex-start;
+  }
+
+  .timeline-numberline-step {
+    flex: 0 0 auto;
+    width: 140px;
+  }
+
+  .timeline-numberline-dot {
+    width: 38px;
+    height: 38px;
+  }
+
+  .timeline-numberline-number {
+    font-size: 0.9rem;
+  }
+
+  .timeline-numberline-content {
+    max-width: 140px;
+  }
+
+  .timeline-numberline-title {
+    font-size: 0.75rem;
+  }
+
+  .timeline-numberline-description {
+    font-size: 0.65rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .timeline-numberline-step {
+    width: 120px;
+  }
+
+  .timeline-numberline-dot {
+    width: 34px;
+    height: 34px;
+  }
+
+  .timeline-numberline-number {
+    font-size: 0.8rem;
+  }
+
+  .timeline-numberline-content {
+    max-width: 120px;
+  }
+
+  .timeline-numberline-title {
+    font-size: 0.7rem;
+  }
+
+  .timeline-numberline-description {
+    font-size: 0.6rem;
+  }
+}

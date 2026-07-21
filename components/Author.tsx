@@ -8,48 +8,28 @@ export default function Author() {
       <div className="author-inner">
         {/* TARTALOM - BAL OLDALON */}
         <div className="author-content">
-          <h2 className="author-name">dr. Léner-Pintér Sára</h2>
-          <p className="author-subtitle">Ügyvéd, mediátor Veszprém – Több mint 25 év szakmai tapasztalat</p>
+          <h2 className="typo-author-name">dr. Léner-Pintér Sára</h2>
+          <p className="typo-author-subtitle">Veszprémi ügyvéd, mediátor – Több mint 25 év szakmai tapasztalattal</p>
 
           <div className="author-body">
-            <p className="author-description">
-              Jogi problémájával nem kell egyedül megbirkóznia. Ügyvédként és mediátorként 
-              több mint 25 éve segítem ügyfeleimet abban, hogy a számukra legkedvezőbb jogi 
-              megoldást találják meg – legyen szó családjogi ügyekről, ingatlanjogról, 
-              öröklési kérdésekről, szerződések készítéséről, követelésérvényesítésről vagy 
-              mediációról.
+            <p className="typo-author-description">
+              Jogi problémájával nem kell egyedül megbirkóznia. Ügyvédként és mediátorként több mint 25 éve segítem ügyfeleimet abban, hogy a számukra legkedvezőbb jogi megoldást találják meg. Legyen szó családjogról, ingatlanügyről, öröklési kérdésekről, szerződésekről vagy mediációról, célom minden esetben a biztonságos és átlátható megoldás.
             </p>
 
-            <p className="author-description">
-              Az ELTE Állam- és Jogtudományi Karán szerzett jogi végzettségemre és több 
-              évtizedes szakmai tapasztalatomra építve minden ügyben személyre szabott, 
-              átlátható és érthető jogi segítséget nyújtok. Hiszem, hogy egy jó ügyvéd 
-              nem csupán ismeri a jogszabályokat, hanem érthetően elmagyarázza a 
-              lehetőségeket, segít a megalapozott döntések meghozatalában, és következetesen 
-              képviseli ügyfele érdekeit.
+            <p className="typo-author-description">
+              Az ELTE Állam- és Jogtudományi Karán szerzett végzettségemre és több évtizedes szakmai tapasztalatomra építve személyre szabott jogi segítséget nyújtok. Fontosnak tartom, hogy ügyfeleim ne csak jogi képviseletet kapjanak, hanem érthető tájékoztatást és valódi támogatást is.
             </p>
 
-            <p className="author-description">
-              Munkám során kiemelt területeim a családjog, az ingatlanjog, az öröklési 
-              ügyek, a jogi tanácsadás, az okiratszerkesztés, valamint a mediáció, amely 
-              számos esetben gyorsabb és költséghatékonyabb alternatívát jelenthet a 
-              bírósági eljárással szemben.
+            <p className="typo-author-description">
+              Kiemelt területeim a családjog, az ingatlanjog, az öröklési ügyek, az okiratszerkesztés, a jogi tanácsadás és a mediáció. Hiszem, hogy minden ügy egyedi, ezért minden esetben az adott élethelyzethez igazodó megoldást keresem.
             </p>
 
-            <p className="author-description">
-              Legyen szó egy szerződés elkészítéséről, ingatlan adásvételéről, válásról, 
-              hagyatéki ügyről vagy jogvita rendezéséről, célom minden esetben az, hogy 
-              ügyfeleim számára biztonságos, korrekt és hosszú távon is megfelelő 
-              megoldást találjak.
-            </p>
-
-            <p className="author-description author-closing">
-              Forduljon hozzám bizalommal, és beszéljük át, hogyan segíthetek az Ön 
-              ügyében.
+            <p className="typo-author-closing">
+              Forduljon hozzám bizalommal, és beszéljük át, hogyan segíthetek az Ön ügyében.
             </p>
 
             <div className="author-cta">
-              <Link href="/kapcsolat" className="btn btn-accent">
+              <Link href="/kapcsolat" className="btn btn-accent typo-btn">
                 Kapcsolatfelvétel →
               </Link>
             </div>

@@ -7,37 +7,37 @@ export default function Home() {
       title: 'Családjog',
       description: 'Válóper, gyermektartás, gyermekelhelyezés, szülői felügyelet és vagyonmegosztás.',
       href: '/szolgaltatasok/csaladjog',
-      icon: '/images/családjog.png'
+      icon: '/images/csaladjog/családjog.png'
     },
     {
       title: 'Ingatlanjog',
       description: 'Adásvétel, ajándékozás, közös tulajdon megszüntetése, haszonélvezet.',
       href: '/szolgaltatasok/ingatlanjog',
-      icon: '/images/ingatlanjog.png'
+      icon: '/images/ingatlanjog/ingatlanjog.png'
     },
     {
       title: 'Mediáció',
       description: 'Alternatív vitarendezés és családi közvetítés jogvitákban.',
       href: '/szolgaltatasok/mediacio',
-      icon: '/images/mediáció.png'
+      icon: '/images/mediacio/mediáció.png'
     },
     {
       title: 'Öröklési ügyek',
       description: 'Végrendelet készítés, hagyatéki eljárás és öröklési okiratok.',
       href: '/szolgaltatasok/orokles',
-      icon: '/images/öröklés.png'
+      icon: '/images/orokles/öröklés.png'
     },
     {
       title: 'Cégeljárások',
       description: 'Cégalapítás, cégátírás, cégbejegyzés és cégjogi tanácsadás.',
-      href: '/szolgaltatasok/egyeb/cegeljarasok',
-      icon: '/images/cégeljárás.png'
+      href: '/szolgaltatasok/cegeljarasok',
+      icon: '/images/cegeljaras/cégeljárás.png'
     },
     {
       title: 'Okiratszerkesztés',
       description: 'Szerződések, nyilatkozatok és jogi okiratok elkészítése.',
-      href: '/szolgaltatasok/egyeb/okiratszerkesztes',
-      icon: '/images/okirat.png'
+      href: '/szolgaltatasok/okiratszerkesztes',
+      icon: '/images/okirat/okirat.png'
     }
   ]
 
@@ -71,23 +71,33 @@ export default function Home() {
     }
   ]
 
-  const testimonials = [
-    {
-      rating: 5,
-      text: 'Végig nyugodtan és érthetően segített a válóper során. Minden lépést előre egyeztettünk, így tudtam mire számítsak.',
-      author: 'Anikó'
-    },
-    {
-      rating: 5,
-      text: 'Gyors, precíz, korrekt tájékoztatást kaptam az ingatlan adásvétel során. Profi és megbízható szakember.',
-      author: 'Tamás'
-    },
-    {
-      rating: 5,
-      text: 'Köszönöm a segítséget a hagyatéki eljárásban! Csak ajánlani tudom mindenkinek, aki egyértelmű és érthető tájékoztatást szeretne.',
-      author: 'Mária'
-    }
-  ]
+const testimonials = [
+  {
+    rating: 5,
+    text: "Az Ügyvédnő gyors, precíz és a szabályok mentén ügyfélbarát megoldást javasolt az eddig felmerült kérdésekben. Akinek eddig ajánlottam, még egy személy sem csalódott benne.",
+    author: "K. Plébánia Balatonedericsi R."
+  },
+  {
+    rating: 5,
+    text: "Rendkívül alapos, empatikus, az ügyfél és az ügy teljes figyelmét élvezi. Tökéletesen átlát minden helyzetet, melyeket kellő higgadtsággal, megfontoltan és szakszerűen kezel.",
+    author: "Judit"
+  },
+  {
+    rating: 5,
+    text: "Maximális elégedettségem mellett jó szívvel ajánlom mindenkinek, akinek jogban járatos személy segítségére van szüksége. Figyelmes, lehetőségekhez mérten gyors ügyintézés garantált.",
+    author: "Dezső"
+  },
+  {
+    rating: 5,
+    text: "Gondos munkájának köszönhetően már sokféle ügyes bajos esetem megoldódott. Mindenkinek csak ajánlani tudom.",
+    author: "Teréz"
+  },
+  {
+    rating: 5,
+    text: "Szuper szakmai felkészültség, gyors és hatékony ügyintézés.",
+    author: "LBALÁZS"
+  }
+]
 
   return <HomeTemplate services={services} trustItems={trustItems} faqItems={faqItems} testimonials={testimonials} />
 }

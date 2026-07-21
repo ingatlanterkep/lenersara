@@ -31,8 +31,9 @@ export const metadata: Metadata = {
 export default function Gyermekelhelyezes() {
   return (
     <ServiceTemplate
-      heroTitle="Gyermekelhelyezés és szülői felügyelet ügyvéd Veszprém"
-      heroSubtitle="Célom a gyermek érdekeinek maradéktalan érvényesítése és a családi konfliktusok békés, jogszerű rendezése."
+      heroTitle="Gyermekelhelyezés és szülői felügyelet"
+      heroSubtitle="Ügyvédi segítség veszprémben"
+      heroDescription="Célom a gyermek érdekeinek maradéktalan érvényesítése és a családi konfliktusok békés, jogszerű rendezése."
       heroCtaText="Időpont kérése"
       heroCtaLink="/kapcsolat"
 

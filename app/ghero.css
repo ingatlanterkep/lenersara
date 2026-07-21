@@ -559,3 +559,23 @@
     margin: 0 auto;
   }
 }
+/* ============================================================
+   BREADCRUMB - ELHELYEZÉS
+   ============================================================ */
+
+/* A hero után közvetlenül a breadcrumb jön */
+.hero-section + .section.page-content .breadcrumb-bar {
+  margin-top: -2rem;
+  padding-top: 0;
+}
+
+/* A breadcrumb az első section-card előtt van */
+.breadcrumb-bar + .section-card {
+  margin-top: 0;
+}
+
+/* A page-content-en belül */
+.section.page-content .breadcrumb-bar {
+  padding-top: 0rem;
+}
+

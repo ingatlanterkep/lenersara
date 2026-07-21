@@ -1,10 +1,9 @@
-// components/CategoryTemplate.tsx
 import { ReactNode } from 'react'
 import Hero from './Hero'
 import Breadcrumb from './Breadcrumb'
-import TrustBar from './TrustBar'
 import ContactInfo from './ContactInfo'
-import Link from 'next/link'
+import SubServiceGrid from './SubServiceGrid'
+import ServiceDescription from './ServiceDescription'
 
 interface BreadcrumbItem {
   label: string
@@ -21,11 +20,16 @@ interface SubService {
 interface CategoryTemplateProps {
   heroTitle: string
   heroSubtitle: string
+  heroDescription?: string
   heroCtaText?: string
   heroCtaLink?: string
   breadcrumbItems: BreadcrumbItem[]
-  trustItems: { icon: string; text: string }[]
-  content: ReactNode
+  // Bevezető szöveg a kártyák felett (100-200 szó)
+  introTitle?: string
+  introContent: ReactNode
+  // Részletes tartalom (kiterjedtebb írás)
+  detailedContent: ReactNode
+  // Alkategóriák
   subServicesTitle?: string
   subServices: SubService[]
   structuredData?: Record<string, any>[]
@@ -35,12 +39,12 @@ interface CategoryTemplateProps {
 export default function CategoryTemplate({
   heroTitle,
   heroSubtitle,
-  heroCtaText = 'Konzultáció kérése',
-  heroCtaLink = '/kapcsolat',
+  heroDescription,
   breadcrumbItems,
-  trustItems,
-  content,
-  subServicesTitle = 'Kapcsolódó szolgáltatások',
+  introTitle,
+  introContent,
+  detailedContent,
+  subServicesTitle = 'Részletes szolgáltatások',
   subServices,
   structuredData,
   disclaimer = 'Az itt található információk általános tájékoztatást szolgálnak, és nem helyettesítik az egyedi jogi tanácsadást. Minden ügy egyedi körülményei miatt érdemes személyes konzultációt kérni.',
@@ -51,11 +55,8 @@ export default function CategoryTemplate({
         <Hero 
           title={heroTitle}
           subtitle={heroSubtitle}
-          ctaText={heroCtaText}
-          ctaLink={heroCtaLink}
+          description={heroDescription}
         />
-
-        <TrustBar items={trustItems} />
       </div>
 
       <div className="section page-content">
@@ -65,30 +66,29 @@ export default function CategoryTemplate({
             <Breadcrumb items={breadcrumbItems} />
           </div>
 
+          {/* 1. SZOLGÁLTATÁS KÁRTYÁK - rövid bevezetővel */}
           <div className="section-card">
-            <div className="prose" style={{ maxWidth: '100%' }}>
-              {content}
+            {/* Bevezető */}
+            {introTitle && <h2 className="typo-h2-decorated">{introTitle}</h2>}
+            <div className="category-intro">
+              {introContent}
             </div>
+            
+            {/* Kártyák */}
+            <SubServiceGrid 
+              items={subServices}
+              title={subServicesTitle}
+            />
           </div>
 
-          {/* Alszolgáltatások - EGYSZERŰ LISTAKÉNT */}
+          {/* 2. RÉSZLETES TARTALOM - kiterjedtebb írás */}
           <div className="section-card" style={{ marginTop: '2rem' }}>
-            <h2 className="section-title">{subServicesTitle}</h2>
-            <div className="related-topics-grid">
-              {subServices.map((service) => (
-                <Link 
-                  key={service.href} 
-                  href={service.href} 
-                  className="related-topic-link"
-                >
-                  {service.icon && <span className="related-topic-icon">{service.icon}</span>}
-                  <span className="related-topic-text">{service.title}</span>
-                  <span className="related-topic-arrow">→</span>
-                </Link>
-              ))}
-            </div>
+            <ServiceDescription>
+              {detailedContent}
+            </ServiceDescription>
           </div>
 
+          {/* 3. KAPCSOLAT */}
           <div className="section-card" style={{ marginTop: '2rem' }}>
             <ContactInfo 
               phone="+36 20 490 5530"
@@ -98,6 +98,7 @@ export default function CategoryTemplate({
             />
           </div>
 
+          {/* Disclaimer */}
           <div className="disclaimer-wrapper" style={{ marginTop: '1.5rem' }}>
             <div className="alert alert-warning" style={{ fontSize: '0.8rem', opacity: 0.5 }}>
               <p>{disclaimer}</p>

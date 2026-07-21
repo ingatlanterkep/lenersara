@@ -1,0 +1,2255 @@
+/* ============================================================
+   TIPOGRÁFIA - PRÉMIUM, ÁTFOGÓ STÍLUSOK
+   Minden oldalra egységes, elegáns, magazinszerű design
+   ============================================================ */
+
+:root {
+  /* TIPOGRAFIKUS SKÁLA */
+  --font-scale-xxxxl: 4.5rem;
+  --font-scale-xxxl: 3.8rem;
+  --font-scale-xxl: 3.2rem;
+  --font-scale-xl: 2.8rem;
+  --font-scale-lg: 2.2rem;
+  --font-scale-md: 1.8rem;
+  --font-scale-sm: 1.4rem;
+  --font-scale-xs: 1.2rem;
+  --font-scale-xxs: 1rem;
+  --font-scale-xxxs: 0.85rem;
+  --font-scale-xxxxs: 0.75rem;
+  --font-scale-xxxxxs: 0.65rem;
+
+  /* SZÖVEG SZÍNEK */
+  --text-primary: var(--color-primary);
+  --text-secondary: var(--color-gray-800);
+  --text-muted: var(--color-gray-600);
+  --text-light: var(--color-gray-500);
+  --text-lighter: var(--color-gray-400);
+  --text-white: var(--color-white);
+  --text-accent: var(--color-accent);
+  --text-accent-hover: var(--color-accent-hover);
+
+  /* BETŰTÍPUSOK */
+  --font-primary: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ============================================================
+   1. ALAPBEÁLLÍTÁSOK
+   ============================================================ */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+}
+
+/* ============================================================
+   2. FEJLÉC CÍMEK (H1-H6)
+   ============================================================ */
+
+/* --- H1 - Főoldal, Hero --- */
+.typo-h1 {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxl);
+  font-weight: 300;
+  color: var(--text-primary);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  position: relative;
+}
+
+.typo-h1::after {
+  content: '';
+  display: block;
+  width: 5rem;
+  height: 3px;
+  background: var(--text-accent);
+  margin-top: 0.75rem;
+  border-radius: 2px;
+  opacity: 0.5;
+}
+
+.typo-h1-hero {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxxl);
+  font-weight: 300;
+  color: var(--text-primary);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+}
+
+.typo-h1-hero::after {
+  content: '';
+  display: block;
+  width: 6rem;
+  height: 4px;
+  background: var(--text-accent);
+  margin-top: 0.75rem;
+  border-radius: 2px;
+  opacity: 0.4;
+}
+
+.typo-h1-page {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxl);
+  font-weight: 300;
+  color: var(--text-primary);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.typo-h1-page::after {
+  content: '';
+  display: block;
+  width: 4rem;
+  height: 3px;
+  background: var(--text-accent);
+  margin-top: 0.75rem;
+  border-radius: 2px;
+  opacity: 0.4;
+}
+
+.typo-h1-light {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxl);
+  font-weight: 200;
+  color: var(--text-primary);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.typo-h1-bold {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxl);
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+/* --- H2 - Szekciócímek --- */
+.typo-h2 {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xl);
+  font-weight: 300;
+  color: var(--text-primary);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.typo-h2-section {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xl);
+  font-weight: 300;
+  color: var(--text-primary);
+  text-align: center;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.5rem;
+}
+
+.typo-h2-section::after {
+  content: '';
+  display: block;
+  width: 4rem;
+  height: 3px;
+  background: var(--text-accent);
+  margin: 0.75rem auto 0;
+  border-radius: 2px;
+  opacity: 0.5;
+}
+
+.typo-h2-white {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xl);
+  font-weight: 300;
+  color: var(--color-white);
+  text-align: center;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.typo-h2-white::after {
+  content: '';
+  display: block;
+  width: 4rem;
+  height: 3px;
+  background: var(--text-accent);
+  margin: 0.75rem auto 0;
+  border-radius: 2px;
+  opacity: 0.4;
+}
+
+/* --- H2 - Dekorált (vonal + pont) --- */
+.typo-h2-decorated {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xl);
+  font-weight: 300;
+  color: var(--text-primary);
+  text-align: center;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.5rem;
+}
+
+.typo-h2-decorated .decorative-line {
+  display: block;
+  margin: 0.75rem auto 0;
+  max-width: 200px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--text-accent), transparent);
+  opacity: 0.4;
+}
+
+.typo-h2-decorated .decorative-dot {
+  display: block;
+  margin: -4px auto 0;
+  font-size: 0.6rem;
+  color: var(--text-accent);
+  opacity: 0.6;
+  text-align: center;
+  line-height: 1;
+}
+
+/* --- H2 - Dekorált (fehér háttéren) --- */
+.typo-h2-decorated-white {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xl);
+  font-weight: 300;
+  color: var(--color-white);
+  text-align: center;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.5rem;
+}
+
+.typo-h2-decorated-white .decorative-line {
+  display: block;
+  margin: 0.75rem auto 0;
+  max-width: 200px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--text-accent), transparent);
+  opacity: 0.3;
+}
+
+.typo-h2-decorated-white .decorative-dot {
+  display: block;
+  margin: -4px auto 0;
+  font-size: 0.6rem;
+  color: var(--text-accent);
+  opacity: 0.6;
+  text-align: center;
+  line-height: 1;
+}
+
+/* --- H2 - Magazin stílus (számozott) --- */
+.typo-h2-magazine {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-lg);
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin-top: 3.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid rgba(245, 130, 32, 0.15);
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.typo-h2-magazine .number {
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-accent);
+  opacity: 0.4;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+.typo-h2-magazine::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background: var(--text-accent);
+  border-radius: 1px;
+}
+
+.typo-h2-magazine-white {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-lg);
+  font-weight: 400;
+  color: var(--color-white);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin-top: 3.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid rgba(245, 130, 32, 0.15);
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.typo-h2-magazine-white .number {
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-accent);
+  opacity: 0.4;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+.typo-h2-magazine-white::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background: var(--text-accent);
+  border-radius: 1px;
+}
+
+/* --- H2 - Balra igazított dekorált --- */
+.typo-h2-left-decorated {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xl);
+  font-weight: 300;
+  color: var(--text-primary);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid rgba(245, 130, 32, 0.15);
+  position: relative;
+}
+
+.typo-h2-left-decorated::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background: var(--text-accent);
+  border-radius: 1px;
+}
+
+/* --- H3 --- */
+.typo-h3 {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-md);
+  font-weight: 300;
+  color: var(--text-primary);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.typo-h3-section {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-md);
+  font-weight: 300;
+  color: var(--text-primary);
+  text-align: center;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.typo-h3-sub {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-sm);
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.typo-h3-accent {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-md);
+  font-weight: 300;
+  color: var(--text-accent);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+/* --- H4 --- */
+.typo-h4 {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-sm);
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.typo-h4-light {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-sm);
+  font-weight: 300;
+  color: var(--text-primary);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.typo-h4-uppercase {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxs);
+  font-weight: 500;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  line-height: 1.3;
+  letter-spacing: 0.06em;
+}
+
+/* --- H5 --- */
+.typo-h5 {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xs);
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.typo-h5-uppercase {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxxs);
+  font-weight: 500;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  line-height: 1.3;
+  letter-spacing: 0.08em;
+}
+
+/* --- H6 --- */
+.typo-h6 {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxs);
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+/* ============================================================
+   3. BEKEZDÉSEK
+   ============================================================ */
+.typo-body {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxs);
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  letter-spacing: 0.01em;
+}
+
+.typo-body-strong {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxs);
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.8;
+  letter-spacing: 0.01em;
+}
+
+.typo-body-large {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xs);
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.9;
+  letter-spacing: 0.01em;
+}
+
+.typo-body-small {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxs);
+  font-weight: 300;
+  color: var(--text-muted);
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+}
+
+.typo-body-light {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxs);
+  font-weight: 300;
+  color: var(--text-light);
+  line-height: 1.8;
+  letter-spacing: 0.01em;
+}
+
+.typo-body-accent {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxs);
+  font-weight: 300;
+  color: var(--text-accent);
+  line-height: 1.8;
+  letter-spacing: 0.01em;
+}
+
+.typo-body-white {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxs);
+  font-weight: 300;
+  color: var(--color-white);
+  line-height: 1.8;
+  letter-spacing: 0.01em;
+}
+
+.typo-body-justify {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxs);
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  letter-spacing: 0.01em;
+  text-align: justify;
+}
+
+.typo-body-intro {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xs);
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.9;
+  letter-spacing: 0.01em;
+}
+
+.typo-body-intro::first-letter {
+  font-size: 4rem;
+  font-weight: 300;
+  color: var(--text-primary);
+  float: left;
+  line-height: 1;
+  margin-right: 0.5rem;
+  margin-top: 0.1rem;
+}
+
+/* ============================================================
+   4. SZÍNEK
+   ============================================================ */
+.typo-accent {
+  color: var(--text-accent);
+}
+
+.typo-primary {
+  color: var(--text-primary);
+}
+
+.typo-white {
+  color: var(--text-white);
+}
+
+.typo-muted {
+  color: var(--text-muted);
+}
+
+.typo-light {
+  color: var(--text-light);
+}
+
+.typo-lighter {
+  color: var(--text-lighter);
+}
+
+.typo-dark {
+  color: var(--color-gray-900);
+}
+
+.typo-success {
+  color: #22c55e;
+}
+
+.typo-warning {
+  color: #f59e0b;
+}
+
+.typo-danger {
+  color: #ef4444;
+}
+
+/* ============================================================
+   5. SZÖVEG SÚLYOK
+   ============================================================ */
+.typo-thin {
+  font-weight: 100;
+}
+
+.typo-extralight {
+  font-weight: 200;
+}
+
+.typo-light-weight {
+  font-weight: 300;
+}
+
+.typo-regular-weight {
+  font-weight: 400;
+}
+
+.typo-medium-weight {
+  font-weight: 500;
+}
+
+.typo-semibold-weight {
+  font-weight: 600;
+}
+
+.typo-bold-weight {
+  font-weight: 700;
+}
+
+.typo-extrabold {
+  font-weight: 800;
+}
+
+.typo-black {
+  font-weight: 900;
+}
+
+/* ============================================================
+   6. BETŰMÉRETEK
+   ============================================================ */
+.typo-size-xxs {
+  font-size: var(--font-scale-xxxs);
+}
+
+.typo-size-xs {
+  font-size: var(--font-scale-xxs);
+}
+
+.typo-size-sm {
+  font-size: var(--font-scale-xs);
+}
+
+.typo-size-md {
+  font-size: var(--font-scale-sm);
+}
+
+.typo-size-lg {
+  font-size: var(--font-scale-md);
+}
+
+.typo-size-xl {
+  font-size: var(--font-scale-lg);
+}
+
+.typo-size-xxl {
+  font-size: var(--font-scale-xl);
+}
+
+.typo-size-xxxl {
+  font-size: var(--font-scale-xxl);
+}
+
+.typo-size-xxxxl {
+  font-size: var(--font-scale-xxxl);
+}
+
+/* ============================================================
+   7. KÜLÖNLEGES STÍLUSOK
+   ============================================================ */
+.typo-uppercase {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.typo-lowercase {
+  text-transform: lowercase;
+}
+
+.typo-capitalize {
+  text-transform: capitalize;
+}
+
+.typo-italic {
+  font-style: italic;
+}
+
+.typo-underline {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.typo-underline-accent {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--text-accent);
+}
+
+.typo-no-underline {
+  text-decoration: none;
+}
+
+.typo-line-through {
+  text-decoration: line-through;
+}
+
+.typo-tracking-tight {
+  letter-spacing: -0.02em;
+}
+
+.typo-tracking-normal {
+  letter-spacing: 0.01em;
+}
+
+.typo-tracking-wide {
+  letter-spacing: 0.05em;
+}
+
+.typo-tracking-wider {
+  letter-spacing: 0.08em;
+}
+
+.typo-tracking-widest {
+  letter-spacing: 0.1em;
+}
+
+.typo-leading-tight {
+  line-height: 1.2;
+}
+
+.typo-leading-normal {
+  line-height: 1.7;
+}
+
+.typo-leading-loose {
+  line-height: 2;
+}
+
+.typo-leading-relaxed {
+  line-height: 1.9;
+}
+
+.typo-indent {
+  text-indent: 2rem;
+}
+
+.typo-nowrap {
+  white-space: nowrap;
+}
+
+/* ============================================================
+   8. AUTHOR STÍLUSOK
+   ============================================================ */
+.typo-author-name {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-lg);
+  font-weight: 300;
+  color: var(--text-primary);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  padding-bottom: 0.25rem;
+  border-bottom: 2px solid rgba(245, 130, 32, 0.2);
+  display: inline-block;
+}
+
+.typo-author-name-centered {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-lg);
+  font-weight: 300;
+  color: var(--text-primary);
+  text-align: center;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  padding-bottom: 0.25rem;
+  border-bottom: 2px solid rgba(245, 130, 32, 0.2);
+  display: inline-block;
+  margin: 0 auto;
+}
+
+.typo-author-subtitle {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxs);
+  font-weight: 300;
+  color: var(--text-accent);
+  letter-spacing: 0.02em;
+  margin-top: 0.25rem;
+}
+
+.typo-author-description {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxs);
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  letter-spacing: 0.01em;
+}
+
+.typo-author-closing {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxs);
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.8;
+  letter-spacing: 0.01em;
+}
+
+.typo-author-signature {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xs);
+  font-weight: 300;
+  color: var(--text-primary);
+  font-style: italic;
+  letter-spacing: 0.02em;
+}
+
+/* ============================================================
+   9. SZOLGÁLTATÁS KÁRTYA STÍLUSOK
+   ============================================================ */
+.typo-service-title {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-sm);
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.2;
+  transition: color 0.3s ease;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid rgba(245, 130, 32, 0.15);
+}
+
+.typo-service-title:hover {
+  color: var(--text-accent);
+}
+
+.typo-service-description {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxs);
+  font-weight: 300;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.typo-service-link {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxs);
+  font-weight: 300;
+  color: var(--text-accent);
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.typo-service-link::after {
+  content: '→';
+  transition: transform 0.3s ease;
+  font-size: 1rem;
+}
+
+.typo-service-link:hover::after {
+  transform: translateX(6px);
+}
+
+.typo-service-tag {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxxxs);
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-white);
+}
+
+/* ============================================================
+   10. TESZTIMONIAL STÍLUSOK
+   ============================================================ */
+.typo-testimonial-text {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxs);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.typo-testimonial-text::before {
+  content: '"';
+  position: absolute;
+  left: 0;
+  top: -0.25rem;
+  font-size: 2rem;
+  color: var(--text-accent);
+  opacity: 0.2;
+  font-style: normal;
+  font-weight: 300;
+}
+
+.typo-testimonial-author {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxxs);
+  font-weight: 400;
+  color: var(--text-primary);
+  padding-left: 1.5rem;
+}
+
+.typo-testimonial-role {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxxxs);
+  font-weight: 300;
+  color: var(--text-light);
+  padding-left: 1.5rem;
+}
+
+/* ============================================================
+   11. KAPCSOLAT STÍLUSOK
+   ============================================================ */
+.typo-contact-label {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxxs);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.typo-contact-value {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxs);
+  font-weight: 400;
+  color: var(--text-primary);
+}
+
+.typo-contact-note {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxxs);
+  font-weight: 300;
+  color: var(--text-light);
+}
+
+/* ============================================================
+   12. GOMB STÍLUSOK
+   ============================================================ */
+.typo-btn {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxs);
+  font-weight: 300;
+  letter-spacing: 0.02em;
+}
+
+.typo-btn-small {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxs);
+  font-weight: 300;
+  letter-spacing: 0.02em;
+}
+
+.typo-btn-large {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xs);
+  font-weight: 300;
+  letter-spacing: 0.02em;
+}
+
+.typo-btn-uppercase {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxs);
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ============================================================
+   13. FAQ STÍLUSOK
+   ============================================================ */
+.typo-faq-question {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxs);
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.85);
+  transition: var(--transition);
+}
+
+.typo-faq-question:hover {
+  color: var(--color-white);
+}
+
+.typo-faq-answer {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxs);
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.6;
+}
+
+.typo-faq-toggle {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xs);
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.15);
+  transition: var(--transition);
+}
+
+.typo-faq-toggle:hover {
+  color: var(--text-accent);
+}
+
+/* ============================================================
+   14. FOOTER STÍLUSOK
+   ============================================================ */
+.typo-footer-heading {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxs);
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.85);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.typo-footer-text {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxxs);
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.4);
+  line-height: 1.7;
+}
+
+.typo-footer-link {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxxs);
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.4);
+  transition: var(--transition);
+}
+
+.typo-footer-link:hover {
+  color: var(--text-accent);
+}
+
+.typo-footer-copyright {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxxs);
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.2);
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+
+/* ============================================================
+   15. HERO STÍLUSOK
+   ============================================================ */
+.typo-hero-title {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxl);
+  font-weight: 300;
+  color: var(--text-primary);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  position: relative;
+}
+
+.typo-hero-title::after {
+  content: '';
+  display: block;
+  width: 5rem;
+  height: 3px;
+  background: var(--text-accent);
+  margin-top: 0.75rem;
+  border-radius: 2px;
+  opacity: 0.5;
+}
+
+.typo-hero-subtitle {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xs);
+  font-weight: 300;
+  color: var(--text-muted);
+  letter-spacing: 0.01em;
+}
+
+.typo-hero-description {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxs);
+  font-weight: 300;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.typo-hero-quote {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxs);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--text-muted);
+  line-height: 1.6;
+  border-left: 3px solid var(--text-accent);
+  padding-left: 1.25rem;
+  position: relative;
+}
+
+.typo-hero-quote::before {
+  content: '"';
+  position: absolute;
+  left: -0.5rem;
+  top: -0.5rem;
+  font-size: 2.5rem;
+  color: var(--text-accent);
+  opacity: 0.12;
+  font-style: normal;
+}
+
+.typo-hero-highlight {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxl);
+  font-weight: 300;
+  color: var(--text-accent);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+/* ============================================================
+   16. PROSE TARTALOM STÍLUSOK
+   ============================================================ */
+.typo-prose {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.typo-prose h2 {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-lg);
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin-top: 3.5rem;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid rgba(245, 130, 32, 0.15);
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.typo-prose h2 .number {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-accent);
+  opacity: 0.4;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+.typo-prose h2::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background: var(--text-accent);
+  border-radius: 1px;
+}
+
+.typo-prose h2:first-of-type {
+  margin-top: 0;
+}
+
+.typo-prose h3 {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-sm);
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  margin-top: 2rem;
+  margin-bottom: 0.4rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid rgba(16, 40, 74, 0.06);
+}
+
+.typo-prose h3 .number {
+  color: var(--text-accent);
+  opacity: 0.4;
+  font-weight: 300;
+  margin-right: 0.5rem;
+}
+
+.typo-prose p {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxs);
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.9;
+  letter-spacing: 0.01em;
+  margin-bottom: 1.5rem;
+}
+
+.typo-prose p strong {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.typo-prose p:last-child {
+  margin-bottom: 0;
+}
+
+.typo-prose ul,
+.typo-prose ol {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxs);
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.9;
+  padding-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.typo-prose ul li,
+.typo-prose ol li {
+  margin-bottom: 0.4rem;
+  padding-left: 0.5rem;
+}
+
+.typo-prose ul li::marker {
+  color: var(--text-accent);
+}
+
+.typo-prose ol li::marker {
+  color: var(--text-accent);
+  font-weight: 400;
+}
+
+.typo-prose ul li strong,
+.typo-prose ol li strong {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.typo-prose a {
+  color: var(--text-accent);
+  transition: var(--transition);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: rgba(245, 130, 32, 0.25);
+  font-weight: 400;
+}
+
+.typo-prose a:hover {
+  color: var(--text-accent-hover);
+  text-decoration-color: var(--text-accent);
+}
+
+.typo-prose blockquote {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xs);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--text-muted);
+  line-height: 1.7;
+  padding: 1rem 1.5rem 1rem 2.5rem;
+  margin: 2rem 0;
+  background: rgba(245, 130, 32, 0.03);
+  border-radius: var(--radius-sm);
+  border-left: 4px solid var(--text-accent);
+  position: relative;
+}
+
+.typo-prose blockquote::before {
+  content: '"';
+  position: absolute;
+  left: 0.75rem;
+  top: 0.5rem;
+  font-size: 2.5rem;
+  color: var(--text-accent);
+  opacity: 0.12;
+  font-style: normal;
+  font-weight: 300;
+}
+
+.typo-prose blockquote footer {
+  font-style: normal;
+  font-weight: 300;
+  color: var(--text-light);
+  margin-top: 0.5rem;
+  padding-left: 0.5rem;
+  font-size: var(--font-scale-xxxs);
+}
+
+/* ============================================================
+   17. KALLOUT BLOKKOK
+   ============================================================ */
+.typo-callout {
+  background: var(--color-gray-50);
+  border-left: 4px solid var(--text-accent);
+  padding: 1.25rem 1.5rem;
+  margin: 1.75rem 0;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxs);
+  font-weight: 300;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.typo-callout strong {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.typo-callout .icon {
+  font-size: 1.2rem;
+  margin-right: 0.5rem;
+}
+
+.typo-callout-warning {
+  background: rgba(245, 130, 32, 0.05);
+  border-left: 4px solid var(--text-accent);
+}
+
+.typo-callout-info {
+  background: rgba(16, 40, 74, 0.04);
+  border-left: 4px solid var(--text-primary);
+}
+
+.typo-callout-success {
+  background: rgba(34, 197, 94, 0.05);
+  border-left: 4px solid #22c55e;
+}
+
+.typo-callout-danger {
+  background: rgba(239, 68, 68, 0.05);
+  border-left: 4px solid #ef4444;
+}
+
+/* ============================================================
+   18. ÖSSZEFOGLALÓ
+   ============================================================ */
+.typo-summary {
+  background: var(--color-gray-50);
+  border-radius: var(--radius-sm);
+  padding: 1.5rem 2rem;
+  margin: 2rem 0 1.5rem;
+  border: 1px solid var(--color-gray-200);
+}
+
+.typo-summary-title {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxs);
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.typo-summary ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem 1.5rem;
+}
+
+.typo-summary ul li {
+  padding-left: 1.5rem;
+  position: relative;
+  margin-bottom: 0.2rem;
+  font-size: var(--font-scale-xxxs);
+  color: var(--text-muted);
+}
+
+.typo-summary ul li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--text-accent);
+  font-weight: 400;
+}
+
+@media (max-width: 600px) {
+  .typo-summary ul {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================
+   19. KIEMELT KULCSSZAVAK
+   ============================================================ */
+.typo-highlight {
+  color: var(--text-accent);
+  font-weight: 400;
+}
+
+.typo-highlight-primary {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.typo-highlight-bg {
+  background: rgba(245, 130, 32, 0.08);
+  padding: 0.1rem 0.3rem;
+  border-radius: 2px;
+}
+
+.typo-highlight-bg-primary {
+  background: rgba(16, 40, 74, 0.06);
+  padding: 0.1rem 0.3rem;
+  border-radius: 2px;
+}
+
+.typo-highlight-underline {
+  text-decoration: underline;
+  text-decoration-color: var(--text-accent);
+  text-underline-offset: 3px;
+}
+
+
+
+/* ============================================================
+   21. SZEKCIÓ CÍMEK (általános)
+   ============================================================ */
+.typo-section-title {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-lg);
+  font-weight: 300;
+  color: var(--text-primary);
+  text-align: center;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.01em;
+}
+
+.typo-section-title::after {
+  content: '';
+  display: block;
+  width: 4rem;
+  height: 3px;
+  background: var(--text-accent);
+  margin: 0.75rem auto 0;
+  border-radius: 2px;
+  opacity: 0.5;
+}
+
+.typo-section-subtitle {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xs);
+  font-weight: 300;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 0.25rem;
+  margin-bottom: 2.5rem;
+  letter-spacing: 0.01em;
+}
+
+.typo-section-label {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxxs);
+  font-weight: 400;
+  color: var(--text-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+/* ============================================================
+   22. TÁBLÁZAT STÍLUSOK
+   ============================================================ */
+.typo-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxs);
+  background: var(--color-white);
+}
+
+.typo-table thead tr {
+  background: var(--text-primary);
+}
+
+.typo-table th {
+  padding: 1rem 1.25rem;
+  text-align: left;
+  font-weight: 400;
+  color: var(--color-white);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: var(--font-scale-xxxxs);
+}
+
+.typo-table td {
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--color-gray-100);
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.typo-table tbody tr:hover {
+  background: rgba(245, 130, 32, 0.02);
+}
+
+.typo-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.typo-table-striped tbody tr:nth-child(even) {
+  background: var(--color-gray-50);
+}
+
+.typo-table-striped tbody tr:nth-child(even):hover {
+  background: rgba(245, 130, 32, 0.04);
+}
+
+.typo-table-compact th,
+.typo-table-compact td {
+  padding: 0.5rem 0.75rem;
+}
+
+/* ============================================================
+   23. TIMELINE STÍLUSOK
+   ============================================================ */
+.typo-timeline-item {
+  position: relative;
+  padding: 1.5rem 1.25rem;
+  background: var(--color-white);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-gray-200);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(16, 40, 74, 0.03);
+}
+
+.typo-timeline-item:hover {
+  transform: translateY(-4px);
+  border-color: var(--text-accent);
+  box-shadow: 0 12px 32px rgba(16, 40, 74, 0.08);
+}
+
+.typo-timeline-number {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-lg);
+  font-weight: 300;
+  color: var(--text-accent);
+  opacity: 0.2;
+  margin-bottom: 0.25rem;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.typo-timeline-title {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxs);
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+  line-height: 1.2;
+}
+
+.typo-timeline-description {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxxs);
+  font-weight: 300;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.typo-timeline-vertical {
+  position: relative;
+  padding-left: 2rem;
+}
+
+.typo-timeline-vertical::before {
+  content: '';
+  position: absolute;
+  left: 0.5rem;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--color-gray-200);
+}
+
+.typo-timeline-vertical .typo-timeline-item {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.typo-timeline-vertical .typo-timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -1.5rem;
+  top: 1.5rem;
+  width: 1rem;
+  height: 2px;
+  background: var(--color-gray-200);
+}
+
+/* ============================================================
+   24. MIKOR FORDULJON ÜGYVÉDHEZ
+   ============================================================ */
+.typo-when-to-contact-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxs);
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  background: var(--color-gray-50);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-gray-100);
+  transition: all 0.3s ease;
+}
+
+.typo-when-to-contact-item:hover {
+  background: var(--color-white);
+  border-color: var(--text-accent);
+  box-shadow: 0 4px 16px rgba(245, 130, 32, 0.06);
+  transform: translateX(4px);
+}
+
+.typo-when-to-contact-dot {
+  flex-shrink: 0;
+  color: var(--text-accent);
+  font-size: 0.6rem;
+  margin-top: 0.5rem;
+  opacity: 0.6;
+}
+
+/* ============================================================
+   25. LISTÁK
+   ============================================================ */
+.typo-list-unstyled {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.typo-list-inline {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.typo-list-inline li {
+  display: inline-block;
+}
+
+.typo-list-divided li {
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+.typo-list-divided li:last-child {
+  border-bottom: none;
+}
+
+.typo-list-check {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.typo-list-check li {
+  padding-left: 1.5rem;
+  position: relative;
+  margin-bottom: 0.4rem;
+}
+
+.typo-list-check li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--text-accent);
+}
+
+.typo-list-dash {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.typo-list-dash li {
+  padding-left: 1.5rem;
+  position: relative;
+  margin-bottom: 0.4rem;
+}
+
+.typo-list-dash li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--text-accent);
+  opacity: 0.5;
+}
+
+.typo-list-number-circle {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  counter-reset: item;
+}
+
+.typo-list-number-circle li {
+  counter-increment: item;
+  padding-left: 2.5rem;
+  position: relative;
+  margin-bottom: 0.6rem;
+}
+
+.typo-list-number-circle li::before {
+  content: counter(item);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 50%;
+  background: var(--text-accent);
+  color: var(--color-white);
+  font-size: var(--font-scale-xxxxs);
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================================
+   26. ALÁHÚZÁSOK
+   ============================================================ */
+.typo-underline-accent {
+  border-bottom: 2px solid var(--text-accent);
+  padding-bottom: 0.1rem;
+}
+
+.typo-underline-primary {
+  border-bottom: 2px solid var(--text-primary);
+  padding-bottom: 0.1rem;
+}
+
+.typo-underline-dotted {
+  border-bottom: 1px dotted var(--text-accent);
+  padding-bottom: 0.1rem;
+}
+
+/* ============================================================
+   27. RESPONSZÍV MÉRETEK
+   ============================================================ */
+@media (max-width: 1200px) {
+  .typo-h1 {
+    font-size: var(--font-scale-xxl);
+  }
+  .typo-h1-hero {
+    font-size: var(--font-scale-xxxl);
+  }
+  .typo-h2,
+  .typo-h2-section,
+  .typo-h2-decorated,
+  .typo-h2-decorated-white {
+    font-size: var(--font-scale-lg);
+  }
+  .typo-h3,
+  .typo-h3-section {
+    font-size: var(--font-scale-sm);
+  }
+  .typo-hero-title {
+    font-size: var(--font-scale-xxl);
+  }
+}
+
+@media (max-width: 992px) {
+  .typo-h1 {
+    font-size: var(--font-scale-xl);
+  }
+  .typo-h1-hero {
+    font-size: var(--font-scale-xxl);
+  }
+  .typo-h2,
+  .typo-h2-section,
+  .typo-h2-decorated,
+  .typo-h2-decorated-white {
+    font-size: var(--font-scale-md);
+  }
+  .typo-hero-title {
+    font-size: var(--font-scale-xl);
+  }
+  .typo-h2-magazine {
+    font-size: var(--font-scale-md);
+  }
+}
+
+@media (max-width: 768px) {
+  .typo-h1 {
+    font-size: var(--font-scale-lg);
+  }
+  .typo-h1-hero {
+    font-size: var(--font-scale-xl);
+  }
+  .typo-h2,
+  .typo-h2-section,
+  .typo-h2-decorated,
+  .typo-h2-decorated-white {
+    font-size: var(--font-scale-sm);
+  }
+  .typo-h3,
+  .typo-h3-section {
+    font-size: var(--font-scale-xs);
+  }
+  .typo-h4 {
+    font-size: var(--font-scale-xxs);
+  }
+  .typo-hero-title {
+    font-size: var(--font-scale-lg);
+  }
+  .typo-hero-subtitle {
+    font-size: var(--font-scale-xxs);
+  }
+  .typo-body-large {
+    font-size: var(--font-scale-xxs);
+  }
+  .typo-author-name {
+    font-size: var(--font-scale-md);
+  }
+  .typo-service-title {
+    font-size: var(--font-scale-xs);
+  }
+  .typo-prose h2 {
+    font-size: var(--font-scale-sm);
+  }
+  .typo-prose h3 {
+    font-size: var(--font-scale-xs);
+  }
+  .typo-prose p {
+    font-size: var(--font-scale-xxxs);
+  }
+  .typo-prose blockquote {
+    font-size: var(--font-scale-xxs);
+  }
+  .typo-summary ul {
+    grid-template-columns: 1fr;
+  }
+  .typo-h2-magazine {
+    font-size: var(--font-scale-sm);
+    flex-wrap: wrap;
+  }
+  .typo-h2-magazine .number {
+    font-size: var(--font-scale-xxxxs);
+  }
+}
+
+@media (max-width: 480px) {
+  .typo-h1 {
+    font-size: var(--font-scale-md);
+  }
+  .typo-h1-hero {
+    font-size: var(--font-scale-lg);
+  }
+  .typo-h2,
+  .typo-h2-section,
+  .typo-h2-decorated,
+  .typo-h2-decorated-white {
+    font-size: var(--font-scale-xs);
+  }
+  .typo-hero-title {
+    font-size: var(--font-scale-md);
+  }
+  .typo-hero-title::after {
+    width: 3rem;
+  }
+  .typo-author-name {
+    font-size: var(--font-scale-sm);
+  }
+  .typo-service-title {
+    font-size: var(--font-scale-xxs);
+  }
+  .typo-prose h2 {
+    font-size: var(--font-scale-xs);
+  }
+  .typo-prose h3 {
+    font-size: var(--font-scale-xxs);
+  }
+  .typo-prose p {
+    font-size: var(--font-scale-xxxxs);
+  }
+  .typo-h2-magazine {
+    font-size: var(--font-scale-xs);
+  }
+  .typo-h2-magazine .number {
+    font-size: var(--font-scale-xxxxs);
+  }
+}
+
+/* ============================================================
+   28. HASZNOS SEGÉD OSZTÁLYOK
+   ============================================================ */
+.typo-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.typo-truncate-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.typo-truncate-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.typo-truncate-4 {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.typo-align-left {
+  text-align: left;
+}
+
+.typo-align-center {
+  text-align: center;
+}
+
+.typo-align-right {
+  text-align: right;
+}
+
+.typo-align-justify {
+  text-align: justify;
+}
+
+/* ============================================================
+   29. KÜLÖNLEGES ELEMEK
+   ============================================================ */
+.typo-dropcap::first-letter {
+  font-size: 4rem;
+  font-weight: 300;
+  color: var(--text-primary);
+  float: left;
+  line-height: 1;
+  margin-right: 0.5rem;
+  margin-top: 0.1rem;
+  font-family: var(--font-primary);
+}
+
+.typo-small-caps {
+  font-variant: small-caps;
+  letter-spacing: 0.04em;
+}
+
+.typo-marker-accent ::marker {
+  color: var(--text-accent);
+}
+
+.typo-quote {
+  quotes: "„" "”" "“" "”";
+}
+
+.typo-quote::before {
+  content: open-quote;
+  color: var(--text-accent);
+  opacity: 0.3;
+}
+
+.typo-quote::after {
+  content: close-quote;
+  color: var(--text-accent);
+  opacity: 0.3;
+}
+
+/* ============================================================
+   30. NYOMTATÁS
+   ============================================================ */
+@media print {
+  .typo-h1,
+  .typo-h2,
+  .typo-h3,
+  .typo-h4 {
+    color: #000 !important;
+  }
+  .typo-body {
+    color: #333 !important;
+  }
+  .typo-accent {
+    color: #000 !important;
+  }
+  .typo-prose blockquote {
+    border-left-color: #000 !important;
+  }
+  .typo-prose blockquote::before {
+    color: #000 !important;
+    opacity: 0.2 !important;
+  }
+}
+
+/* ============================================================
+   31. KÉZZEL ÍRT ELEMEK
+   ============================================================ */
+.typo-handwritten {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-style: italic;
+  font-weight: 300;
+  color: var(--text-primary);
+}
+
+.typo-handwritten-accent {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-style: italic;
+  font-weight: 300;
+  color: var(--text-accent);
+}
+
+/* ============================================================
+   32. FOKOZATOS CÍMEK
+   ============================================================ */
+.typo-gradient {
+  background: linear-gradient(135deg, var(--text-primary), var(--text-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.typo-gradient-hero {
+  background: linear-gradient(135deg, var(--text-primary), var(--text-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 300;
+}
+
+/* ============================================================
+   33. KERETEZETT SZÖVEG
+   ============================================================ */
+.typo-boxed {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border: 1px solid var(--text-accent);
+  border-radius: 2px;
+  color: var(--text-accent);
+  font-weight: 400;
+}
+
+.typo-boxed-primary {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border: 1px solid var(--text-primary);
+  border-radius: 2px;
+  color: var(--text-primary);
+  font-weight: 400;
+}
+
+/* ============================================================
+   34. ÁTMENETI SZÖVEGEK
+   ============================================================ */
+.typo-fade-in {
+  animation: typoFadeIn 0.6s ease forwards;
+}
+
+@keyframes typoFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.typo-fade-in-delay-1 {
+  animation-delay: 0.1s;
+}
+
+.typo-fade-in-delay-2 {
+  animation-delay: 0.2s;
+}
+
+.typo-fade-in-delay-3 {
+  animation-delay: 0.3s;
+}
+
+/* ============================================================
+   35. RÉGI STÍLUSÚ SZÖVEGELEMEK
+   ============================================================ */
+.typo-vintage {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-weight: 300;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+}
+
+.typo-vintage-accent {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-weight: 300;
+  color: var(--text-accent);
+  letter-spacing: 0.02em;
+}
+
+/* ============================================================
+   36. CÍMSOROK
+   ============================================================ */
+.typo-headline {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxl);
+  font-weight: 300;
+  color: var(--text-primary);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+}
+
+.typo-headline-sm {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xl);
+  font-weight: 300;
+  color: var(--text-primary);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.typo-headline-lg {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxl);
+  font-weight: 300;
+  color: var(--text-primary);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+}
+
+/* ============================================================
+   37. KISMÉRETŰ CÍMEK
+   ============================================================ */
+.typo-eyebrow {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxxs);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-accent);
+}
+
+.typo-eyebrow-white {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxxs);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-white);
+  opacity: 0.6;
+}
+
+.typo-meta {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxxs);
+  font-weight: 300;
+  color: var(--text-light);
+  letter-spacing: 0.02em;
+}
+
+/* ============================================================
+   38. CÍM UTÁNI ALÁHÚZÁSOK
+   ============================================================ */
+.typo-divider-line {
+  display: block;
+  width: 4rem;
+  height: 3px;
+  background: var(--text-accent);
+  border-radius: 2px;
+  margin-top: 0.75rem;
+  opacity: 0.5;
+}
+
+.typo-divider-line-center {
+  display: block;
+  width: 4rem;
+  height: 3px;
+  background: var(--text-accent);
+  border-radius: 2px;
+  margin: 0.75rem auto 0;
+  opacity: 0.5;
+}
+
+.typo-divider-line-white {
+  display: block;
+  width: 4rem;
+  height: 3px;
+  background: var(--text-white);
+  border-radius: 2px;
+  margin-top: 0.75rem;
+  opacity: 0.3;
+}
+
+.typo-divider-line-white-center {
+  display: block;
+  width: 4rem;
+  height: 3px;
+  background: var(--text-white);
+  border-radius: 2px;
+  margin: 0.75rem auto 0;
+  opacity: 0.3;
+}
+
+/* ============================================================
+   39. PÁROSÍTOTT STÍLUSOK
+   ============================================================ */
+.typo-pair-title {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xs);
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.typo-pair-value {
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxs);
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* ============================================================
+   40. ÁLLAPOTJELZŐK
+   ============================================================ */
+.typo-status-success {
+  color: #22c55e;
+  font-weight: 400;
+}
+
+.typo-status-warning {
+  color: #f59e0b;
+  font-weight: 400;
+}
+
+.typo-status-danger {
+  color: #ef4444;
+  font-weight: 400;
+}
+
+.typo-status-info {
+  color: var(--text-accent);
+  font-weight: 400;
+}

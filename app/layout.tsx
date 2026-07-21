@@ -3,7 +3,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 import './gnavbar.css'
 import './ghero.css'
-import './gauthor.css'
+import './gcards.css'
+import './gtyphography.css'
 
 
 import Navigation from '@/components/Navigation'

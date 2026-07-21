@@ -1,8 +1,6 @@
-// components/ServiceTemplate.tsx
 import { ReactNode } from 'react'
 import Hero from './Hero'
 import Breadcrumb from './Breadcrumb'
-import TrustBar from './TrustBar'
 import Timeline from './Timeline'
 import FAQ from './FAQ'
 import ContactInfo from './ContactInfo'
@@ -27,6 +25,7 @@ interface FAQItem {
 interface ServiceTemplateProps {
   heroTitle: string
   heroSubtitle: string
+  heroDescription: string
   heroCtaText?: string
   heroCtaLink?: string
   breadcrumbItems: BreadcrumbItem[]
@@ -49,8 +48,7 @@ interface ServiceTemplateProps {
 export default function ServiceTemplate({
   heroTitle,
   heroSubtitle,
-  heroCtaText = 'Konzultáció kérése',
-  heroCtaLink = '/kapcsolat',
+  heroDescription,
   breadcrumbItems,
   trustItems,
   content,
@@ -68,11 +66,8 @@ export default function ServiceTemplate({
         <Hero 
           title={heroTitle}
           subtitle={heroSubtitle}
-          ctaText={heroCtaText}
-          ctaLink={heroCtaLink}
+          description={heroDescription}
         />
-
-        <TrustBar items={trustItems} />
       </div>
 
       <div className="section page-content">
@@ -88,13 +83,16 @@ export default function ServiceTemplate({
             </div>
           </div>
 
-          {/* "Mikor forduljon ügyvédhez?" - FINOMÍTVA */}
+          {/* "Mikor forduljon ügyvédhez?" */}
           {whenToContact && (
             <div className="section-card" style={{ marginTop: '2rem' }}>
               <div className="when-to-contact">
-                <h2 className="section-title">
+
+                        <h2 className="typo-h2-decorated">
                   {whenToContact.title || 'Mikor érdemes ügyvédhez fordulni?'}
-                </h2>
+        <span className="decorative-line"></span>
+        <span className="decorative-dot">●</span>
+      </h2>
                 <ul className="when-to-contact-list">
                   {whenToContact.items.map((item, index) => (
                     <li key={index} className="when-to-contact-item">
@@ -119,24 +117,30 @@ export default function ServiceTemplate({
             </div>
           )}
 
-          {/* Timeline - SZÁMOK FORMÁZVA */}
-          <div className="section-card" style={{ marginTop: '2rem' }}>
-            <h2 className="section-title">{timelineTitle}</h2>
-            <div className="timeline-horizontal">
-              {timelineSteps.map((step, index) => (
-                <div key={step.number} className="timeline-horizontal-item">
-                  <div className="timeline-horizontal-number">
-                    {String(step.number).padStart(2, '0')}
-                  </div>
-                  {index < timelineSteps.length - 1 && (
-                    <div className="timeline-horizontal-line" />
-                  )}
-                  <h3 className="timeline-horizontal-title">{step.title}</h3>
-                  <p className="timeline-horizontal-description">{step.description}</p>
-                </div>
-              ))}
-            </div>
+{/* Timeline - VÍZSZINTES SZÁMVONAL */}
+<div className="section-card" style={{ marginTop: '2rem' }}>
+        <h2 className="typo-h2-decorated">
+{timelineTitle}
+        <span className="decorative-line"></span>
+        <span className="decorative-dot">●</span>
+      </h2>
+  <div className="timeline-numberline">
+    <div className="timeline-numberline-track"></div>
+    <div className={`timeline-numberline-steps ${timelineSteps.length <= 4 ? `has-${timelineSteps.length}-steps` : ''}`}>
+      {timelineSteps.map((step, index) => (
+        <div key={step.number} className="timeline-numberline-step">
+          <div className="timeline-numberline-dot">
+            <span className="timeline-numberline-number">{step.number}</span>
           </div>
+          <div className="timeline-numberline-content">
+            <h3 className="timeline-numberline-title">{step.title}</h3>
+            <p className="timeline-numberline-description">{step.description}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
 
           <div className="section-card" style={{ marginTop: '2rem' }}>
             <ContactInfo 

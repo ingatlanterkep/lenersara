@@ -1,24 +1,24 @@
 import Link from 'next/link'
 import Image from 'next/image'
 
-interface Service {
+interface SubService {
   title: string
-  description: string
   href: string
-  icon: string
+  description: string
+  icon?: string
 }
 
-interface ServiceGridProps {
-  services: Service[]
+interface SubServiceGridProps {
+  items: SubService[]
   title?: string
   subtitle?: string
 }
 
-export default function ServiceGrid({ 
-  services, 
-  title = 'Szolgáltatásaink',
+export default function SubServiceGrid({ 
+  items, 
+  title = 'Kapcsolódó szolgáltatások',
   subtitle 
-}: ServiceGridProps) {
+}: SubServiceGridProps) {
   return (
     <div>
       {title && (
@@ -30,11 +30,11 @@ export default function ServiceGrid({
       )}
       {subtitle && <p className="typo-section-subtitle">{subtitle}</p>}
       <div className="service-grid-modern">
-        {services.map((service) => (
+        {items.map((service) => (
           <Link key={service.title} href={service.href} className="service-card-modern">
             <div className="service-card-image-wrapper">
               <Image 
-                src={service.icon} 
+                src={service.icon || '/images/placeholder.png'} 
                 alt={service.title}
                 width={400}
                 height={300}
@@ -49,7 +49,7 @@ export default function ServiceGrid({
               <h3 className="typo-service-title">{service.title}</h3>
               <p className="typo-service-description">{service.description}</p>
               <div className="service-card-footer">
-                <span className="typo-service-link">Tovább a részletekhez →</span>
+                <span className="typo-service-link">Részletek →</span>
               </div>
             </div>
           </Link>

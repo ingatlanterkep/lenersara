@@ -1,4 +1,3 @@
-// components/Testimonials.tsx
 interface Testimonial {
   rating: number
   text: string
@@ -8,12 +7,21 @@ interface Testimonial {
 interface TestimonialsProps {
   items: Testimonial[]
   title?: string
+  viewAllLink?: string
 }
 
-export default function Testimonials({ items, title = 'Vélemények' }: TestimonialsProps) {
+export default function Testimonials({ 
+  items, 
+  title = 'Vélemények',
+  viewAllLink = '/velemenyek'
+}: TestimonialsProps) {
   return (
     <div className="testimonials">
-      <h2 className="section-title">{title}</h2>
+      <h2 className="typo-h2-decorated">
+        {title}
+        <span className="decorative-line"></span>
+        <span className="decorative-dot">●</span>
+      </h2>
       <div className="testimonials-grid">
         {items.map((item, index) => (
           <div key={index} className="testimonial-card">
@@ -24,17 +32,24 @@ export default function Testimonials({ items, title = 'Vélemények' }: Testimon
                   className="testimonial-star"
                   style={{
                     color: i < item.rating ? '#f59e0b' : '#d1d5db',
-                    fontSize: '1.1rem'
+                    fontSize: '0.9rem'
                   }}
                 >
                   ★
                 </span>
               ))}
             </div>
-            <p className="testimonial-text">"{item.text}"</p>
+            <p className="testimonial-text">{item.text}</p>
             <p className="testimonial-author">— {item.author}</p>
           </div>
         ))}
+      </div>
+      
+      {/* További vélemények link */}
+      <div className="testimonials-footer">
+        <a href={viewAllLink} className="testimonials-view-all">
+          További vélemények megtekintése a Google-n →
+        </a>
       </div>
     </div>
   )
