@@ -505,3 +505,57 @@
   }
 }
 
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1024px) {
+
+  .hero-container {
+    flex-direction: column;
+    text-align: center;
+    padding: 1rem 2rem;
+  }
+
+  .hero-content {
+    flex: 0 0 100%;
+    max-width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+    align-items: center;
+  }
+
+  .hero-title {
+    font-size: 2.8rem;
+  }
+
+  .hero-title::after {
+    margin: 0.4rem auto 0;
+  }
+
+  .hero-description {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .hero-buttons {
+    justify-content: center;
+  }
+
+  .hero-quote {
+    max-width: 100%;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .hero-image-wrapper {
+    flex: 0 0 100%;
+    max-width: 100%;
+    margin-left: 0;
+    justify-content: center;
+  }
+
+  .hero-image-frame {
+    max-width: 320px;
+    margin: 0 auto;
+  }
+}

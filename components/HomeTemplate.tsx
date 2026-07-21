@@ -1,7 +1,7 @@
 import Hero from './Hero'
-import TrustBar from './TrustBar'
+
 import ServiceGrid from './ServiceGrid'
-import AuthorFull from './AuthorFull'
+import Author from './Author'  // ← rövid verzió
 import ContactInfo from './ContactInfo'
 import FAQ from './FAQ'
 import Testimonials from './Testimonials'
@@ -47,8 +47,8 @@ export default function HomeTemplate({ services, trustItems, faqItems, testimoni
           </div>
 
 
-          <div className="section-card" style={{ marginTop: '2rem' }}>
-            <AuthorFull />
+   <div className="section-card" style={{ marginTop: '2rem' }}>
+            <Author />  {/* ← rövid verzió a főoldalon */}
           </div>
 
           
