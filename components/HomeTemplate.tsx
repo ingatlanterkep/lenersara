@@ -15,21 +15,33 @@ interface Service {
   icon: string
 }
 
+interface SpecialService extends Service {
+  subtitle?: string
+  ctaText?: string
+}
+
 interface HomeTemplateProps {
   services: Service[]
+  specialServices?: SpecialService[]
   trustItems: { icon: string; text: string }[]
   faqItems: { question: string; answer: string }[]
   testimonials?: { rating: number; text: string; author: string }[]
 }
 
-export default function HomeTemplate({ services, trustItems, faqItems, testimonials }: HomeTemplateProps) {
+export default function HomeTemplate({ 
+  services, 
+  specialServices = [],
+  trustItems, 
+  faqItems, 
+  testimonials 
+}: HomeTemplateProps) {
   return (
     <>
       <div className="hero-section" id="fooldal">
         <Hero
           title="dr. Léner-Pintér Sára"
           subtitle="Egyéni ügyvéd, mediátor"
-        description="Veszprémi ügyvédi irodámban széleskörű jogi segítséget nyújtok családjogi, ingatlanjogi és öröklési ügyekben. Több mint 25 éves tapasztalatommal támogatom ügyfeleimet a jogi helyzetükben. A személyes konzultáció mellett online elérhetőség is biztosított."
+          description="Veszprémi ügyvédi irodámban széleskörű jogi segítséget nyújtok családjogi, ingatlanjogi és öröklési ügyekben. Több mint 25 éves tapasztalatommal támogatom ügyfeleimet a jogi helyzetükben. A személyes konzultáció mellett online elérhetőség is biztosított."
           phone="+36 20 490 5530"
           email="drlpsmobil@gmail.com"
           imageSrc="/images/dr-léner-pintér-sára.png"
@@ -43,6 +55,7 @@ export default function HomeTemplate({ services, trustItems, faqItems, testimoni
           <div className="section-card" id="szolgaltatasok">
             <ServiceGrid
               services={services}
+              specialServices={specialServices}
               title="Jogi szolgáltatások"
               subtitle="Átfogó jogi segítségnyújtás magánszemélyek és vállalkozások számára"
             />
@@ -63,7 +76,6 @@ export default function HomeTemplate({ services, trustItems, faqItems, testimoni
               phone="+36 20 490 5530"
               email="drlpsmobil@gmail.com"
               address="8200 Veszprém, Füredi u. 11."
-              // Részletes nyitvatartás - így jelenik meg a kért formátumban
               openingHoursDetailed={[
                 { day: 'Hétfő', hours: 'Zárva', isClosed: true },
                 { day: 'Kedd', hours: '9:00–17:00' },

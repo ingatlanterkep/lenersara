@@ -8,6 +8,9 @@ import { useState } from 'react'
 export default function Author() {
   const [isExpanded, setIsExpanded] = useState(false)
 
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded)
+  }
 
   return (
     <div className="author">
@@ -68,6 +71,16 @@ export default function Author() {
                 </div>
               </>
             )}
+
+            {/* NYITOTT ÁLLAPOTBAN A ZÁRÓ RÉSZ A HOSSZÚBAN VAN, ITT NINCS */}
+
+            {/* TOVÁBB OLVASOM / KEVESEBBET MUTATOK GOMB */}
+            <button 
+              className="author-read-more-btn"
+              onClick={toggleExpand}
+            >
+              {isExpanded ? 'Kevesebbet mutatok ↑' : 'Tovább olvasom ↓'}
+            </button>
           </div>
 
           {/* KÉP - JOBB OLDALON */}
@@ -141,15 +154,15 @@ export default function Author() {
           <h3 className="author-expanded-title">Miért fordulnak hozzám ügyfeleim?</h3>
 
           <ul className="author-reason-list">
-            <li> Több mint 25 év szakmai tapasztalat</li>
-            <li> ELTE Állam- és Jogtudományi Kar</li>
-            <li> Ügyvéd és mediátor egy személyben</li>
-            <li> Személyes, közvetlen ügyfélkapcsolat</li>
-            <li> Érthető jogi tájékoztatás</li>
-            <li> Precíz okiratszerkesztés</li>
-            <li> Gyors és hatékony ügyintézés</li>
-            <li> Békés megoldások keresése, amikor lehetséges</li>
-            <li> Határozott jogi képviselet, amikor szükséges</li>
+            <li>✔ Több mint 25 év szakmai tapasztalat</li>
+            <li>✔ ELTE Állam- és Jogtudományi Kar</li>
+            <li>✔ Ügyvéd és mediátor egy személyben</li>
+            <li>✔ Személyes, közvetlen ügyfélkapcsolat</li>
+            <li>✔ Érthető jogi tájékoztatás</li>
+            <li>✔ Precíz okiratszerkesztés</li>
+            <li>✔ Gyors és hatékony ügyintézés</li>
+            <li>✔ Békés megoldások keresése, amikor lehetséges</li>
+            <li>✔ Határozott jogi képviselet, amikor szükséges</li>
           </ul>
 
           {/* ZÁRÓ SZÖVEG - CSAK A HOSSZÚ VÁLTOZATBAN */}
