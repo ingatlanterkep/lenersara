@@ -1,7 +1,9 @@
-import Hero from './Hero'
+// components/HomeTemplate.tsx
+'use client'
 
+import Hero from './Hero'
 import ServiceGrid from './ServiceGrid'
-import Author from './Author'  // ← rövid verzió
+import Author from './Author'
 import ContactInfo from './ContactInfo'
 import FAQ from './FAQ'
 import Testimonials from './Testimonials'
@@ -23,22 +25,22 @@ interface HomeTemplateProps {
 export default function HomeTemplate({ services, trustItems, faqItems, testimonials }: HomeTemplateProps) {
   return (
     <>
-      <div className="hero-section">
-       <Hero
-  title="dr. Léner-Pintér Sára"
-  subtitle="Egyéni ügyvéd, mediátor"
-  description="Több mint 25 éves szakmai tapasztalattal segítek ügyfeleimnek családjogi, ingatlanjogi és öröklési ügyekben. Irodám Veszprém szívében található, de online konzultációra is van lehetőség."
-  phone="+36 20 490 5530"
-  email="drlpsmobil@gmail.com"
-  imageSrc="/images/dr-léner-pintér-sára.png"
-  imageAlt="dr. Léner-Pintér Sára - ügyvéd, mediátor"
-/>
-
+      <div className="hero-section" id="fooldal">
+        <Hero
+          title="dr. Léner-Pintér Sára"
+          subtitle="Egyéni ügyvéd, mediátor"
+        description="Veszprémi ügyvédi irodámban széleskörű jogi segítséget nyújtok családjogi, ingatlanjogi és öröklési ügyekben. Több mint 25 éves tapasztalatommal támogatom ügyfeleimet a jogi helyzetükben. A személyes konzultáció mellett online elérhetőség is biztosított."
+          phone="+36 20 490 5530"
+          email="drlpsmobil@gmail.com"
+          imageSrc="/images/dr-léner-pintér-sára.png"
+          imageAlt="dr. Léner-Pintér Sára - ügyvéd, mediátor"
+          hideOnInternal={false}
+        />
       </div>
 
       <div className="section page-content">
         <div className="container">
-          <div className="section-card">
+          <div className="section-card" id="szolgaltatasok">
             <ServiceGrid
               services={services}
               title="Jogi szolgáltatások"
@@ -46,11 +48,9 @@ export default function HomeTemplate({ services, trustItems, faqItems, testimoni
             />
           </div>
 
-
-   <div className="section-card" style={{ marginTop: '2rem' }}>
-            <Author />  {/* ← rövid verzió a főoldalon */}
+          <div className="section-card" id="rolam" style={{ marginTop: '2rem' }}>
+            <Author />
           </div>
-
           
           {testimonials && testimonials.length > 0 && (
             <div className="section-card" style={{ marginTop: '2rem' }}>
@@ -58,12 +58,21 @@ export default function HomeTemplate({ services, trustItems, faqItems, testimoni
             </div>
           )}
 
-          <div className="section-card" style={{ marginTop: '2rem' }}>
+          <div className="section-card" id="kapcsolat" style={{ marginTop: '2rem' }}>
             <ContactInfo
               phone="+36 20 490 5530"
               email="drlpsmobil@gmail.com"
               address="8200 Veszprém, Füredi u. 11."
-              openingHours="Hétfő-Péntek: 9:00 - 18:00"
+              // Részletes nyitvatartás - így jelenik meg a kért formátumban
+              openingHoursDetailed={[
+                { day: 'Hétfő', hours: 'Zárva', isClosed: true },
+                { day: 'Kedd', hours: '9:00–17:00' },
+                { day: 'Szerda', hours: '9:00–17:00' },
+                { day: 'Csütörtök', hours: '9:00–17:00' },
+                { day: 'Péntek', hours: '9:00–14:00' },
+                { day: 'Szombat', hours: 'Zárva', isClosed: true },
+                { day: 'Vasárnap', hours: 'Zárva', isClosed: true },
+              ]}
             />
           </div>
         </div>

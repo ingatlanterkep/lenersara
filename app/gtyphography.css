@@ -2253,3 +2253,439 @@ body {
   color: var(--text-accent);
   font-weight: 400;
 }
+
+/* ============================================================
+   AUTHOR KÁRTYA - MÓDOSÍTVA
+   ============================================================ */
+.author {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 0 0.5rem;
+}
+
+.author-inner {
+  display: flex;
+  gap: 3rem;
+  align-items: flex-start; /* ← MÓDOSÍTVA: center-ről flex-start-ra */
+}
+
+@media (max-width: 768px) {
+  .author-inner {
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 2rem;
+  }
+}
+
+.author-image-wrapper {
+  flex-shrink: 0;
+  width: 280px; /* ← CSÖKKENTVE */
+  min-width: 280px; /* ← CSÖKKENTVE */
+  height: auto;
+  overflow: visible;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  border-radius: 0;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: 0.5rem; /* ← HOZZÁADVA */
+}
+
+.author:hover .author-image-wrapper {
+  transform: translateY(-4px);
+}
+
+.author-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: drop-shadow(0 10px 30px rgba(16, 40, 74, 0.08));
+}
+
+.author:hover .author-image {
+  transform: scale(1.02);
+}
+
+@media (max-width: 1024px) {
+  .author-image-wrapper {
+    width: 220px;
+    min-width: 220px;
+  }
+}
+
+@media (max-width: 768px) {
+  .author-image-wrapper {
+    width: 200px;
+    min-width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .author-image-wrapper {
+    width: 160px;
+    min-width: 160px;
+  }
+}
+
+.author-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.author-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+/* ============================================================
+   AUTHOR - BŐVÍTHETŐ TARTALOM KÉPEKKEL
+   ============================================================ */
+
+/* --- Bővített kép konténer --- */
+.author-expanded-image-wrapper {
+  float: right;
+  width: 260px;
+  max-width: 45%;
+  margin: 0.25rem 0 1rem 1.5rem;
+  border-radius: var(--card-radius-md);
+  overflow: hidden;
+  box-shadow: var(--card-shadow-md);
+  transition: var(--card-transition);
+}
+
+.author-expanded-image-wrapper:hover {
+  transform: scale(1.02) translateY(-4px);
+  box-shadow: var(--card-shadow-hover);
+}
+
+.author-expanded-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+/* --- Bővített tartalom konténer --- */
+.author-expanded-content {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1), 
+              opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              margin 0.4s ease;
+  margin: 0;
+}
+
+.author-expanded-content.open {
+  max-height: 8000px;
+  opacity: 1;
+  margin: 1rem 0 0.5rem;
+}
+
+/* --- Bővített címek --- */
+.author-expanded-title {
+  font-family: var(--font-primary);
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: var(--color-primary);
+  line-height: 1.3;
+  margin-top: 1.75rem;
+  margin-bottom: 0.4rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid rgba(16, 40, 74, 0.06);
+  position: relative;
+  padding-left: 0.75rem;
+  clear: both;
+}
+
+.author-expanded-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.1rem;
+  bottom: 0.1rem;
+  width: 2px;
+  background: var(--color-accent);
+  border-radius: 2px;
+  opacity: 0.4;
+}
+
+.author-expanded-title:first-of-type {
+  margin-top: 0.5rem;
+  clear: both;
+}
+
+/* --- Szöveg a kép körül - MINDEN BEKEZDÉS --- */
+.author-expanded-content .typo-author-description {
+  overflow: hidden;
+  display: block;
+}
+
+/* --- Szolgáltatás lista --- */
+.author-service-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 1rem 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.3rem 1.5rem;
+  clear: both;
+}
+
+.author-service-list li {
+  padding: 0.3rem 0 0.3rem 1.5rem;
+  position: relative;
+  font-family: var(--font-primary);
+  font-size: 0.9rem;
+  font-weight: 300;
+  color: var(--color-gray-700);
+  line-height: 1.5;
+}
+
+.author-service-list li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--color-accent);
+  opacity: 0.6;
+}
+
+@media (max-width: 768px) {
+  .author-service-list {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
+  }
+}
+
+/* --- Érvek lista --- */
+.author-reason-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 1rem 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.3rem 1.5rem;
+  clear: both;
+}
+
+.author-reason-list li {
+  padding: 0.3rem 0 0.3rem 1.8rem;
+  position: relative;
+  font-family: var(--font-primary);
+  font-size: 0.9rem;
+  font-weight: 300;
+  color: var(--color-gray-700);
+  line-height: 1.5;
+}
+
+.author-reason-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.4rem;
+  width: 1.2rem;
+  height: 1.2rem;
+  background: var(--color-accent);
+  border-radius: 50%;
+  opacity: 0.1;
+}
+
+@media (max-width: 768px) {
+  .author-reason-list {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
+  }
+}
+
+/* --- Tovább olvasom gomb --- */
+.author-read-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-primary);
+  font-size: 0.9rem;
+  font-weight: 300;
+  color: var(--color-accent);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  transition: all 0.3s ease;
+  letter-spacing: 0.02em;
+  position: relative;
+  clear: both;
+}
+
+.author-read-more-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 0.35rem;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--color-accent);
+  transition: width 0.3s ease;
+}
+
+.author-read-more-btn:hover {
+  color: var(--color-accent-hover);
+}
+
+.author-read-more-btn:hover::after {
+  width: 100%;
+}
+
+.author-read-more-btn:focus {
+  outline: none;
+}
+
+/* --- Animáció a tartalom betöltéséhez --- */
+@keyframes authorContentFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.author-expanded-content.open p,
+.author-expanded-content.open h3,
+.author-expanded-content.open ul,
+.author-expanded-content.open li,
+.author-expanded-content.open .author-expanded-image-wrapper {
+  animation: authorContentFadeIn 0.4s ease forwards;
+}
+
+.author-expanded-content.open .author-expanded-image-wrapper {
+  animation-delay: 0.05s;
+}
+.author-expanded-content.open p:nth-child(2) { animation-delay: 0.10s; }
+.author-expanded-content.open p:nth-child(3) { animation-delay: 0.15s; }
+.author-expanded-content.open h3:nth-child(4) { animation-delay: 0.20s; }
+.author-expanded-content.open p:nth-child(5) { animation-delay: 0.25s; }
+.author-expanded-content.open p:nth-child(6) { animation-delay: 0.30s; }
+.author-expanded-content.open h3:nth-child(7) { animation-delay: 0.35s; }
+.author-expanded-content.open p:nth-child(8) { animation-delay: 0.40s; }
+.author-expanded-content.open ul:nth-child(9) { animation-delay: 0.45s; }
+.author-expanded-content.open p:nth-child(10) { animation-delay: 0.50s; }
+.author-expanded-content.open h3:nth-child(11) { animation-delay: 0.55s; }
+.author-expanded-content.open p:nth-child(12) { animation-delay: 0.60s; }
+.author-expanded-content.open p:nth-child(13) { animation-delay: 0.65s; }
+.author-expanded-content.open p:nth-child(14) { animation-delay: 0.70s; }
+.author-expanded-content.open ul:nth-child(15) { animation-delay: 0.75s; }
+.author-expanded-content.open p:nth-child(16) { animation-delay: 0.80s; }
+.author-expanded-content.open h3:nth-child(17) { animation-delay: 0.85s; }
+.author-expanded-content.open p:nth-child(18) { animation-delay: 0.90s; }
+.author-expanded-content.open p:nth-child(19) { animation-delay: 0.95s; }
+.author-expanded-content.open p:nth-child(20) { animation-delay: 1.00s; }
+.author-expanded-content.open h3:nth-child(21) { animation-delay: 1.05s; }
+.author-expanded-content.open ul:nth-child(22) { animation-delay: 1.10s; }
+.author-expanded-content.open h3:nth-child(23) { animation-delay: 1.15s; }
+.author-expanded-content.open p:nth-child(24) { animation-delay: 1.20s; }
+.author-expanded-content.open p:nth-child(25) { animation-delay: 1.25s; }
+
+/* --- Reszponzív --- */
+@media (max-width: 992px) {
+  .author-expanded-image-wrapper {
+    width: 220px;
+    max-width: 40%;
+  }
+}
+
+@media (max-width: 768px) {
+  .author-expanded-image-wrapper {
+    float: none;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 0 1rem 0;
+  }
+  
+  .author-expanded-image {
+    width: 100%;
+    height: auto;
+  }
+  
+  .author-expanded-content .typo-author-description {
+    clear: both;
+  }
+}
+
+@media (max-width: 480px) {
+  .author-expanded-image-wrapper {
+    border-radius: var(--card-radius-sm);
+  }
+}
+
+/* ============================================================
+   CONTACT - RÉSZLETES NYITVATARTÁS
+   ============================================================ */
+
+.contact-hours-wrapper {
+  flex: 1;
+  min-width: 0;
+}
+
+.contact-hours-table {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin-top: 0.25rem;
+}
+
+.contact-hours-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-primary);
+  font-size: var(--font-scale-xxxs);
+  padding: 0.15rem 0;
+  border-bottom: 1px solid rgba(16, 40, 74, 0.04);
+}
+
+.contact-hours-row:last-child {
+  border-bottom: none;
+}
+
+.contact-hours-row.closed {
+  opacity: 0.4;
+}
+
+.contact-hours-row.closed .contact-hours-value {
+  color: var(--color-gray-500);
+}
+
+.contact-hours-day {
+  font-weight: 400;
+  color: var(--text-primary);
+}
+
+.contact-hours-value {
+  font-weight: 300;
+  color: var(--text-secondary);
+}
+
+/* Reszponzív */
+@media (max-width: 768px) {
+  .contact-hours-table {
+    gap: 0.1rem;
+  }
+  
+  .contact-hours-row {
+    font-size: var(--font-scale-xxxxs);
+    padding: 0.1rem 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .contact-hours-row {
+    font-size: var(--font-scale-xxxxs);
+    flex-wrap: wrap;
+    gap: 0.1rem;
+  }
+}

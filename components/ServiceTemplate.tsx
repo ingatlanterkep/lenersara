@@ -1,3 +1,6 @@
+// components/ServiceTemplate.tsx
+'use client'
+
 import { ReactNode } from 'react'
 import Hero from './Hero'
 import Breadcrumb from './Breadcrumb'
@@ -5,6 +8,7 @@ import Timeline from './Timeline'
 import FAQ from './FAQ'
 import ContactInfo from './ContactInfo'
 import Link from 'next/link'
+import { useHeroVisibility } from '@/components/HeroVisibilityContext'
 
 interface BreadcrumbItem {
   label: string
@@ -60,15 +64,22 @@ export default function ServiceTemplate({
   structuredData,
   disclaimer = 'Az itt található információk általános tájékoztatást szolgálnak, és nem helyettesítik az egyedi jogi tanácsadást. Minden ügy egyedi körülményei miatt érdemes személyes konzultációt kérni.',
 }: ServiceTemplateProps) {
+  const { isHeroVisible } = useHeroVisibility()
+  const showHero = isHeroVisible
+
   return (
     <>
-      <div className="hero-section">
-        <Hero 
-          title={heroTitle}
-          subtitle={heroSubtitle}
-          description={heroDescription}
-        />
-      </div>
+      {/* Csak akkor rendereljük a hero-section-t, ha látszik a Hero */}
+      {showHero && (
+        <div className="hero-section">
+          <Hero 
+            title={heroTitle}
+            subtitle={heroSubtitle}
+            description={heroDescription}
+            hideOnInternal={true}
+          />
+        </div>
+      )}
 
       <div className="section page-content">
         <div className="container">
@@ -83,16 +94,14 @@ export default function ServiceTemplate({
             </div>
           </div>
 
-          {/* "Mikor forduljon ügyvédhez?" */}
           {whenToContact && (
             <div className="section-card" style={{ marginTop: '2rem' }}>
               <div className="when-to-contact">
-
-                        <h2 className="typo-h2-decorated">
+                <h2 className="typo-h2-decorated">
                   {whenToContact.title || 'Mikor érdemes ügyvédhez fordulni?'}
-        <span className="decorative-line"></span>
-        <span className="decorative-dot">●</span>
-      </h2>
+                  <span className="decorative-line"></span>
+                  <span className="decorative-dot">●</span>
+                </h2>
                 <ul className="when-to-contact-list">
                   {whenToContact.items.map((item, index) => (
                     <li key={index} className="when-to-contact-item">
@@ -117,30 +126,29 @@ export default function ServiceTemplate({
             </div>
           )}
 
-{/* Timeline - VÍZSZINTES SZÁMVONAL */}
-<div className="section-card" style={{ marginTop: '2rem' }}>
-        <h2 className="typo-h2-decorated">
-{timelineTitle}
-        <span className="decorative-line"></span>
-        <span className="decorative-dot">●</span>
-      </h2>
-  <div className="timeline-numberline">
-    <div className="timeline-numberline-track"></div>
-    <div className={`timeline-numberline-steps ${timelineSteps.length <= 4 ? `has-${timelineSteps.length}-steps` : ''}`}>
-      {timelineSteps.map((step, index) => (
-        <div key={step.number} className="timeline-numberline-step">
-          <div className="timeline-numberline-dot">
-            <span className="timeline-numberline-number">{step.number}</span>
+          <div className="section-card" style={{ marginTop: '2rem' }}>
+            <h2 className="typo-h2-decorated">
+              {timelineTitle}
+              <span className="decorative-line"></span>
+              <span className="decorative-dot">●</span>
+            </h2>
+            <div className="timeline-numberline">
+              <div className="timeline-numberline-track"></div>
+              <div className={`timeline-numberline-steps ${timelineSteps.length <= 4 ? `has-${timelineSteps.length}-steps` : ''}`}>
+                {timelineSteps.map((step) => (
+                  <div key={step.number} className="timeline-numberline-step">
+                    <div className="timeline-numberline-dot">
+                      <span className="timeline-numberline-number">{step.number}</span>
+                    </div>
+                    <div className="timeline-numberline-content">
+                      <h3 className="timeline-numberline-title">{step.title}</h3>
+                      <p className="timeline-numberline-description">{step.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-          <div className="timeline-numberline-content">
-            <h3 className="timeline-numberline-title">{step.title}</h3>
-            <p className="timeline-numberline-description">{step.description}</p>
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-</div>
 
           <div className="section-card" style={{ marginTop: '2rem' }}>
             <ContactInfo 

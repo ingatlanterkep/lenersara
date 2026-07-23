@@ -579,3 +579,17 @@
   padding-top: 0rem;
 }
 
+/* app/globals.css - HERO ELREJTÉS */
+.hero-section-hidden {
+  display: none !important;
+}
+
+/* Vagy ha szeretnéd, hogy helyet se foglaljon */
+.hero-section.hidden {
+  display: none !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}

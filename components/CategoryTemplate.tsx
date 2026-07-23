@@ -1,9 +1,13 @@
+// components/CategoryTemplate.tsx
+'use client'  // ← EZ FONTOS!
+
 import { ReactNode } from 'react'
 import Hero from './Hero'
 import Breadcrumb from './Breadcrumb'
 import ContactInfo from './ContactInfo'
 import SubServiceGrid from './SubServiceGrid'
 import ServiceDescription from './ServiceDescription'
+import { useHeroVisibility } from '@/components/HeroVisibilityContext'  // ← contexts mappa
 
 interface BreadcrumbItem {
   label: string
@@ -24,12 +28,9 @@ interface CategoryTemplateProps {
   heroCtaText?: string
   heroCtaLink?: string
   breadcrumbItems: BreadcrumbItem[]
-  // Bevezető szöveg a kártyák felett (100-200 szó)
   introTitle?: string
   introContent: ReactNode
-  // Részletes tartalom (kiterjedtebb írás)
   detailedContent: ReactNode
-  // Alkategóriák
   subServicesTitle?: string
   subServices: SubService[]
   structuredData?: Record<string, any>[]
@@ -49,15 +50,24 @@ export default function CategoryTemplate({
   structuredData,
   disclaimer = 'Az itt található információk általános tájékoztatást szolgálnak, és nem helyettesítik az egyedi jogi tanácsadást. Minden ügy egyedi körülményei miatt érdemes személyes konzultációt kérni.',
 }: CategoryTemplateProps) {
+  const { isHeroVisible } = useHeroVisibility()
+  
+  // Ellenőrizzük, hogy a Hero látszik-e
+  const showHero = isHeroVisible
+
   return (
     <>
-      <div className="hero-section">
-        <Hero 
-          title={heroTitle}
-          subtitle={heroSubtitle}
-          description={heroDescription}
-        />
-      </div>
+      {/* Csak akkor rendereljük a hero-section-t, ha látszik a Hero */}
+      {showHero && (
+        <div className="hero-section">
+          <Hero 
+            title={heroTitle}
+            subtitle={heroSubtitle}
+            description={heroDescription}
+            hideOnInternal={true}
+          />
+        </div>
+      )}
 
       <div className="section page-content">
         <div className="container">
@@ -66,29 +76,24 @@ export default function CategoryTemplate({
             <Breadcrumb items={breadcrumbItems} />
           </div>
 
-          {/* 1. SZOLGÁLTATÁS KÁRTYÁK - rövid bevezetővel */}
           <div className="section-card">
-            {/* Bevezető */}
             {introTitle && <h2 className="typo-h2-decorated">{introTitle}</h2>}
             <div className="category-intro">
               {introContent}
             </div>
             
-            {/* Kártyák */}
             <SubServiceGrid 
               items={subServices}
               title={subServicesTitle}
             />
           </div>
 
-          {/* 2. RÉSZLETES TARTALOM - kiterjedtebb írás */}
           <div className="section-card" style={{ marginTop: '2rem' }}>
             <ServiceDescription>
               {detailedContent}
             </ServiceDescription>
           </div>
 
-          {/* 3. KAPCSOLAT */}
           <div className="section-card" style={{ marginTop: '2rem' }}>
             <ContactInfo 
               phone="+36 20 490 5530"
@@ -98,7 +103,6 @@ export default function CategoryTemplate({
             />
           </div>
 
-          {/* Disclaimer */}
           <div className="disclaimer-wrapper" style={{ marginTop: '1.5rem' }}>
             <div className="alert alert-warning" style={{ fontSize: '0.8rem', opacity: 0.5 }}>
               <p>{disclaimer}</p>

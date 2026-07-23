@@ -22,8 +22,8 @@ export const metadata: Metadata = {
 export default function Ingatlanjog() {
   return (
     <CategoryTemplate
-      heroTitle="Ingatlanjog"
-      heroSubtitle="Ügyvédi segítség veszprémben"
+      heroTitle="Ingatlanjogi ügyvéd Veszprémben"
+      heroSubtitle="dr. Léner-Pintér Sára"
       heroDescription="Jogi segítség ingatlan adásvételhez, ajándékozáshoz, közös tulajdon megszüntetéséhez, haszonélvezeti joggal kapcsolatos ügyekhez és egyéb ingatlanjogi kérdésekben."
       heroCtaText="Konzultáció kérése"
       heroCtaLink="/kapcsolat"

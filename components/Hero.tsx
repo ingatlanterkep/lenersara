@@ -1,8 +1,9 @@
-// components/Hero.tsx - TELJESEN ÚJ LAYOUT
+// components/Hero.tsx - TELJESEN ÚJ VERZIÓ
 'use client'
 
 import Image from 'next/image'
 import { useState } from 'react'
+import { useHeroVisibility } from '@/components/HeroVisibilityContext'
 
 interface HeroProps {
   title: string
@@ -12,6 +13,8 @@ interface HeroProps {
   email?: string
   imageSrc?: string
   imageAlt?: string
+  hideOnInternal?: boolean
+  className?: string // Új prop
 }
 
 export default function Hero({
@@ -21,10 +24,18 @@ export default function Hero({
   phone = '+36 20 490 5530',
   email = 'drlpsmobil@gmail.com',
   imageSrc = '/images/dr-léner-pintér-sára.png',
-  imageAlt = 'dr. Léner-Pintér Sára'
+  imageAlt = 'dr. Léner-Pintér Sára',
+  hideOnInternal = true,
+  className = ''
 }: HeroProps) {
   const [showPhone, setShowPhone] = useState(false)
   const [showEmail, setShowEmail] = useState(false)
+  const { isHeroVisible } = useHeroVisibility()
+
+  // Ha el kell rejteni, NE rendereljünk SEMMIT
+  if (hideOnInternal && !isHeroVisible) {
+    return null
+  }
 
   const handlePhoneClick = (e: React.MouseEvent) => {
     if (window.innerWidth < 768) {
@@ -47,9 +58,8 @@ export default function Hero({
   }
 
   return (
-    <div className="hero">
+    <div className={`hero ${className}`}>
       <div className="container hero-container">
-        {/* 1. BAL OLDAL - Tartalom */}
         <div className="hero-content">
           <h1 className="hero-title">{title}</h1>
           {subtitle && <p className="hero-subtitle">{subtitle}</p>}
@@ -85,7 +95,6 @@ export default function Hero({
           )}
         </div>
 
-        {/* 2. KÖZÉP - Kép */}
         <div className="hero-image-wrapper">
           <div className="hero-image-frame">
             <Image
@@ -99,9 +108,8 @@ export default function Hero({
           </div>
         </div>
 
-        {/* 3. JOBB OLDAL - Pontok */}
         <div className="hero-right-points">
-
+          {/* Pontok itt lehetnek */}
         </div>
       </div>
     </div>

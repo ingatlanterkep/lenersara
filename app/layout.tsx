@@ -6,9 +6,9 @@ import './ghero.css'
 import './gcards.css'
 import './gtyphography.css'
 
-
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
+import { HeroVisibilityProvider } from '@/components/HeroVisibilityContext'
 
 export const metadata: Metadata = {
   title: 'Ügyvéd Veszprém | Családjog, ingatlanjog, mediáció',
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: '/favicon32.ico', sizes: 'any' },
-     ],
+    ],
     apple: [
       { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
     ],
@@ -28,7 +28,6 @@ export const metadata: Metadata = {
     ],
   },
   manifest: '/site.webmanifest',
-  // Opcionális: theme color
   themeColor: '#0a1628',
 }
 
@@ -40,11 +39,13 @@ export default function RootLayout({
   return (
     <html lang="hu">
       <body>
-        <Navigation />
-        <main>
-          {children}
-        </main>
-        <Footer />
+        <HeroVisibilityProvider>
+          <Navigation />
+          <main>
+            {children}
+          </main>
+          <Footer />
+        </HeroVisibilityProvider>
       </body>
     </html>
   )

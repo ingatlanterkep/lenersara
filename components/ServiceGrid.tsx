@@ -1,3 +1,6 @@
+// components/ServiceGrid.tsx
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -19,6 +22,12 @@ export default function ServiceGrid({
   title = 'Szolgáltatásaink',
   subtitle 
 }: ServiceGridProps) {
+  
+  const handleServiceClick = () => {
+    // JELEZZÜK, hogy belső navigáció történik
+    sessionStorage.setItem('internalNavigation', 'true')
+  }
+
   return (
     <div>
       {title && (
@@ -31,7 +40,12 @@ export default function ServiceGrid({
       {subtitle && <p className="typo-section-subtitle">{subtitle}</p>}
       <div className="service-grid-modern">
         {services.map((service) => (
-          <Link key={service.title} href={service.href} className="service-card-modern">
+          <Link 
+            key={service.title} 
+            href={service.href} 
+            className="service-card-modern"
+            onClick={handleServiceClick}  // ← EZ ÚJ!
+          >
             <div className="service-card-image-wrapper">
               <Image 
                 src={service.icon} 

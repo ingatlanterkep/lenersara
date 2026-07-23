@@ -1,3 +1,6 @@
+// components/SubServiceGrid.tsx
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -19,6 +22,11 @@ export default function SubServiceGrid({
   title = 'Kapcsolódó szolgáltatások',
   subtitle 
 }: SubServiceGridProps) {
+  
+  const handleClick = () => {
+    sessionStorage.setItem('internalNavigation', 'true')
+  }
+
   return (
     <div>
       {title && (
@@ -31,7 +39,12 @@ export default function SubServiceGrid({
       {subtitle && <p className="typo-section-subtitle">{subtitle}</p>}
       <div className="service-grid-modern">
         {items.map((service) => (
-          <Link key={service.title} href={service.href} className="service-card-modern">
+          <Link 
+            key={service.title} 
+            href={service.href} 
+            className="service-card-modern"
+            onClick={handleClick}  // ← EZ KELL!
+          >
             <div className="service-card-image-wrapper">
               <Image 
                 src={service.icon || '/images/placeholder.png'} 

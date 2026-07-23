@@ -22,8 +22,9 @@ export const metadata: Metadata = {
 export default function Csaladjog() {
   return (
     <CategoryTemplate
-      heroTitle="Családjogi ügyvéd Veszprém"
-      heroSubtitle="Jogi segítség válással, szülői felügyelettel, kapcsolattartással, gyermektartással és házastársi vagyonjoggal kapcsolatos ügyekben."
+      heroTitle="Családjogi ügyvéd Veszprémben"
+      heroSubtitle="dr. Léner-Pintér Sára"
+      heroDescription="Jogi segítség válással, szülői felügyelettel, kapcsolattartással, gyermektartással és házastársi vagyonjoggal kapcsolatos ügyekben."
       heroCtaText="Konzultáció kérése"
       heroCtaLink="/kapcsolat"
 

@@ -1,4 +1,8 @@
+// components/Breadcrumb.tsx
+'use client'  // ← FONTOS!
+
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 interface BreadcrumbItem {
   label: string
@@ -10,6 +14,18 @@ interface BreadcrumbProps {
 }
 
 export default function Breadcrumb({ items }: BreadcrumbProps) {
+  const router = useRouter()
+
+  const handleBreadcrumbClick = (e: React.MouseEvent, href: string) => {
+    e.preventDefault()
+    
+    // JELEZZÜK, hogy belső navigáció történik
+    sessionStorage.setItem('internalNavigation', 'true')
+    
+    // Navigálás
+    router.push(href)
+  }
+
   return (
     <div className="breadcrumb-bar">
       <div className="breadcrumb-bar-inner">
@@ -20,9 +36,13 @@ export default function Breadcrumb({ items }: BreadcrumbProps) {
               {index === items.length - 1 ? (
                 <span className="breadcrumb-bar-current">{item.label}</span>
               ) : (
-                <Link href={item.href} className="breadcrumb-bar-link">
+                <a
+                  href={item.href}
+                  className="breadcrumb-bar-link"
+                  onClick={(e) => handleBreadcrumbClick(e, item.href)}
+                >
                   {item.label}
-                </Link>
+                </a>
               )}
             </li>
           ))}

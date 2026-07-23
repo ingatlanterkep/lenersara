@@ -1,11 +1,21 @@
+// components/ContactInfo.tsx
+'use client'
+
 import Link from 'next/link'
 
 interface ContactInfoProps {
   phone: string
   email: string
   address: string
-  openingHours: string
+  openingHours?: string // Egyszerű string formátum (opcionális)
+  openingHoursDetailed?: OpeningHour[] // Részletes nyitvatartás
   mapEmbedUrl?: string
+}
+
+interface OpeningHour {
+  day: string
+  hours: string
+  isClosed?: boolean
 }
 
 export default function ContactInfo({ 
@@ -13,8 +23,22 @@ export default function ContactInfo({
   email, 
   address, 
   openingHours,
-  mapEmbedUrl = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2631.829903378054!2d17.909173976261958!3d47.084804371146674!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47699b1a137e19d1%3A0xa20e874601424264!2zZHIuIEzDqW5lci1QaW50w6lyIFPDoXJh!5e1!3m2!1shu!2shu!4v1783619111106!5m2!1shu!2shu" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin'
+  openingHoursDetailed,
+  mapEmbedUrl = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2631.829903378054!2d17.909173976261958!3d47.084804371146674!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47699b1a137e19d1%3A0xa20e874601424264!2zZHIuIEzDqW5lci1QaW50w6lyIFPDoXJh!5e1!3m2!1shu!2shu!4v1783619111106!5m2!1shu!2shu'
 }: ContactInfoProps) {
+  // Alapértelmezett részletes nyitvatartás, ha nincs megadva
+  const defaultOpeningHours: OpeningHour[] = [
+    { day: 'Hétfő', hours: 'Zárva', isClosed: true },
+    { day: 'Kedd', hours: '9:00–17:00' },
+    { day: 'Szerda', hours: '9:00–17:00' },
+    { day: 'Csütörtök', hours: '9:00–17:00' },
+    { day: 'Péntek', hours: '9:00–14:00' },
+    { day: 'Szombat', hours: 'Zárva', isClosed: true },
+    { day: 'Vasárnap', hours: 'Zárva', isClosed: true },
+  ]
+
+  const hours = openingHoursDetailed || defaultOpeningHours
+
   return (
     <>
       <h2 className="typo-h2-decorated">
@@ -24,7 +48,7 @@ export default function ContactInfo({
       </h2>
       
       <div className="contact-container">
-        {/* BAL OLDAL - Elérhetőségek (nagyobb, olvashatóbb) */}
+        {/* BAL OLDAL - Elérhetőségek */}
         <div className="contact-info-list">
           <div className="contact-info-item">
             <div className="contact-info-icon">
@@ -64,16 +88,24 @@ export default function ContactInfo({
             </div>
           </div>
 
-          <div className="contact-info-item">
+          {/* NYITVATARTÁS - RÉSZLETES TÁBLÁZAT */}
+          <div className="contact-info-item contact-info-hours">
             <div className="contact-info-icon">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10"/>
                 <polyline points="12,6 12,12 16,14"/>
               </svg>
             </div>
-            <div>
+            <div className="contact-hours-wrapper">
               <span className="contact-info-label">Fogadási idő</span>
-              <p className="contact-info-value">{openingHours}</p>
+              <div className="contact-hours-table">
+                {hours.map((item) => (
+                  <div key={item.day} className={`contact-hours-row ${item.isClosed ? 'closed' : ''}`}>
+                    <span className="contact-hours-day">{item.day}</span>
+                    <span className="contact-hours-value">{item.hours}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -84,7 +116,7 @@ export default function ContactInfo({
           </div>
         </div>
 
-        {/* JOBB OLDAL - Térkép (szép kerettel) */}
+        {/* JOBB OLDAL - Térkép */}
         <div className="contact-map-wrapper">
           <div className="contact-map">
             <iframe
