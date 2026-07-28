@@ -61,42 +61,42 @@ export default function Okiratszerkesztes() {
           href: '/szolgaltatasok/okiratszerkesztes/polgari-jogi-szerzodesek',
           description:
             'Polgári jogi szerződések elkészítése és véleményezése az adott jogviszonyhoz igazodva, a felek érdekeinek figyelembevételével.',
-          icon: '/images/okiratszerkesztes/szerzodesek.png'
+          icon: '/images/okirat/szerzodesek.png'
         },
         {
           title: 'Meghatalmazások',
           href: '/szolgaltatasok/okiratszerkesztes/meghatalmazasok',
           description:
             'Meghatalmazások elkészítése különböző ügyintézésekhez, képviselethez és jognyilatkozatok megtételéhez.',
-          icon: '/images/okiratszerkesztes/meghatalmazas.png'
+          icon: '/images/okirat/meghatalmazas.png'
         },
         {
           title: 'Nyilatkozatok',
           href: '/szolgaltatasok/okiratszerkesztes/nyilatkozatok',
           description:
             'Jogi nyilatkozatok elkészítése, amelyek egyértelműen és megfelelő formában rögzítik a nyilatkozó akaratát.',
-          icon: '/images/okiratszerkesztes/nyilatkozat.png'
+          icon: '/images/okirat/nyilatkozat.png'
         },
         {
           title: 'Tartozáselismerés és fizetési megállapodások',
           href: '/szolgaltatasok/okiratszerkesztes/tartozaselismeres',
           description:
             'Tartozáselismerő nyilatkozatok és fizetési megállapodások elkészítése az egyedi körülmények figyelembevételével.',
-          icon: '/images/okiratszerkesztes/tartozaselismeres.png'
+          icon: '/images/okirat/tartozaselismeres.png'
         },
         {
           title: 'Egyedi okiratok készítése',
           href: '/szolgaltatasok/okiratszerkesztes/egyedi-okiratok',
           description:
             'Olyan okiratok elkészítése, amelyekre nincs egységes minta, és amelyek az adott ügy sajátosságaihoz igazodnak.',
-          icon: '/images/okiratszerkesztes/egyedi-okirat.png'
+          icon: '/images/okirat/egyedi-okirat.png'
         },
         {
           title: 'Okiratok véleményezése',
           href: '/szolgaltatasok/okiratszerkesztes/okiratok-velemenyezese',
           description:
             'Már elkészült szerződések és egyéb okiratok jogi áttekintése, a lehetséges kockázatok és módosítási javaslatok ismertetése.',
-          icon: '/images/okiratszerkesztes/velemenyezes.png'
+          icon: '/images/okirat/velemenyezes.png'
         }
       ]}
 
