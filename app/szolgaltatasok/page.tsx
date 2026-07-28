@@ -36,14 +36,14 @@ export default function Szolgaltatasok() {
       ]
     },
     {
-      title: 'Cégjog',
+      title: 'Cégeljárások',
       description:
         'Jogi közreműködés vállalkozások alapításában, működésében és változásainak bejegyzésében.',
-      href: '/szolgaltatasok/cegjog',
+      href: '/szolgaltatasok/cegeljarasok',
       items: [
         'Cégalapítás',
-        'Változásbejegyzés',
-        'Társasági szerződések és üzletrész-átruházás'
+        'Cégmódosítás',
+        'cégmegszüntetés és végelszámolás'
       ]
     },
     {
@@ -91,7 +91,7 @@ export default function Szolgaltatasok() {
       ]
     },
     {
-      title: 'Követelésérvényesítés',
+      title: 'Követeléskezelés',
       description:
         'Lejárt tartozások jogi érvényesítése felszólítással, fizetési meghagyással vagy peres eljárásban.',
       href: '/szolgaltatasok/koveteleservenyesites',

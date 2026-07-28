@@ -25,33 +25,32 @@ export default function Home() {
       icon: '/images/orokles/öröklés.png'
     },
     {
-      title: 'Cégjog',
-      description:
-        'Cégalapítás, változásbejegyzés és társasági szerződések készítése.',
-      href: '/szolgaltatasok/cegjog',
-      icon: '/images/cegeljaras/cégeljárás.png'
+      title: 'Cégeljárások',
+      description:'Cégalapítás, cégmódosítás, cégmegszüntetés és végelszámolás.',
+      href: '/szolgaltatasok/cegeljarasok',
+      icon: '/images/cegeljarasok/cégeljárás.png'
     },
     {
-      title: 'Munkajog',
-      description:
-        'Felmondás, munkaszerződés és munkabér-követelések.',
-      href: '/szolgaltatasok/munkajog',
-      icon: '/images/munkajog/munkajog.png'
-    },
-    {
-      title: 'Építési jog',
-      description:
-        'Kivitelezési szerződések, építési hibák és hatósági eljárások.',
-      href: '/szolgaltatasok/epitesi-jog',
-      icon: '/images/epitesi-jog/epitesi-jog.png'
-    },
-    {
-      title: 'Peres képviselet',
-      description:
-        'Polgári perek, szerződéses jogviták és ingatlanperek.',
-      href: '/szolgaltatasok/peres-kepviselet',
-      icon: '/images/peres-kepviselet/peres-kepviselet.png'
-    },
+  title: 'Munkajog',
+  description:
+    'Munkaszerződés, felmondás, munkabérrel kapcsolatos igények és munkajogi viták.',
+  href: '/szolgaltatasok/munkajog',
+  icon: '/images/munkajog/munkajog.png'
+},
+{
+  title: 'Építési jog',
+  description:
+    'Építési szerződések, építésügyi hatósági ügyek és építési jogviták.',
+  href: '/szolgaltatasok/epitesi-jog',
+  icon: '/images/epitesi-jog/epitesi-jog.png'
+},
+{
+  title: 'Peres képviselet',
+  description:
+    'Polgári perek, szerződéses jogviták, valamint kártérítési és sérelemdíj-ügyek.',
+  href: '/szolgaltatasok/peres-kepviselet',
+  icon: '/images/peres-kepviselet/peres-kepviselet.png'
+},
     {
       title: 'Okiratszerkesztés',
       description:
@@ -59,13 +58,13 @@ export default function Home() {
       href: '/szolgaltatasok/okiratszerkesztes',
       icon: '/images/okirat/okirat.png'
     },
-    {
-      title: 'Követeléskezelés',
-      description:
-        'Fizetési felszólítás, fizetési meghagyás és végrehajtási ügyek.',
-      href: '/szolgaltatasok/koveteleservenyesites',
-      icon: '/images/koveteles/koveteleskezeles.png'
-    }
+{
+  title: 'Követeléskezelés',
+  description:
+    'Fizetési felszólítás, fizetési meghagyás és végrehajtási eljárások.',
+  href: '/szolgaltatasok/koveteleskezeles',
+  icon: '/images/koveteles/koveteleskezeles.png'
+}
   ]
 
   const specialServices = [
