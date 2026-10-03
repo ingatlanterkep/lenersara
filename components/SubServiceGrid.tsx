@@ -62,7 +62,7 @@ export default function SubServiceGrid({
               <h3 className="typo-service-title">{service.title}</h3>
               <p className="typo-service-description">{service.description}</p>
               <div className="service-card-footer">
-                <span className="typo-service-link">Részletek →</span>
+                <span className="typo-service-link">Részletek</span>
               </div>
             </div>
           </Link>

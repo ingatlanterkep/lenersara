@@ -106,7 +106,7 @@ export default function ServiceGrid({
                 <p className="typo-service-description">{service.description}</p>
                 <div className="service-card-footer">
                   <span className="typo-service-link">
-                    {(service as SpecialService).ctaText || 'Tovább a részletekhez →'}
+                    {(service as SpecialService).ctaText || 'Tovább a részletekhez'}
                   </span>
                 </div>
               </div>

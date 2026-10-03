@@ -176,7 +176,7 @@ export default function Szolgaltatasok() {
                 >
                   Részletek
                   <span aria-hidden="true" className="ml-2">
-                    →
+                    
                   </span>
                 </Link>
               </article>

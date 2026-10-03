@@ -122,7 +122,7 @@ export default function ServiceTemplate({
 
                 <div className="when-to-contact-cta">
                   <Link 
-                    href={whenToContact.ctaLink || '/kapcsolat'} 
+                    href={whenToContact.ctaLink || '/#kapcsolat'} 
                     className="btn btn-accent"
                   >
                     {whenToContact.ctaText || 'Konzultáció időpont kérése'}

@@ -366,7 +366,7 @@ export default function Mediacio() {
           'gazdasági érvényesülést akadályozó viták feloldására'
         ],
         ctaText: 'Kérjen időpontot konzultációra',
-        ctaLink: '/kapcsolat'
+        ctaLink: '/#kapcsolat'
       }}
 
       timelineTitle="Hogyan zajlik a mediációs eljárás?"
