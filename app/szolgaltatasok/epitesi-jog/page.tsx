@@ -26,11 +26,11 @@ export default function EpitesiJog() {
       heroSubtitle="dr. Léner-Pintér Sára"
       heroDescription="Jogi segítség építési szerződésekkel, hatósági ügyekkel és építési jogvitákkal kapcsolatos kérdésekben."
       heroCtaText="Konzultáció kérése"
-      heroCtaLink="/kapcsolat"
+      heroCtaLink="/#kapcsolat"
 
       breadcrumbItems={[
         { label: 'Főoldal', href: '/' },
-        { label: 'Szolgáltatások', href: '/szolgaltatasok' },
+        { label: 'Szolgáltatások', href: '/#szolgaltatasok' },
         { label: 'Építési jog', href: '/szolgaltatasok/epitesi-jog' }
       ]}
 
@@ -78,6 +78,20 @@ export default function EpitesiJog() {
           description:
             'Jogi képviselet építési beruházásokkal kapcsolatos vitákban, teljesítési igények érvényesítésében és kártérítési ügyekben.',
           icon: '/images/epitesi-jog/epitesi-jogvitak.png'
+        },
+        {
+          title: 'Ingatlan és építményi jog',
+          href: '/szolgaltatasok/epitesi-jog/ingatlan-es-epitmenyi-jog',
+          description:
+            'Jogi segítség a telekszerzés, az ingatlan-nyilvántartási ügyek és az építményi jog alapításának teljes folyamatában.',
+          icon: '/images/epitesi-jog/ingatlan-es-epitmenyi-jog.png'
+        },
+        {
+          title: 'Szomszédjogi kérdések',
+          href: '/szolgaltatasok/epitesi-jog/szomszedjogi-kerdesek',
+          description:
+            'Jogi segítség a szomszédjogi viták megelőzésében és rendezésében, a szolgalmi jogok alapításában, valamint a peres és peren kívüli eljárásokban.',
+          icon: '/images/epitesi-jog/szomszedjogi-kerdesek.png'
         }
       ]}
 
@@ -206,7 +220,7 @@ export default function EpitesiJog() {
               '@type': 'ListItem',
               position: 2,
               name: 'Szolgáltatások',
-              item: 'https://ugyvedimegoldas.hu/szolgaltatasok'
+              item: 'https://ugyvedimegoldas.hu/#szolgaltatasok'
             },
             {
               '@type': 'ListItem',

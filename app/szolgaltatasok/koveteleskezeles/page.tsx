@@ -28,11 +28,11 @@ export default function Koveteleservenyesites() {
       heroSubtitle="dr. Léner-Pintér Sára"
       heroDescription="Jogi segítség lejárt pénzkövetelések rendezéséhez és hatékony érvényesítéséhez."
       heroCtaText="Konzultáció kérése"
-      heroCtaLink="/kapcsolat"
+      heroCtaLink="/#kapcsolat"
 
       breadcrumbItems={[
         { label: 'Főoldal', href: '/' },
-        { label: 'Szolgáltatások', href: '/szolgaltatasok' },
+        { label: 'Szolgáltatások', href: '/#szolgaltatasok' },
         {
           label: 'Követeléskezelés',
           href: '/szolgaltatasok/koveteleservenyesites'
@@ -248,7 +248,7 @@ export default function Koveteleservenyesites() {
               '@type': 'ListItem',
               position: 2,
               name: 'Szolgáltatások',
-              item: 'https://ugyvedimegoldas.hu/szolgaltatasok'
+              item: 'https://ugyvedimegoldas.hu/#szolgaltatasok'
             },
             {
               '@type': 'ListItem',

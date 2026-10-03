@@ -14,9 +14,15 @@ const navigation = [
     subItems: [
       { name: 'Családjog', href: '/szolgaltatasok/csaladjog' },
       { name: 'Ingatlanjog', href: '/szolgaltatasok/ingatlanjog' },
-      { name: 'Öröklési ügyek', href: '/szolgaltatasok/orokles' },
+      { name: 'Öröklési jog', href: '/szolgaltatasok/orokles' },
+      { name: 'Cégeljárások', href: '/szolgaltatasok/cegeljarasok' },
+      { name: 'Munkajog', href: '/szolgaltatasok/munkajog' },
+      { name: 'Építési jog', href: '/szolgaltatasok/epitesi-jog' },
+      { name: 'Peres képviselet', href: '/szolgaltatasok/peres-kepviselet' },
+      { name: 'Okiratszerkesztés', href: '/szolgaltatasok/okiratszerkesztes' },
+      { name: 'Követeléskezelés', href: '/szolgaltatasok/koveteleservenyesites' },
       { name: 'Mediáció', href: '/szolgaltatasok/mediacio' },
-      { name: 'Egyéb jogi szolgáltatások', href: '/szolgaltatasok/egyeb' },
+      { name: 'Pártfogó ügyvédi képviselet', href: '/szolgaltatasok/partfogo-ugyved' },
     ]
   },
   { 
@@ -25,7 +31,6 @@ const navigation = [
     sectionId: 'rolam' 
   },
   { name: 'Díjszabás', href: '/dijszabas' },
-  { name: 'Hasznos információk', href: '/tudastar' },
   { 
     name: 'Kapcsolat', 
     href: '/#kapcsolat',

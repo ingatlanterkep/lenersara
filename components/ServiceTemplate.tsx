@@ -32,6 +32,7 @@ interface ServiceTemplateProps {
   heroDescription: string
   heroCtaText?: string
   heroCtaLink?: string
+  showHero?: boolean
   breadcrumbItems: BreadcrumbItem[]
   trustItems: { icon: string; text: string }[]
   content: ReactNode
@@ -53,6 +54,7 @@ export default function ServiceTemplate({
   heroTitle,
   heroSubtitle,
   heroDescription,
+  showHero = true,
   breadcrumbItems,
   trustItems,
   content,
@@ -65,12 +67,13 @@ export default function ServiceTemplate({
   disclaimer = 'Az itt található információk általános tájékoztatást szolgálnak, és nem helyettesítik az egyedi jogi tanácsadást. Minden ügy egyedi körülményei miatt érdemes személyes konzultációt kérni.',
 }: ServiceTemplateProps) {
   const { isHeroVisible } = useHeroVisibility()
-  const showHero = isHeroVisible
+
+  const shouldShowHero = showHero && isHeroVisible
 
   return (
     <>
-      {/* Csak akkor rendereljük a hero-section-t, ha látszik a Hero */}
-      {showHero && (
+      {/* Csak akkor rendereljük a hero-section-t, ha engedélyezve van és látszik a Hero */}
+      {shouldShowHero && (
         <div className="hero-section">
           <Hero 
             title={heroTitle}
@@ -102,6 +105,7 @@ export default function ServiceTemplate({
                   <span className="decorative-line"></span>
                   <span className="decorative-dot">●</span>
                 </h2>
+
                 <ul className="when-to-contact-list">
                   {whenToContact.items.map((item, index) => (
                     <li key={index} className="when-to-contact-item">
@@ -110,10 +114,12 @@ export default function ServiceTemplate({
                     </li>
                   ))}
                 </ul>
+
                 <p className="when-to-contact-note">
                   Minden ügy egyedi, ezért a pontos lehetőségeket csak az iratok és a körülmények 
                   áttekintése után lehet megítélni.
                 </p>
+
                 <div className="when-to-contact-cta">
                   <Link 
                     href={whenToContact.ctaLink || '/kapcsolat'} 
@@ -126,29 +132,51 @@ export default function ServiceTemplate({
             </div>
           )}
 
-          <div className="section-card" style={{ marginTop: '2rem' }}>
-            <h2 className="typo-h2-decorated">
-              {timelineTitle}
-              <span className="decorative-line"></span>
-              <span className="decorative-dot">●</span>
-            </h2>
-            <div className="timeline-numberline">
-              <div className="timeline-numberline-track"></div>
-              <div className={`timeline-numberline-steps ${timelineSteps.length <= 4 ? `has-${timelineSteps.length}-steps` : ''}`}>
-                {timelineSteps.map((step) => (
-                  <div key={step.number} className="timeline-numberline-step">
-                    <div className="timeline-numberline-dot">
-                      <span className="timeline-numberline-number">{step.number}</span>
+          {/* Timeline csak akkor jelenik meg, ha vannak lépések */}
+          {timelineSteps.length > 0 && (
+            <div className="section-card" style={{ marginTop: '2rem' }}>
+              <h2 className="typo-h2-decorated">
+                {timelineTitle}
+                <span className="decorative-line"></span>
+                <span className="decorative-dot">●</span>
+              </h2>
+
+              <div className="timeline-numberline">
+                <div className="timeline-numberline-track"></div>
+
+                <div
+                  className={`timeline-numberline-steps ${
+                    timelineSteps.length <= 4
+                      ? `has-${timelineSteps.length}-steps`
+                      : ''
+                  }`}
+                >
+                  {timelineSteps.map((step) => (
+                    <div
+                      key={step.number}
+                      className="timeline-numberline-step"
+                    >
+                      <div className="timeline-numberline-dot">
+                        <span className="timeline-numberline-number">
+                          {step.number}
+                        </span>
+                      </div>
+
+                      <div className="timeline-numberline-content">
+                        <h3 className="timeline-numberline-title">
+                          {step.title}
+                        </h3>
+
+                        <p className="timeline-numberline-description">
+                          {step.description}
+                        </p>
+                      </div>
                     </div>
-                    <div className="timeline-numberline-content">
-                      <h3 className="timeline-numberline-title">{step.title}</h3>
-                      <p className="timeline-numberline-description">{step.description}</p>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           <div className="section-card" style={{ marginTop: '2rem' }}>
             <ContactInfo 
@@ -159,8 +187,14 @@ export default function ServiceTemplate({
             />
           </div>
 
-          <div className="disclaimer-wrapper" style={{ marginTop: '1.5rem' }}>
-            <div className="alert alert-warning" style={{ fontSize: '0.8rem', opacity: 0.5 }}>
+          <div
+            className="disclaimer-wrapper"
+            style={{ marginTop: '1.5rem' }}
+          >
+            <div
+              className="alert alert-warning"
+              style={{ fontSize: '0.8rem', opacity: 0.5 }}
+            >
               <p>{disclaimer}</p>
             </div>
           </div>

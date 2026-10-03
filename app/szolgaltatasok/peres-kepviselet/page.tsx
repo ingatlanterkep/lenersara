@@ -27,11 +27,11 @@ export default function PeresKepviselet() {
       heroSubtitle="dr. Léner-Pintér Sára"
       heroDescription="Jogi tanácsadás, perelőkészítés és bírósági képviselet polgári jogi ügyekben."
       heroCtaText="Konzultáció kérése"
-      heroCtaLink="/kapcsolat"
+      heroCtaLink="/#kapcsolat"
 
       breadcrumbItems={[
         { label: 'Főoldal', href: '/' },
-        { label: 'Szolgáltatások', href: '/szolgaltatasok' },
+        { label: 'Szolgáltatások', href: '/#szolgaltatasok' },
         {
           label: 'Peres képviselet',
           href: '/szolgaltatasok/peres-kepviselet'
@@ -250,7 +250,7 @@ export default function PeresKepviselet() {
               '@type': 'ListItem',
               position: 2,
               name: 'Szolgáltatások',
-              item: 'https://ugyvedimegoldas.hu/szolgaltatasok'
+              item: 'https://ugyvedimegoldas.hu/#szolgaltatasok'
             },
             {
               '@type': 'ListItem',

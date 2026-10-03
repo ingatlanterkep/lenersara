@@ -26,11 +26,11 @@ export default function Ingatlanjog() {
       heroSubtitle="dr. Léner-Pintér Sára"
       heroDescription="Jogi segítség ingatlan adásvételhez, ajándékozáshoz, közös tulajdon megszüntetéséhez, haszonélvezeti joggal kapcsolatos ügyekhez és egyéb ingatlanjogi kérdésekben."
       heroCtaText="Konzultáció kérése"
-      heroCtaLink="/kapcsolat"
+      heroCtaLink="/#kapcsolat"
 
       breadcrumbItems={[
         { label: 'Főoldal', href: '/' },
-        { label: 'Szolgáltatások', href: '/szolgaltatasok' },
+        { label: 'Szolgáltatások', href: '/#szolgaltatasok' },
         { label: 'Ingatlanjog', href: '/szolgaltatasok/ingatlanjog' }
       ]}
 
@@ -255,7 +255,7 @@ export default function Ingatlanjog() {
               '@type': 'ListItem',
               position: 2,
               name: 'Szolgáltatások',
-              item: 'https://ugyvedimegoldas.hu/szolgaltatasok'
+              item: 'https://ugyvedimegoldas.hu/#szolgaltatasok'
             },
             {
               '@type': 'ListItem',

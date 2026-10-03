@@ -26,11 +26,11 @@ export default function Csaladjog() {
       heroSubtitle="dr. Léner-Pintér Sára"
       heroDescription="Jogi segítség válással, szülői felügyelettel, kapcsolattartással, gyermektartással és házastársi vagyonjoggal kapcsolatos ügyekben."
       heroCtaText="Konzultáció kérése"
-      heroCtaLink="/kapcsolat"
+      heroCtaLink="/#kapcsolat"
 
       breadcrumbItems={[
         { label: 'Főoldal', href: '/' },
-        { label: 'Szolgáltatások', href: '/szolgaltatasok' },
+        { label: 'Szolgáltatások', href: '/#szolgaltatasok' },
         { label: 'Családjog', href: '/szolgaltatasok/csaladjog' }
       ]}
 
@@ -59,8 +59,8 @@ export default function Csaladjog() {
       subServicesTitle="Családjogi szolgáltatások"
       subServices={[
         {
-          title: 'Válóper',
-          href: '/szolgaltatasok/csaladjog/valoper',
+          title: 'Kapcsolatrendezés',
+          href: '/szolgaltatasok/csaladjog/szuloi-megallapodas',
           description:
             'Jogi segítség a házasság felbontásához, az egyezség előkészítéséhez és a válóper során felmerülő kérdések rendezéséhez.',
           icon: '/images/csaladjog/válóper.png'
@@ -239,7 +239,7 @@ export default function Csaladjog() {
               '@type': 'ListItem',
               position: 2,
               name: 'Szolgáltatások',
-              item: 'https://ugyvedimegoldas.hu/szolgaltatasok'
+              item: 'https://ugyvedimegoldas.hu/#szolgaltatasok'
             },
             {
               '@type': 'ListItem',

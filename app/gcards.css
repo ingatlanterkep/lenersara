@@ -2967,3 +2967,26 @@
 .author-cta-expanded .btn:hover::before {
   opacity: 1;
 }
+
+.footer-legal {
+  max-width: 1100px;
+  margin-bottom: 1.25rem;
+}
+
+.footer-legal-text {
+  margin: 0 0 0.55rem;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.footer-legal-text strong {
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.footer-copyright {
+  margin: 0;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.3);
+}

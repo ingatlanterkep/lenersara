@@ -30,11 +30,11 @@ export default function Mediacio() {
       heroSubtitle="dr. Léner-Pintér Sára"
       heroDescription="Békés vitarendezés közvetítői eljárással. Párkapcsolati, válási, munkaügyi, iskolai és közösségi mediáció."
       heroCtaText="Konzultáció kérése"
-      heroCtaLink="/kapcsolat"
+      heroCtaLink="/#kapcsolat"
 
       breadcrumbItems={[
         { label: 'Főoldal', href: '/' },
-        { label: 'Szolgáltatások', href: '/szolgaltatasok' },
+        { label: 'Szolgáltatások', href: '/#szolgaltatasok' },
         { label: 'Mediáció', href: '/szolgaltatasok/mediacio' }
       ]}
 

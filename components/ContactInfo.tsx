@@ -110,7 +110,7 @@ export default function ContactInfo({
           </div>
 
           <div className="contact-info-cta-wrapper">
-            <Link href="/kapcsolat" className="btn btn-accent typo-btn">
+            <Link href="/#kapcsolat" className="btn btn-accent typo-btn">
               Kapcsolatfelvétel →
             </Link>
           </div>

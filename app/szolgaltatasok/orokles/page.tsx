@@ -26,11 +26,11 @@ export default function Orokles() {
       heroSubtitle="Ügyvédi segítség veszprémben"
       heroDescription="Jogi segítség végrendelet készítéséhez, hagyatéki eljáráshoz, kötelesrész érvényesítéséhez, öröklési szerződéshez és örökösök közötti jogviták rendezéséhez."
       heroCtaText="Konzultáció kérése"
-      heroCtaLink="/kapcsolat"
+      heroCtaLink="/#kapcsolat"
 
       breadcrumbItems={[
         { label: 'Főoldal', href: '/' },
-        { label: 'Szolgáltatások', href: '/szolgaltatasok' },
+        { label: 'Szolgáltatások', href: '/#szolgaltatasok' },
         { label: 'Öröklés', href: '/szolgaltatasok/orokles' }
       ]}
 
@@ -306,7 +306,7 @@ export default function Orokles() {
               '@type': 'ListItem',
               position: 2,
               name: 'Szolgáltatások',
-              item: 'https://ugyvedimegoldas.hu/szolgaltatasok'
+              item: 'https://ugyvedimegoldas.hu/#szolgaltatasok'
             },
             {
               '@type': 'ListItem',

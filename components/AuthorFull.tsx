@@ -170,7 +170,7 @@ export default function AuthorFull() {
         </p>
 
         <div className="author-cta">
-          <Link href="/kapcsolat" className="btn btn-accent">
+          <Link href="/#kapcsolat" className="btn btn-accent">
             Kapcsolatfelvétel →
           </Link>
         </div>

@@ -65,7 +65,7 @@ export default function Author() {
 
                 {/* CTA GOMB - CSAK A RÖVID VÁLTOZATBAN */}
                 <div className="author-cta-short">
-                  <Link href="/kapcsolat" className="btn btn-accent typo-btn">
+                  <Link href="/#kapcsolat" className="btn btn-accent typo-btn">
                     Kapcsolatfelvétel →
                   </Link>
                 </div>
@@ -178,7 +178,7 @@ export default function Author() {
 
           {/* CTA GOMB - CSAK A HOSSZÚ VÁLTOZATBAN */}
           <div className="author-cta-expanded">
-            <Link href="/kapcsolat" className="btn btn-accent typo-btn">
+            <Link href="/#kapcsolat" className="btn btn-accent typo-btn">
               Kapcsolatfelvétel →
             </Link>
           </div>

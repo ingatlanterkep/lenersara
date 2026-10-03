@@ -26,11 +26,11 @@ export default function Okiratszerkesztes() {
       heroSubtitle="Ügyvédi segítség veszprémben"
       heroDescription="Ügyvédi közreműködéssel készített szerződések, nyilatkozatok és egyéb jogi okiratok a jogszabályoknak megfelelően, az Ön egyedi élethelyzetéhez igazítva."
       heroCtaText="Konzultáció kérése"
-      heroCtaLink="/kapcsolat"
+      heroCtaLink="/#kapcsolat"
 
       breadcrumbItems={[
         { label: 'Főoldal', href: '/' },
-        { label: 'Szolgáltatások', href: '/szolgaltatasok' },
+        { label: 'Szolgáltatások', href: '/#szolgaltatasok' },
         { label: 'Okiratszerkesztés', href: '/szolgaltatasok/okiratszerkesztes' }
       ]}
 
@@ -245,7 +245,7 @@ export default function Okiratszerkesztes() {
               '@type': 'ListItem',
               position: 2,
               name: 'Szolgáltatások',
-              item: 'https://ugyvedimegoldas.hu/szolgaltatasok'
+              item: 'https://ugyvedimegoldas.hu/#szolgaltatasok'
             },
             {
               '@type': 'ListItem',

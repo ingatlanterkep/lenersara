@@ -26,11 +26,11 @@ export default function Munkajog() {
       heroSubtitle="dr. Léner-Pintér Sára"
       heroDescription="Jogi tanácsadás és képviselet munkavállalók és munkáltatók részére a munkaviszonnyal összefüggő kérdésekben."
       heroCtaText="Konzultáció kérése"
-      heroCtaLink="/kapcsolat"
+      heroCtaLink="/#kapcsolat"
 
       breadcrumbItems={[
         { label: 'Főoldal', href: '/' },
-        { label: 'Szolgáltatások', href: '/szolgaltatasok' },
+        { label: 'Szolgáltatások', href: '/#szolgaltatasok' },
         { label: 'Munkajog', href: '/szolgaltatasok/munkajog' }
       ]}
 
@@ -212,7 +212,7 @@ export default function Munkajog() {
               '@type': 'ListItem',
               position: 2,
               name: 'Szolgáltatások',
-              item: 'https://ugyvedimegoldas.hu/szolgaltatasok'
+              item: 'https://ugyvedimegoldas.hu/#szolgaltatasok'
             },
             {
               '@type': 'ListItem',

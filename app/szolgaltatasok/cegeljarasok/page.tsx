@@ -25,11 +25,11 @@ export default function Cegeljarasok() {
       heroTitle="Cégeljárások és cégjogi ügyintézés Veszprém"
       heroSubtitle="Jogi segítség cégalapításhoz, cégmódosításhoz, végelszámoláshoz és egyéb cégbírósági eljárásokhoz. Teljes körű ügyintézés elektronikus cégeljárás keretében."
       heroCtaText="Konzultáció kérése"
-      heroCtaLink="/kapcsolat"
+      heroCtaLink="/#kapcsolat"
 
       breadcrumbItems={[
         { label: 'Főoldal', href: '/' },
-        { label: 'Szolgáltatások', href: '/szolgaltatasok' },
+        { label: 'Szolgáltatások', href: '/#szolgaltatasok' },
         { label: 'Cégeljárások', href: '/szolgaltatasok/cegeljarasok' }
       ]}
 
@@ -224,7 +224,7 @@ export default function Cegeljarasok() {
               '@type': 'ListItem',
               position: 2,
               name: 'Szolgáltatások',
-              item: 'https://ugyvedimegoldas.hu/szolgaltatasok'
+              item: 'https://ugyvedimegoldas.hu/#szolgaltatasok'
             },
             {
               '@type': 'ListItem',
