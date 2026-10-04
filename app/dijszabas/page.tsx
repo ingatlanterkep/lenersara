@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 export default function DijszabasPage() {
   return (
     <ServiceTemplate
-    showHero={false}
+      showHero={false}
       heroTitle=""
       heroSubtitle=""
       heroDescription=""
@@ -82,7 +82,7 @@ export default function DijszabasPage() {
                 <tr>
                   <td>Konzultáció</td>
                   <td>Első konzultáció</td>
-                  <td><strong>30.000 Ft/óra</strong></td>
+                  <td><strong>40.000 Ft/óra</strong></td>
                 </tr>
 
                 <tr>
@@ -93,14 +93,14 @@ export default function DijszabasPage() {
 
                 <tr>
                   <td>Okiratszerkesztés</td>
-                  <td>Egyszerű szerződések</td>
-                  <td><strong>50.000 Ft-tól</strong></td>
+                  <td>Egyszerű megítélésű ügyekben</td>
+                  <td><strong>100.000 Ft-tól</strong></td>
                 </tr>
 
                 <tr>
                   <td>Okiratszerkesztés</td>
-                  <td>Összetett szerződések</td>
-                  <td><strong>100.000 Ft-tól</strong></td>
+                  <td>Összetett dokumentumok</td>
+                  <td><strong>125.000 Ft-tól</strong></td>
                 </tr>
 
                 <tr>
@@ -116,13 +116,13 @@ export default function DijszabasPage() {
                 <tr>
                   <td>Képviselet</td>
                   <td>Bírósági képviselet</td>
-                  <td><strong>150.000 Ft-tól</strong></td>
+                  <td><strong>egyedi díjmegállapodás</strong></td>
                 </tr>
 
                 <tr>
                   <td>Képviselet</td>
                   <td>Hatósági eljárás</td>
-                  <td><strong>100.000 Ft-tól</strong></td>
+                  <td><strong>egyedi díjmegállapodás</strong></td>
                 </tr>
 
                 <tr>
@@ -140,7 +140,7 @@ export default function DijszabasPage() {
                 <tr>
                   <td>Mediáció</td>
                   <td>Mediációs ülés – közös, 2 fő</td>
-                  <td><strong>20.000 Ft/óra</strong></td>
+                  <td><strong>35.000 Ft/óra</strong></td>
                 </tr>
 
                 <tr>
@@ -151,8 +151,8 @@ export default function DijszabasPage() {
 
                 <tr>
                   <td>Mediáció</td>
-                  <td>Válási mediáció</td>
-                  <td><strong>17.500 Ft/óra</strong></td>
+                  <td>Mediációs előkészítő ülés</td>
+                  <td><strong>17.000 Ft/alkalom</strong></td>
                 </tr>
 
                 <tr>
@@ -194,12 +194,6 @@ export default function DijszabasPage() {
                 </tr>
 
                 <tr>
-                  <td>Mediáció</td>
-                  <td>Mediációs előkészítő ülés</td>
-                  <td><strong>17.000 Ft/alkalom</strong></td>
-                </tr>
-
-                <tr>
                   <td>Előzetes egyeztetés</td>
                   <td>Kapcsolatfelvétel, előzetes megbeszélés</td>
                   <td><strong>0 Ft</strong></td>
@@ -232,10 +226,9 @@ export default function DijszabasPage() {
       faqTitle="Gyakori kérdések a díjszabásról"
       faqItems={[
         {
-
           question: 'Mennyibe kerül egy első konzultáció?',
           answer:
-            'Az első konzultáció díja 30.000 Ft/óra. A konzultáció során áttekintjük az ügyét, és tájékoztatást adok a lehetséges jogi lépésekről és a várható költségekről.'
+            'Az első konzultáció díja 40.000 Ft/óra. A konzultáció során áttekintjük az ügyét, és tájékoztatást adok a lehetséges jogi lépésekről és a várható költségekről.'
         },
         {
           question: 'Milyen fizetési módokat fogad el?',
