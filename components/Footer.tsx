@@ -54,7 +54,7 @@ export default function Footer() {
       </Link>
     </li>
     <li>
-      <Link href="/szolgaltatasok/koveteleservenyesites">
+      <Link href="/szolgaltatasok/koveteleskezeles">
         Követeléskezelés
       </Link>
     </li>

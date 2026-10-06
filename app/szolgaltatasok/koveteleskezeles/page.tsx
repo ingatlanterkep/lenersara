@@ -7,14 +7,14 @@ export const metadata: Metadata = {
     'Ügyvédi követeléskezelés és követelésérvényesítés Veszprémben magánszemélyek és vállalkozások részére. Több mint 25 év szakmai tapasztalat.',
   alternates: {
     canonical:
-      'https://ugyvedimegoldas.hu/szolgaltatasok/koveteleservenyesites'
+      'https://ugyvedimegoldas.hu/szolgaltatasok/koveteleskezeles'
   },
   openGraph: {
     title: 'Követeléskezelés Veszprém | dr. Léner-Pintér Sára',
     description:
       'Jogi segítség lejárt pénzkövetelések rendezéséhez és érvényesítéséhez Veszprémben.',
     url:
-      'https://ugyvedimegoldas.hu/szolgaltatasok/koveteleservenyesites',
+      'https://ugyvedimegoldas.hu/szolgaltatasok/koveteleskezeles',
     siteName: 'Ügyvédi Megoldás',
     locale: 'hu_HU',
     type: 'website'
@@ -35,7 +35,7 @@ export default function Koveteleservenyesites() {
         { label: 'Szolgáltatások', href: '/#szolgaltatasok' },
         {
           label: 'Követeléskezelés',
-          href: '/szolgaltatasok/koveteleservenyesites'
+          href: '/szolgaltatasok/koveteleskezeles'
         }
       ]}
 
@@ -67,7 +67,7 @@ export default function Koveteleservenyesites() {
         {
           title: 'Fizetési felszólítás',
           href:
-            '/szolgaltatasok/koveteleservenyesites/fizetesi-felszolitas',
+            '/szolgaltatasok/koveteleskezeles/fizetesi-felszolitas',
           description:
             'Ügyvédi felszólítás, egyezségi lehetőségek és a követelés peren kívüli rendezésének előkészítése.',
           icon:
@@ -76,7 +76,7 @@ export default function Koveteleservenyesites() {
         {
           title: 'Fizetési meghagyás',
           href:
-            '/szolgaltatasok/koveteleservenyesites/fizetesi-meghagyas',
+            '/szolgaltatasok/koveteleskezeles/fizetesi-meghagyas',
           description:
             'Jogi segítség a fizetési meghagyásos eljárás megindításához és az eljárás során szükséges lépésekhez.',
           icon:
@@ -85,7 +85,7 @@ export default function Koveteleservenyesites() {
         {
           title: 'Végrehajtási eljárások',
           href:
-            '/szolgaltatasok/koveteleservenyesites/vegrehajtas',
+            '/szolgaltatasok/koveteleskezeles/vegrehajtas',
           description:
             'Jogi segítség végrehajtható követelések érvényesítéséhez és végrehajtási ügyekben.',
           icon:
@@ -218,12 +218,12 @@ export default function Koveteleservenyesites() {
           '@context': 'https://schema.org',
           '@type': 'Service',
           '@id':
-            'https://ugyvedimegoldas.hu/szolgaltatasok/koveteleservenyesites#service',
+            'https://ugyvedimegoldas.hu/szolgaltatasok/koveteleskezeles#service',
           name: 'Követeléskezelési és követelésérvényesítési szolgáltatás',
           description:
             'Jogi tanácsadás és ügyvédi segítség lejárt pénzkövetelések rendezéséhez és érvényesítéséhez Veszprémben.',
           url:
-            'https://ugyvedimegoldas.hu/szolgaltatasok/koveteleservenyesites',
+            'https://ugyvedimegoldas.hu/szolgaltatasok/koveteleskezeles',
           provider: {
             '@id': 'https://ugyvedimegoldas.hu/#law-office'
           },
@@ -255,7 +255,7 @@ export default function Koveteleservenyesites() {
               position: 3,
               name: 'Követeléskezelés',
               item:
-                'https://ugyvedimegoldas.hu/szolgaltatasok/koveteleservenyesites'
+                'https://ugyvedimegoldas.hu/szolgaltatasok/koveteleskezeles'
             }
           ]
         }

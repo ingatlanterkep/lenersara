@@ -20,7 +20,7 @@ const navigation = [
       { name: 'Építési jog', href: '/szolgaltatasok/epitesi-jog' },
       { name: 'Peres képviselet', href: '/szolgaltatasok/peres-kepviselet' },
       { name: 'Okiratszerkesztés', href: '/szolgaltatasok/okiratszerkesztes' },
-      { name: 'Követeléskezelés', href: '/szolgaltatasok/koveteleservenyesites' },
+      { name: 'Követeléskezelés', href: '/szolgaltatasok/koveteleskezeles' },
       { name: 'Mediáció', href: '/szolgaltatasok/mediacio' },
       { name: 'Pártfogó ügyvédi képviselet', href: '/szolgaltatasok/partfogo-ugyved' },
     ]

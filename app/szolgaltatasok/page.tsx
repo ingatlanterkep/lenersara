@@ -94,7 +94,7 @@ export default function Szolgaltatasok() {
       title: 'Követeléskezelés',
       description:
         'Lejárt tartozások jogi érvényesítése felszólítással, fizetési meghagyással vagy peres eljárásban.',
-      href: '/szolgaltatasok/koveteleservenyesites',
+      href: '/szolgaltatasok/koveteleskezeles',
       items: [
         'Ügyvédi fizetési felszólítás',
         'Fizetési meghagyás',
